@@ -1,0 +1,19 @@
+apiVersion: skaffold/v3
+kind: Config
+build:
+  artifacts:
+    - image: stile95/userauth
+      context: userauth
+      sync:
+        manual:
+          - src: src/**/*.js
+            dest: .
+      docker:
+        dockerfile: Dockerfile
+  local:
+    push: false
+manifests:
+  rawYaml:
+    - ./infrastructure/k8s/*
+deploy:
+  kubectl: {}

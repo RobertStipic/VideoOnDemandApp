@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userauth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userauth
+  template:
+    metadata:
+      labels:
+        app: userauth
+    spec:
+      containers:
+        - name: userauth
+          image: stile95/userauth
+---
+apiVersion: v1 
+kind: Service
+metadata:
+  name: userauth-srv
+spec: ##default ClusterIP service
+  selector:
+    app:  userauth
+  ports:
+  - name: auth
+    protocol: TCP
+    port:  3000
+    targetPort:  3000
