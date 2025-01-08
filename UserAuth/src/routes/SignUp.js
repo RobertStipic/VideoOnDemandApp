@@ -1,7 +1,7 @@
 import express from 'express';
 import {body , validationResult} from 'express-validator';
 import { User } from '../../models/user.js';
-import mongoose from 'mongoose';
+
 
 const SingUpRouter = express.Router();
 
@@ -67,10 +67,10 @@ SingUpRouter.post('/users/signup',[
     const {email, password, firstName, lastName, dateOfBirth, country, city, gender} = req.body;
     const emailExist = await User.findOne({email});
     if (emailExist){
-        return res.status(409).send('email already exist');
+        return res.status(409).send('Email already exist');
     }
    await User.create({email, password, firstName, lastName, dateOfBirth, country, city, gender });
-    const user = await User.findOne({})
+    const user = await User.findOne({email})
  res.status(400).send(user);
 });
 
