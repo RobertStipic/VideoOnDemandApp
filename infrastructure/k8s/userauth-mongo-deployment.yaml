@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userauth-mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userauth-mongo
+  template:
+    metadata:
+      labels:
+        app: userauth-mongo
+    spec:
+      containers:
+        - image:  mongo
+          name:  userauth-mongo
+          #env:
+          #- name:  ENVVARNAME
+          #  value:  ENVVARVALUE
+---
+apiVersion: v1 
+kind: Service
+metadata:
+  name:  userauth-mongo-srv
+spec:
+  selector:
+    app:  userauth-mongo
+  ports:
+  - name:  mongodb
+    protocol: TCP
+    port:  27017
+    targetPort:  27017
