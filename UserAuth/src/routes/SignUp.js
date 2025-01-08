@@ -28,7 +28,22 @@ SingUpRouter.post('/users/signup',[
     .exists({ checkFalsy: true })
     .withMessage("Please provide Date of Birth")
     .isDate()
-    .withMessage("Date format must be: YYYY-MM-DD"),
+    .withMessage("Date format must be: YYYY-MM-DD")
+    .custom(value =>{
+        let userDate = new Date(value);
+        let todayDate = new Date();
+        let nowYear = todayDate.getFullYear();
+        let nowMonth = todayDate.getMonth();
+        let nowDay = todayDate.getDate();
+        let userAge = userDate.getFullYear();
+        let userMonth = userDate.getMonth();
+        let userDay = userDate.getDate();
+
+        if(((nowYear-userAge) == 18 && (nowMonth-userMonth)<=0 &&(nowDay-userDay)<=0) || (nowYear-userAge)< 18){
+            throw new Error("User must be 18 years or older");
+        }
+        return true;
+    }),
     body('country')
     .isISO31661Alpha2()
     .withMessage('Please provide valid 2 letter ISO 3166-1 Country code'),
