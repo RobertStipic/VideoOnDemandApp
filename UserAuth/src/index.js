@@ -2,6 +2,7 @@ import express from 'express';
 import 'express-async-errors';
 import bodyparser from 'body-parser';
 import mongose from 'mongoose';
+import cookieSession from 'cookie-session';
 import {CurrentUserRouter} from './routes/CurrentUser.js';
 import { LogInRouter } from './routes/LogIn.js';
 import { LogOutRouter } from './routes/LogOut.js';
@@ -13,9 +14,13 @@ import { ChangePasswordRouter } from './routes/ChangePassword.js';
 
 const {json} = bodyparser;
 const app = express();
+app.set('trust proxy',true); //ingress-nginx uses proxies
 app.use(json());
-
-
+app.use(cookieSession({
+    signed:false,
+    secure: true
+})
+);
 app.use(CurrentUserRouter);
 app.use(LogInRouter);
 app.use(LogOutRouter);
@@ -26,6 +31,12 @@ app.all('*', (req, res) =>{
  res.status(404).send('Route not found');
 });
 const startApp = async() =>{
+    
+    if(!process.env.JWT_PRIVATE_KEY){
+        throw new Error('JWT_PRIVATE_KEY must be defined');
+    }
+
+
     try { 
         await mongose.connect('mongodb://userauth-mongo-srv:27017/userauth');
         console.log("Connected to Database");

@@ -1,7 +1,7 @@
 import express from 'express';
 import {body , validationResult} from 'express-validator';
 import { User } from '../../models/user.js';
-
+import jwt from 'jsonwebtoken'
 
 const SingUpRouter = express.Router();
 
@@ -71,7 +71,17 @@ SingUpRouter.post('/users/signup',[
     }
    await User.create({email, password, firstName, lastName, dateOfBirth, country, city, gender });
     const user = await User.findOne({email})
- res.status(400).send(user);
+
+    //Json Web Token
+    const userJwt = jwt.sign({
+        id: user.id,
+        email: user.email,
+        subscription: user.isSubscribed
+    }, process.env.JWT_PRIVATE_KEY);
+    //process.env.JWT_PRIVATE_KEY is saved in secret inside kubernetes cluster
+    req.session.jwt = userJwt;
+
+ res.status(201).send(user);
 });
 
 export {SingUpRouter};

@@ -1,8 +1,9 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
 import { User } from '../../models/user.js';
 import { PasswordEncription } from '../../services/passwordHash.js';
-import bcrypt from 'bcrypt';
+
 const LogInRouter = express.Router();
 
 LogInRouter.post('/users/login',[
@@ -23,7 +24,7 @@ const {email, password} = req.body;
 
 const existingEmail = await User.findOne({email});
 if (!existingEmail){
-    return res.status(404).send("Provided information doesn't match any record, Email");
+    return res.status(404).send("Provided information doesn't match any record");
 }
 
 const passwordsMatch = PasswordEncription.comparePassword(
@@ -34,8 +35,14 @@ const passwordsMatch = PasswordEncription.comparePassword(
 if(!passwordsMatch){
     return res.status(404).send("Provided information doesn't match any record");
 }
-
-res.status(400).send('User logged in');
+    const userJwt = jwt.sign({
+        id: existingEmail.id,
+        email: existingEmail.email,
+        subscription: existingEmail.isSubscribed
+    }, process.env.JWT_PRIVATE_KEY);
+    //process.env.JWT_PRIVATE_KEY is saved in secret inside kubernetes cluster
+    req.session.jwt = userJwt;
+res.status(200).send(existingEmail);
 
 });
 

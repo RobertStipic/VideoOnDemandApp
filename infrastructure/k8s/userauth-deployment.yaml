@@ -15,6 +15,12 @@ spec:
       containers:
         - name: userauth
           image: stile95/userauth
+          env:
+          - name: JWT_PRIVATE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: jwt-secret
+                key: JWT_SECRET_KEY
 ---
 apiVersion: v1 
 kind: Service

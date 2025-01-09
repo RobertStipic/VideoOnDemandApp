@@ -37,11 +37,23 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-});
+},
+{
+    toJSON: {
+            transform(doc, ret){
+                ret.id = ret._id;
+                delete ret._id;
+                delete ret.password;   
+            },
+
+    versionKey:false
+          
+    }
+})
 userSchema.pre('save', function () {
     if(this.isModified('password')){
+        const passwordtest= this.get('password');    
         const hashed = PasswordEncription.hashPassword(this.get('password'));
-        console.log('hashed password:', hashed);
         this.set('password', hashed);
     }
 });
