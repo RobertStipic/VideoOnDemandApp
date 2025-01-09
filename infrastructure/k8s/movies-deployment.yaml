@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movies-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movies
+  template:
+    metadata:
+      labels:
+        app: movies
+    spec:
+      containers:
+        - name: movies
+          image: stile95/movies
+          env:
+          - name: DATABASE_URL
+            value: 'mongodb://userauth-mongo-srv:27017/movies'
+          - name: JWT_PRIVATE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: jwt-secret
+                key: JWT_SECRET_KEY
+---
+apiVersion: v1 
+kind: Service
+metadata:
+  name: movies-srv
+spec: ##default ClusterIP service
+  selector:
+    app:  movies
+  ports:
+  - name: movies
+    protocol: TCP
+    port:  3000
+    targetPort:  3000
