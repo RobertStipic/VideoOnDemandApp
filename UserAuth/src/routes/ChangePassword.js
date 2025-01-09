@@ -2,8 +2,8 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { currentUser } from '@robstipic/middlewares';
 import { userAuthorization } from '@robstipic/middlewares';
-import { User } from '../../models/user.js';
-import { PasswordEncription } from '../../services/passwordHash.js';
+import { User } from '../models/user.js';
+import { PasswordEncription } from '../services/passwordHash.js';
 const ChangePasswordRouter = express.Router();
 
 ChangePasswordRouter.patch('/users/changepassword',[

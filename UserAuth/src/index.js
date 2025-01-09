@@ -35,9 +35,11 @@ const startApp = async() =>{
     if(!process.env.JWT_PRIVATE_KEY){
         throw new Error('JWT_PRIVATE_KEY must be defined');
     }
-
+    if(!process.env.DATABASE_URL){
+        throw new Error('DATABASE_URL must be defined');
+    }
     try { 
-        await mongose.connect('mongodb://userauth-mongo-srv:27017/userauth');
+        await mongose.connect(process.env.DATABASE_URL);
         console.log("Connected to Database");
          }
     catch (err){

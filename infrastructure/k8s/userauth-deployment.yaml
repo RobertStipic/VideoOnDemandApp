@@ -16,6 +16,8 @@ spec:
         - name: userauth
           image: stile95/userauth
           env:
+          - name: DATABASE_URL
+            value: 'mongodb://userauth-mongo-srv:27017/userauth'
           - name: JWT_PRIVATE_KEY
             valueFrom:
               secretKeyRef:
