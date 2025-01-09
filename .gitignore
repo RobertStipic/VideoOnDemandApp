@@ -3,3 +3,4 @@
 # Environment variables
 **/.env*
 node_modules/
+middlewares_shared/
