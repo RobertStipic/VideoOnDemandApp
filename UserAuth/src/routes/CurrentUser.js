@@ -1,6 +1,6 @@
 import express from 'express';
-import { currentUser } from '../../middlewares/current_user.js';
-import { userAuthorization } from '../../middlewares/user_authorization .js';
+import { currentUser } from '@robstipic/middlewares';
+import { userAuthorization } from '@robstipic/middlewares';
 const CurrentUserRouter = express.Router();
 
 CurrentUserRouter.get('/users/currentuser', currentUser, userAuthorization , (req, res) =>{

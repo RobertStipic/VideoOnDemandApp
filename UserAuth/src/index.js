@@ -31,11 +31,10 @@ app.all('*', (req, res) =>{
  res.status(404).send('Route not found');
 });
 const startApp = async() =>{
-    
+
     if(!process.env.JWT_PRIVATE_KEY){
         throw new Error('JWT_PRIVATE_KEY must be defined');
     }
-
 
     try { 
         await mongose.connect('mongodb://userauth-mongo-srv:27017/userauth');
