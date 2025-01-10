@@ -1,6 +1,6 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-
+import { currentUser, userAuthorization } from '@robstipic/middlewares';
 import { Movie } from '../models/movies.js';
 const MoviesByLanguageRouter = express.Router();
 
@@ -18,7 +18,9 @@ body('language')
 Hebrew, Polish, Quenya, Czech, Portuguese, Swahili, Xhosa, Zhulu, Hungarian, Cantonese, Vietnamese, Arabic, Nepali, Hindi,
 Esperanto, Korean, Gaelic, Yiddish, Turkish, Amharic, Danish`)
 ]
-,  async (req, res) =>{
+,currentUser, 
+userAuthorization, 
+async (req, res) =>{
     const errors = validationResult(req);
     if (!errors.isEmpty()){
             return res.status(400).send(errors.array());
