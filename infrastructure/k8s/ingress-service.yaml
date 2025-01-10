@@ -17,3 +17,10 @@ spec:
                 name: userauth-srv
                 port:
                   number: 3000
+          - path: /movies/.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: movies-srv
+                port:
+                  number: 3000
