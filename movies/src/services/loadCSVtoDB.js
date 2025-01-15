@@ -51,6 +51,6 @@ function CSVtoDatabase(){
     temp.BoxOffice=csvData[i]['BoxOffice'];
     temp.Path=csvData[i]['Path'];
     Movie.create(temp);
-    console.log("Movie inserted in database: ", temp.Title);
+    console.log("Movie inserted in database: ",i+1,". ", temp.Title);
   }
   })}

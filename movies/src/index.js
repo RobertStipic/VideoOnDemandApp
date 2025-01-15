@@ -5,6 +5,7 @@ import mongose from 'mongoose';
 import cookieSession from 'cookie-session';
 import { initizializeCSV } from './services/loadCSVtoDB.js';
 import { MoviesByLanguageRouter } from './routes/MoviesByLanguage.js';
+import { MoviesByGenreRouter } from './routes/MoviesByGenre.js';
 
 
 const {json} = bodyparser;
@@ -17,6 +18,7 @@ app.use(cookieSession({
 })
 );
 app.use(MoviesByLanguageRouter);
+app.use(MoviesByGenreRouter);
 app.all('*', (req, res) =>{
  res.status(404).send('Route not found');
 });
