@@ -12,17 +12,13 @@ const __dirname = path.dirname(__filename);
 const output = path.join(__dirname, '..', 'output');
 const videoPath = path.join(__dirname, '..', 'movies');
 const outputPath = path.join(__dirname, '..', 'output');;
-const scaleOptions = ['scale=1280:720', 'scale=640:320'];
+const scale = 'scale=1280:720';
 const videoCodec = 'libx264';
 const x264Options = 'keyint=24:min-keyint=24:no-scenecut';
-const videoBitrates = ['1000k', '2000k', '4000k'];
+const videoBitrates = '2000k';
 
-let counter = 1;
 
 export async function testVideo(){
-  //removeAllFilesSync(outputPath);
-  
-
   if (isEmpty(output)) {
     getMovies();
   } else console.log("Files have been already decoded");
@@ -36,7 +32,7 @@ export async function testVideo(){
       const movies = await Movie.find(
         {},
         { imdbID: 1, Path: 1, Title: 1, _id: 0 }
-      ).limit(2);
+      );
       for (const movie of movies) {
         await processMovie(movie);
       }
@@ -59,9 +55,7 @@ async function videosTranscoding(
   let totalTime;
 
   try {
-    //const currentCounter = getCounter();
-    //const relativeInitSegName = `init$RepresentationID$_${currentCounter}.m4s`;
-   // const relativeMediaSegName = `media$RepresentationID$_${currentCounter}_$Number%05d$.m4s`;
+
 
     console.log(`Transcoding movie ${title} : ${moviePath} to ${newMovieName}...`);
     console.log(`Input file: ${path.join(videoPath, moviePath)}`);
@@ -71,16 +65,16 @@ async function videosTranscoding(
     console.log("dirname: ", __dirname);
     console.log(`Filename: ${filename}`);
 
-    // Ensure the output directory exists
+
     fs.mkdirSync(path.join(outputPath, filename), { recursive: true });
 
     await new Promise((resolve, reject) => {
       ffmpeg()
         .input(path.join(videoPath, moviePath))
-        .videoFilters(scaleOptions)
+        .videoFilters(scale)
         .videoCodec(videoCodec)
         .addOption("-x264opts", x264Options)
-        .outputOptions("-b:v", videoBitrates[0])
+        .outputOptions("-b:v", videoBitrates)
         .format("dash")
         .outputOptions([
           `-use_template 1`,
