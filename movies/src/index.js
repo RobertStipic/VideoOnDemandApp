@@ -8,6 +8,7 @@ import { MoviesByLanguageRouter } from './routes/MoviesByLanguage.js';
 import { MoviesByGenreRouter } from './routes/MoviesByGenre.js';
 import { ListMoviesRouter } from './routes/ListMovies.js';
 import { MoviesByYearRouter } from './routes/MoviesByYear.js';
+import { testVideo } from './services/videoEncoding.js';
 
 
 const {json} = bodyparser;
@@ -44,7 +45,8 @@ const startApp = async() =>{
     app.listen(3000, ()=>{
  console.log("Server up and running on port 3000!");
 });
-initizializeCSV();
+await initizializeCSV();
+testVideo();
 };
 
 startApp();

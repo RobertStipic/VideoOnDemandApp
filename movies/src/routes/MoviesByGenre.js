@@ -3,16 +3,18 @@ import { body, validationResult } from 'express-validator';
 import { currentUser, userAuthorization } from '@robstipic/middlewares';
 import { Movie } from '../models/movies.js';
 
-
+const movieGenres = ["Drama", "Crime", "Action", "History", "Biography", 
+    "Action", "Adventure", "Western", "Romance", "Sci-Fi", "Mystery",
+    "Fantasy", "Thriller", "Comedy", "Horror", "Animation", "Music", 
+    "War", "Family", "Film-Noir"
+]
 const MoviesByGenreRouter = express.Router();
 
 MoviesByGenreRouter.get('/movies/moviesbygenre', [
     body('genre')
     .exists({checkFalsy: true})
     .withMessage('Please provide movie genre')
-    .isIn(["Drama", "Crime", "Action", "History", "Biography", "Action", "Adventure", "Western", "Romance", "Sci-Fi", "Mystery",
-        "Fantasy", "Thriller", "Comedy", "Horror", "Animation", "Music", "War", "Family", "Film-Noir"
-    ])
+    .isIn(movieGenres)
     .withMessage(`List of valid movie genres: Drama, Crime, Action, History, Biography, Action, Adventure, Western, Romance, Sci-Fi, Mystery,
         Fantasy, Thriller, Comedy, "Horror", Animation, Music, War, Family, Film-Noir`)
     ]

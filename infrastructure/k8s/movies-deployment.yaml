@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: movies
-          image: stile95/movies
+          image: stile95/movies:latest
           env:
           - name: DATABASE_URL
             value: 'mongodb://userauth-mongo-srv:27017/movies'

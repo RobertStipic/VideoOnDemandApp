@@ -5,13 +5,13 @@ import { Movie } from '../models/movies.js';
 
 
 const ListMoviesRouter = express.Router();
-var temp_pagesize=10;
+const temp_pagesize=10;
 var temp_n = 0;
 
 ListMoviesRouter.get('/movies/listmovies',  async (req, res) =>{
-    if(n<10){
+    if(temp_n<10){
     let movies = await Movie.find({},{Title:1, Plot: 1, Poster: 1}).skip(temp_pagesize*(temp_n)).limit(temp_pagesize);
-       n++;
+       temp_n++;
     res.status(200).send(movies);
    
     
