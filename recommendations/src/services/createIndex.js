@@ -1,6 +1,5 @@
 import { MongoClient } from "mongodb";
 
-
 const client = new MongoClient(process.env.MONGOATLAS_URL);
 
 export async function createVectorSearch() {
@@ -23,17 +22,16 @@ export async function createVectorSearch() {
         ],
       },
     };
-  
+
     const result = await collection.createSearchIndex(index);
     console.log(result);
-  } 
-  catch (err) {
-    console.error(err);
-
-  }
-  
-  finally {
+  } catch (err) {
+    if (err.code === 68) {
+      console.log("Vector search index already exists for this database");
+    } else {
+      console.error(err);
+    }
+  } finally {
     await client.close();
   }
 }
-

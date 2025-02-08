@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+        - name: payment
+          image: stile95/payment:latest
+          env:
+          - name: JWT_PRIVATE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: jwt-secret
+                key: JWT_SECRET_KEY
+---
+apiVersion: v1 
+kind: Service
+metadata:
+  name: payment-srv
+spec: ##default ClusterIP service
+  selector:
+    app:  payment
+  ports:
+  - name: payment
+    protocol: TCP
+    port:  3000
+    targetPort:  3000
