@@ -1,0 +1,25 @@
+{
+  "name": "recommendations",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@robstipic/middlewares": "^1.0.4",
+    "cookie-session": "^2.1.0",
+    "csvtojson": "^2.0.10",
+    "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.13.0",
+    "nodemon": "^3.1.9",
+    "openai": "^4.82.0"
+  }
+}

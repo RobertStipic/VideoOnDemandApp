@@ -64,7 +64,6 @@ async function CSVtoDatabase(){
         })}
      catch (err){
         console.log(err);
-        reject(err);
       }
     });
 }

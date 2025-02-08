@@ -18,7 +18,7 @@ const x264Options = 'keyint=24:min-keyint=24:no-scenecut';
 const videoBitrates = '2000k';
 
 
-export async function testVideo(){
+export async function startEncoding(){
   if (isEmpty(output)) {
     getMovies();
   } else console.log("Files have been already decoded");
@@ -32,7 +32,7 @@ export async function testVideo(){
       const movies = await Movie.find(
         {},
         { imdbID: 1, Path: 1, Title: 1, _id: 0 }
-      );
+      ).limit(1);
       for (const movie of movies) {
         await processMovie(movie);
       }

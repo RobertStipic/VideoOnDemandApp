@@ -24,3 +24,10 @@ spec:
                 name: movies-srv
                 port:
                   number: 3000
+          - path: /recommendations/.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: recommendation-srv
+                port:
+                  number: 3000
