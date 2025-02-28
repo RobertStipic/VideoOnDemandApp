@@ -29,7 +29,7 @@ MoviePlayedRouter.get(
             queryVector: record.embedding,
             path: "embedding",
             exact: true,
-            limit: 3,
+            limit: 8,
           },
         },
         {

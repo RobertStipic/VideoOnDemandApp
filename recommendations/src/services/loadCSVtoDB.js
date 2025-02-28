@@ -27,7 +27,7 @@ export async function initializeCSV() {
     let count = await collection.countDocuments();
     if (count === empty) {
       console.log("Importing csv data from: ", csvFilePath);
-      await databejz(collection);
+      await CSVtoDatabase(collection);
       console.log("All movies inserted in database");
     } else {
       console.log("Movie collection already has all CSV records loaded");
@@ -37,8 +37,7 @@ export async function initializeCSV() {
   }
 }
 
-
-async function databejz(collection) {
+async function CSVtoDatabase(collection) {
   return new Promise((resolve, reject) => {
     try {
       csvtojson()
@@ -53,7 +52,10 @@ async function databejz(collection) {
               temp.embedding = embedding;
               collection.insertOne(temp);
               console.log(
-                "Movie inserted in database: ", i + 1, ". ", temp.Title
+                "Movie inserted in database: ",
+                i + 1,
+                ". ",
+                temp.Title
               );
             });
           }
@@ -65,4 +67,3 @@ async function databejz(collection) {
     }
   });
 }
-

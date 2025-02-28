@@ -3,9 +3,9 @@ kind: Ingress
 metadata:
   name: ingress-srv
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
+  ingressClassName: nginx
   rules:
     - host: vodapp.dev
       http:
@@ -29,5 +29,19 @@ spec:
             backend:
               service:
                 name: recommendation-srv
+                port:
+                  number: 3000
+          - path: /subscription/.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: subscription-srv
+                port:
+                  number: 3000
+          - path: /payment/.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: payment-srv
                 port:
                   number: 3000

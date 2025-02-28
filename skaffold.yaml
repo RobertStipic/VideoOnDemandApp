@@ -19,7 +19,7 @@ build:
           - src: src/html/**/*.html
             dest: src/html
       docker:
-        dockerfile: Dockerfile    
+        dockerfile: Dockerfile
     - image: stile95/recommendation
       context: recommendations
       sync:
@@ -30,6 +30,22 @@ build:
         dockerfile: Dockerfile
     - image: stile95/payment
       context: payment
+      sync:
+        manual:
+          - src: src/**/*.js
+            dest: .
+      docker:
+        dockerfile: Dockerfile
+    - image: stile95/subscription
+      context: subscription
+      sync:
+        manual:
+          - src: src/**/*.js
+            dest: .
+      docker:
+        dockerfile: Dockerfile
+    - image: stile95/expiration
+      context: expiration
       sync:
         manual:
           - src: src/**/*.js

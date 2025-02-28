@@ -1,29 +1,32 @@
 import { Movie } from "../models/movies.js";
-import csvtojson from 'csvtojson';
-import * as path from 'path';
+import csvtojson from "csvtojson";
+import * as path from "path";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-const csvFilePath=path.join(__dirname, '..', 'csv', 'MOVIES_DATA_final.csv');
+const csvFilePath = path.join(__dirname, "..", "csv", "MOVIES_DATA_final.csv");
 const empty = 0;
-const MoviesCount= 100;
+const MoviesCount = 100;
 
-export async function initizializeCSV(){
-    //await Movie.deleteMany({}); //test function
-    let count = await Movie.countDocuments();
-    if (count === empty){
-      console.log('Importing csv data from: ', csvFilePath);
-        await CSVtoDatabase();
-        return console.log("All movies inserted in database");
-            }
-    else if(count===MoviesCount) console.log('Movie collection have all CSV records loaded');
-    else console.log("Number of records in Database doesnt match value set by application: ", MoviesCount);
+export async function initizializeCSV() {
+  //await Movie.deleteMany({}); //test function
+  let count = await Movie.countDocuments();
+  if (count === empty) {
+    console.log("Importing csv data from: ", csvFilePath);
+    await CSVtoDatabase();
+    return console.log("All movies inserted in database");
+  } else if (count === MoviesCount)
+    console.log("Movie collection have all CSV records loaded");
+  else
+    console.log(
+      "Number of records in Database doesnt match value set by application: ",
+      MoviesCount
+    );
 }
-async function CSVtoDatabase(){ 
-    return new Promise((resolve, reject) => {
-      try{
+async function CSVtoDatabase() {
+  return new Promise((resolve, reject) => {
+    try {
       csvtojson()
         .fromFile(csvFilePath, { encoding: "utf-8" })
         .then((csvData) => {
@@ -60,10 +63,10 @@ async function CSVtoDatabase(){
               temp.Title
             );
           }
-           resolve();
-        })}
-     catch (err){
-        console.log(err);
-      }
-    });
+          resolve();
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  });
 }

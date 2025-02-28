@@ -1,19 +1,20 @@
-import express from 'express';
-import { body, validationResult } from 'express-validator';
-import { currentUser, userAuthorization } from '@robstipic/middlewares';
-import { Movie } from '../models/movies.js';
+import express from "express";
+import { body, validationResult } from "express-validator";
+import { currentUser, userAuthorization } from "@robstipic/middlewares";
+import { Movie } from "../models/movies.js";
 const MoviesByLanguageRouter = express.Router();
-
+//prettier-ignore
+const languangesArray = ["English", "Italian", "Mandarin", "Latin", "Spanish", "Sicilian", " Hebrew",
+    "Polish", "German", "Quenya", "Sindarin","French", "Japanese", "Czech", "Portuguese",
+    "Swahili", "Xhosa", "Zhulu", "Hungarian", "Cantonese", "Vietnamese", "Arabic",
+    "Nepali", "Hindi", "Esperanto", "Russian", "Korean", "Gaelic", "Yiddish", "Turkish",
+    "Amharic", "Danish"]
+//prettier-ignore
 MoviesByLanguageRouter.get('/movies/moviesbylanguage', [
 body('language')
 .exists({checkFalsy: true})
 .withMessage('Please provide language')
-.isIn(["English", "Italian", "Mandarin", "Latin", "Spanish", "Sicilian", " Hebrew",
-    "Polish", "German", "Quenya", "Sindarin","French", "Japanese", "Czech", "Portuguese",
-    "Swahili", "Xhosa", "Zhulu", "Hungarian", "Cantonese", "Vietnamese", "Arabic",
-    "Nepali", "Hindi", "Esperanto", "Russian", "Korean", "Gaelic", "Yiddish", "Turkish",
-    "Amharic", "Danish"
-])
+.isIn(languangesArray)
 .withMessage(`List of valid languages: English, Italian, Mandarin, Latin, Spanish, German, French, Japanese, Russian, Sicilian, 
 Hebrew, Polish, Quenya, Czech, Portuguese, Swahili, Xhosa, Zhulu, Hungarian, Cantonese, Vietnamese, Arabic, Nepali, Hindi,
 Esperanto, Korean, Gaelic, Yiddish, Turkish, Amharic, Danish`)
@@ -30,4 +31,4 @@ async (req, res) =>{
     res.status(200).send(movies);
 });
 
-export {MoviesByLanguageRouter};
+export { MoviesByLanguageRouter };

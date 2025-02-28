@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payment-deployment
+  name: subscription-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: payment
+      app: subscription
   template:
     metadata:
       labels:
-        app: payment
+        app: subscription
     spec:
       containers:
-        - name: payment
-          image: stile95/payment:latest
+        - name: subscription
+          image: stile95/subscription:latest
           env:
             - name: DATABASE_URL
-              value: "mongodb://payment-mongo-srv:27017/payment"
+              value: "mongodb://subscription-mongo-srv:27017/subscription"
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
@@ -35,12 +35,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: payment-srv
+  name: subscription-srv
 spec: ##default ClusterIP service
   selector:
-    app: payment
+    app: subscription
   ports:
-    - name: payment
+    - name: subscription
       protocol: TCP
       port: 3000
       targetPort: 3000
