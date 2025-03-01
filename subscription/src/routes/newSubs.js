@@ -1,6 +1,6 @@
 import express from "express";
-import { body, validationResult } from "express-validator";
-import { currentUser, userAuthorization } from "@robstipic/middlewares";
+import { body } from "express-validator";
+import { userAuthorization } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { SubscriptionCreatedPublisher } from "../events/publisher/subscription-created-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";

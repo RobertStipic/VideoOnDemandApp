@@ -47,4 +47,4 @@ const startApp = async () => {
   startEncoding();
 };
 
-startApp();
+//startApp();

@@ -8,7 +8,7 @@ import { Subjects } from "./subjects/subjects.js";
 import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
-
+import { currentUser } from "@robstipic/middlewares";
 const { json } = bodyparser;
 const app = express();
 
@@ -20,13 +20,29 @@ app.use(
     secure: true,
   })
 );
-
+app.use(currentUser);
 app.use(paymentRouter);
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });
 
 const startApp = async () => {
+  if (!process.env.NATS_CLIENT_ID) {
+    throw new Error("NATS_CLIENT_ID_IS_NEEDED");
+  }
+  if (!process.env.NATS_CLUSTER_ID) {
+    throw new Error("NAT_CLUSTER_ID_IS_NEEDED");
+  }
+  if (!process.env.NATS_URL) {
+    throw new Error("NATS_URL_IS_REQUIRED");
+  }
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL must be defined");
+  }
+  if (!process.env.STRIPE_KEY) {
+    throw new Error("STRIPE_SECRET_KEY must be defined");
+  }
+
   try {
     await natsWrapperClient.connect(process.env.NATS_URL);
     console.log("connected to NATS");

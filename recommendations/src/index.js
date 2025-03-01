@@ -7,7 +7,6 @@ import { initializeCSV } from "./services/loadCSVtoDB.js";
 import { MoviePlayedRouter } from "./routes/MoviePlayed.js";
 import { createVectorSearch } from "./services/createIndex.js";
 
-
 const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true); //ingress-nginx uses proxies
@@ -25,30 +24,29 @@ app.all("*", (req, res) => {
 });
 const startApp = async () => {
   if (!process.env.JWT_PRIVATE_KEY) {
-     throw new Error("JWT_PRIVATE_KEY must be defined");
-   }
-    if (!process.env.DATABASE_URL) {
-      throw new Error("DATABASE_URL must be defined");
-   }
-     if (!process.env.OPENAI_API_KEY) {
-       throw new Error("OPENAI_API_KEY must be defined");
-      }
-          if (!process.env.DATABASE_NAME) {
-            throw new Error("DATABASE_NAME must be defined");
-          }
-              if (!process.env.COLLECTION_NAME) {
-                throw new Error("COLLECTION_NAME must be defined");
-             }
-              if (!process.env.MONGOATLAS_URL) {
-                throw new Error("MONGOATLAS_URL must be defined");
-              }
+    throw new Error("JWT_PRIVATE_KEY must be defined");
+  }
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL must be defined");
+  }
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY must be defined");
+  }
+  if (!process.env.DATABASE_NAME) {
+    throw new Error("DATABASE_NAME must be defined");
+  }
+  if (!process.env.COLLECTION_NAME) {
+    throw new Error("COLLECTION_NAME must be defined");
+  }
+  if (!process.env.MONGOATLAS_URL) {
+    throw new Error("MONGOATLAS_URL must be defined");
+  }
   app.listen(3000, () => {
     console.log("Server up and running on port 3000!");
   });
 
-   await initializeCSV();
-   createVectorSearch();
-
+  await initializeCSV();
+  createVectorSearch();
 };
 
 startApp();

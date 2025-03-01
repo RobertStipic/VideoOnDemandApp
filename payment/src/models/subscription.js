@@ -24,7 +24,7 @@ const Subscriptionchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["created", "cancelled", "awaiting:payment", "complete"],
+      enum: ["pending", "cancelled", "failed", "succeeded"],
       required: true,
     },
   },
@@ -39,6 +39,6 @@ const Subscriptionchema = new mongoose.Schema(
 );
 Subscriptionchema.set("versionKey", "version");
 Subscriptionchema.plugin(updateIfCurrentPlugin);
-const Subscription = mongoose.model("Payment", Subscriptionchema);
+const Subscription = mongoose.model("Subscription", Subscriptionchema);
 
 export { Subscription };

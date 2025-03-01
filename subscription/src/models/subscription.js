@@ -20,7 +20,7 @@ const SubscriptionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["created", "cancelled", "awaiting:payment", "complete"],
+      enum: ["pending", "cancelled", "failed", "succeeded"],
       required: true,
     },
   },
