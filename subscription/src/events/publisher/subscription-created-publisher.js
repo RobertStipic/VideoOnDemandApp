@@ -1,5 +1,4 @@
-import { Subjects } from "../../subjects/subjects.js";
-import { Publisher } from "./publisher.js";
+import { Subjects, Publisher } from "@robstipic/middlewares";
 
 export class SubscriptionCreatedPublisher extends Publisher {
   static subject = Subjects.SubscriptionCreated;

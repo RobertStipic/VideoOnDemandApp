@@ -1,4 +1,4 @@
-import { Listener } from "./listener.js";
+import { Listener } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
 
 export class PaymentComplitedListener extends Listener {

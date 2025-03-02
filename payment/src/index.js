@@ -4,11 +4,10 @@ import bodyparser from "body-parser";
 import cookieSession from "cookie-session";
 import { paymentRouter } from "./routes/newPayment.js";
 import mongose from "mongoose";
-import { Subjects } from "./subjects/subjects.js";
 import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
-import { currentUser } from "@robstipic/middlewares";
+import { currentUser, Subjects } from "@robstipic/middlewares";
 const { json } = bodyparser;
 const app = express();
 

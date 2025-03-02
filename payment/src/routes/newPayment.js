@@ -2,11 +2,10 @@ import express from "express";
 import { Subscription } from "../models/subscription.js";
 import { StripePayment } from "../models/payment.js";
 import { body, validationResult } from "express-validator";
-import { userAuthorization } from "@robstipic/middlewares";
+import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { PaymentComplitedPublisher } from "../events/publisher/payment-complited-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { stripe } from "../stripeClient.js";
-import { Subjects } from "../subjects/subjects.js";
 
 const paymentRouter = express.Router();
 

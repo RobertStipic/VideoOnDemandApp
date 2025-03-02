@@ -1,10 +1,9 @@
 import express from "express";
 import { body } from "express-validator";
-import { userAuthorization } from "@robstipic/middlewares";
+import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { SubscriptionCreatedPublisher } from "../events/publisher/subscription-created-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
-import { Subjects } from "../subjects/subjects.js";
 import { calculateExpiration } from "../services/calculateSubscription.js";
 
 const newSubRouter = express.Router();

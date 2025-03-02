@@ -4,6 +4,7 @@
 **/.env*
 node_modules/
 middlewares_shared/
+middlewares/
 movies/src/output
 expiration/
 nats-test/
