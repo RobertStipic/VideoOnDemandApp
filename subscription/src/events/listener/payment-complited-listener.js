@@ -3,7 +3,6 @@ import { Subscription } from "../../models/subscription.js";
 
 export class PaymentComplitedListener extends Listener {
   async onMessage(data, msg) {
-    console.log("Payment complited event received: ", data.description);
     // console.log("data: ", data);
     const subscription = await Subscription.findById({
       _id: data.subscriptionId,
@@ -15,7 +14,7 @@ export class PaymentComplitedListener extends Listener {
     subscription.set({ status: data.status });
     await subscription.save();
     console.log(
-      "Payment status updated with following keyword:",
+      "Payment complited event received: payment status updated with following keyword:",
       subscription.status,
       "for subscriptionId:",
       data.subscriptionId

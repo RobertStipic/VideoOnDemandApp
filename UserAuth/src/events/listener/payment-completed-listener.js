@@ -3,12 +3,13 @@ import { User } from "../../models/user.js";
 
 export class PaymentCompletedListener extends Listener {
   async onMessage(data, msg) {
-    console.log("Payment complited event received: ", data.description);
     // console.log("data: ", data);
     if (data.status !== "succeeded") {
       throw new Error(
         "Payment not succeeded, subscription not updated for user: " +
-          data.userEmail
+          data.userEmail +
+          "with payment status: " +
+          data.status
       );
     }
     const user = await User.findOne({
@@ -22,7 +23,7 @@ export class PaymentCompletedListener extends Listener {
     user.set({ isSubscribed: true });
     await user.save();
     console.log(
-      "Subscription updated for user:",
+      "Payment complited event received: subscription updated for user:",
       data.userEmail,
       "with subscriptionId:",
       data.subscriptionId,

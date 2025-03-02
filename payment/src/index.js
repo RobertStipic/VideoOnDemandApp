@@ -8,6 +8,7 @@ import { SubscriptionCreatedListener } from "./events/listener/subscription-crea
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { currentUser, Subjects } from "@robstipic/middlewares";
+
 const { json } = bodyparser;
 const app = express();
 
@@ -61,6 +62,7 @@ const startApp = async () => {
     ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);
+
     console.log("Connected to Database");
   } catch (error) {
     console.log("[ERROR_CONNECTING_TO_MONGO/NATS_SERVER", error);
