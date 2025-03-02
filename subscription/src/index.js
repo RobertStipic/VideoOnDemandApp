@@ -10,7 +10,8 @@ import { newSubRouter } from "./routes/newSubs.js";
 import { idRouter } from "./routes/findByIdSubs.js";
 import { findRouter } from "./routes/findAllSubs.js";
 import { updateSubRouter } from "./routes/updateSubscription.js";
-import { PaymentComplitedListener } from "./events/listener/payment-complited-listener.js";
+import { PaymentCompletedListener } from "./events/listener/payment-complited-listener.js";
+import { PaymentExpirationListener } from "./events/listener/payment-expiration-listener.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -53,10 +54,15 @@ const startApp = async () => {
     console.log("connected to NATS");
     process.on("SIGINT", () => natsWrapperClient.close());
     process.on("SIGTERM", () => natsWrapperClient.close());
-    new PaymentComplitedListener(
+    new PaymentCompletedListener(
       natsWrapperClient.jsClient,
-      Subjects.PaymentComplited,
+      Subjects.PaymentCompleted,
       "payment-completed-subscription-service"
+    ).listen();
+    new PaymentExpirationListener(
+      natsWrapperClient.jsClient,
+      Subjects.PaymentExpirationCompleted,
+      "payment-expiration-completed-subscription-service"
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");

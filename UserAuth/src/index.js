@@ -54,7 +54,7 @@ const startApp = async () => {
 
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
-      Subjects.PaymentComplited,
+      Subjects.PaymentCompleted,
       "payment-completed-userauth-service"
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);

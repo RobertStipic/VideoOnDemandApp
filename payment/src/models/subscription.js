@@ -14,6 +14,10 @@ const Subscriptionchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    paymentExpiresAt: {
+      type: Date,
+      required: true,
+    },
     plan: {
       type: Number,
       required: true,

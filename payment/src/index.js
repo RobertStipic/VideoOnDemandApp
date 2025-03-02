@@ -8,6 +8,7 @@ import { findAllRouter } from "./routes/findAllPayments.js";
 import mongose from "mongoose";
 import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
+import { SubscriptionCancelledListener } from "./events/listener/subscription-cancelled-listener.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { currentUser, Subjects } from "@robstipic/middlewares";
 
@@ -63,6 +64,11 @@ const startApp = async () => {
       natsWrapperClient.jsClient,
       Subjects.SubscriptionUpdated,
       "subscription-updated-payment-service"
+    ).listen();
+    new SubscriptionCancelledListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionCancelled,
+      "subscription-cancelled-payment-service"
     ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);

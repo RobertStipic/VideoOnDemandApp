@@ -38,7 +38,7 @@ paymentRouter.post(
     }
 
     if (subscription.status === SubStatus) {
-      return res.status(400).send("Bad request");
+      return res.status(400).send("Bad request, subscription is cancelled");
     }
     const chargeInfo = await stripe.charges.create({
       source: token,

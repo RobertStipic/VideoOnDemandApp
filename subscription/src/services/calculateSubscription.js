@@ -1,5 +1,5 @@
 const DAY = 24 * 60 * 60 * 1000;
-
+const MINUTE = 60 * 1000;
 export const calculateExpiration = (plan, date) => {
   if (!date) {
     let now = Date.now();
@@ -27,4 +27,8 @@ export const calculateExpiration = (plan, date) => {
         throw new Error("Invalid subscription plan");
     }
   }
+};
+export const calculatePaymentExpiration = () => {
+  let now = Date.now();
+  return new Date(now + 10 * MINUTE);
 };

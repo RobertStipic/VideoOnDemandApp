@@ -1,7 +1,7 @@
 import { Listener } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
 
-export class PaymentComplitedListener extends Listener {
+export class PaymentCompletedListener extends Listener {
   async onMessage(data, msg) {
     // console.log("data: ", data);
     const subscription = await Subscription.findById({

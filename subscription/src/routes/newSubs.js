@@ -4,7 +4,10 @@ import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { SubscriptionCreatedPublisher } from "../events/publisher/subscription-created-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
-import { calculateExpiration } from "../services/calculateSubscription.js";
+import {
+  calculateExpiration,
+  calculatePaymentExpiration,
+} from "../services/calculateSubscription.js";
 
 const newSubRouter = express.Router();
 
@@ -21,18 +24,20 @@ newSubRouter.post(
     const { plan, price, status } = req.body;
     const userId = req.currentUser.id;
 
-    const expiresAtObj = calculateExpiration(plan);
+    const expiresAt = calculateExpiration(plan);
+    const paymentExpiresAt = calculatePaymentExpiration();
 
     await Subscription.create({
       userId,
-      expiresAt: expiresAtObj,
+      expiresAt,
+      paymentExpiresAt,
       plan,
       price,
       status,
     });
 
     const subscriptionObj = await Subscription.findOne({
-      expiresAt: expiresAtObj,
+      expiresAt,
     });
 
     await new SubscriptionCreatedPublisher(
@@ -44,7 +49,8 @@ newSubRouter.post(
       price,
       status,
       subscriptionId: subscriptionObj._id,
-      expiresAt: subscriptionObj.expiresAt,
+      expiresAt,
+      paymentExpiresAt,
     });
 
     res.status(201).send({ subscriptionObj });
