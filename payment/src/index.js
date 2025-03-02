@@ -3,6 +3,8 @@ import "express-async-errors";
 import bodyparser from "body-parser";
 import cookieSession from "cookie-session";
 import { paymentRouter } from "./routes/newPayment.js";
+import { findPaymentRouter } from "./routes/findPayment.js";
+import { findAllRouter } from "./routes/findAllPayments.js";
 import mongose from "mongoose";
 import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
@@ -22,6 +24,8 @@ app.use(
 );
 app.use(currentUser);
 app.use(paymentRouter);
+app.use(findPaymentRouter);
+app.use(findAllRouter);
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });
