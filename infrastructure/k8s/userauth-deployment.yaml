@@ -16,23 +16,31 @@ spec:
         - name: userauth
           image: stile95/userauth
           env:
-          - name: DATABASE_URL
-            value: 'mongodb://userauth-mongo-srv:27017/userauth'
-          - name: JWT_PRIVATE_KEY
-            valueFrom:
-              secretKeyRef:
-                name: jwt-secret
-                key: JWT_SECRET_KEY
+            - name: DATABASE_URL
+              value: "mongodb://userauth-mongo-srv:27017/userauth"
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET_KEY
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_CLUSTER_ID
+              value: "vodapp"
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
 ---
-apiVersion: v1 
+apiVersion: v1
 kind: Service
 metadata:
   name: userauth-srv
 spec: ##default ClusterIP service
   selector:
-    app:  userauth
+    app: userauth
   ports:
-  - name: auth
-    protocol: TCP
-    port:  3000
-    targetPort:  3000
+    - name: auth
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
