@@ -1,0 +1,20 @@
+{
+  "name": "subscription-expiration",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@robstipic/middlewares": "^1.0.13",
+    "bull": "^4.16.5",
+    "mongoose": "^8.11.0",
+    "nats": "^2.29.2",
+    "nodemon": "^3.1.9"
+  }
+}

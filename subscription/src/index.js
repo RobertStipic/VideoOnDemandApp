@@ -10,7 +10,7 @@ import { newSubRouter } from "./routes/newSubs.js";
 import { idRouter } from "./routes/findByIdSubs.js";
 import { findRouter } from "./routes/findAllSubs.js";
 import { updateSubRouter } from "./routes/updateSubscription.js";
-import { PaymentCompletedListener } from "./events/listener/payment-complited-listener.js";
+import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
 import { PaymentExpirationListener } from "./events/listener/payment-expiration-listener.js";
 
 const { json } = bodyparser;

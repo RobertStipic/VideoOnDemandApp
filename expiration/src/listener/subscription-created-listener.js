@@ -1,9 +1,7 @@
-import { Listener, Subjects } from "@robstipic/middlewares";
+import { Listener } from "@robstipic/middlewares";
 import { paymentExpirationQueue } from "./expiration-queue.js";
 
 export class SubscriptionCreatedListener extends Listener {
-  queueGroupName = "subscription-created-expiration-service";
-
   async onMessage(data, msg) {
     const delay = new Date(data.paymentExpiresAt).getTime() - Date.now();
     console.log(

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscription-expiration-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscription-expiration
+  template:
+    metadata:
+      labels:
+        app: subscription-expiration
+    spec:
+      containers:
+        - name: subscription-expiration
+          image: stile95/subscription-expiration:latest
+          env:
+            - name: DATABASE_URL
+              value: "mongodb://subscription-expiration-mongo-srv:27017/subscription"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_CLUSTER_ID
+              value: "vodapp"
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: REDIS_HOST
+              value: "subscription-expiration-redis-srv"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscription-srv
+spec: ##default ClusterIP service
+  selector:
+    app: subscription
+  ports:
+    - name: subscription
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
