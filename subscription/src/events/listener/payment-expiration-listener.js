@@ -11,16 +11,19 @@ export class PaymentExpirationListener extends Listener {
     if (!subscription) {
       throw new Error("Subscription not found");
     }
-    subscription.set({ status: ORDER_CANCELLED });
-    await subscription.save();
-    console.log(Subjects.SubscriptionCancelled);
-    new SubscriptionCancelledPublisher(
-      natsWrapperClient.client,
-      Subjects.SubscriptionCancelled
-    ).publish({
-      subscriptionId: data.subscriptionId,
-      status: ORDER_CANCELLED,
-    });
+
+    if (subscription.status === "pending") {
+      subscription.set({ status: ORDER_CANCELLED });
+      await subscription.save();
+      console.log(Subjects.SubscriptionCancelled);
+      new SubscriptionCancelledPublisher(
+        natsWrapperClient.client,
+        Subjects.SubscriptionCancelled
+      ).publish({
+        subscriptionId: data.subscriptionId,
+        status: ORDER_CANCELLED,
+      });
+    }
     msg.ack();
   }
 }

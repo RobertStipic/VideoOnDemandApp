@@ -1,4 +1,5 @@
 import { SubscriptionCreatedListener } from "./listener/subscription-created-listener.js";
+import { SubscriptionUpdatedListener } from "./listener/subscription-updated-listener.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 
@@ -24,6 +25,11 @@ const start = async () => {
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCreated,
       "subscription-created-expiration-service"
+    ).listen();
+    new SubscriptionUpdatedListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionUpdated,
+      "subscription-updated-expiration-service"
     ).listen();
   } catch (error) {
     console.log("[ERROR_CONNECTING_TO_REDIS/NATS_SERVER", error);

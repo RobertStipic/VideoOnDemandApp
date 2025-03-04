@@ -14,7 +14,9 @@ export class SubscriptionUpdatedListener extends Listener {
       "Subscription updated event received with id: ",
       data.subscriptionId
     );
-
+    if (data.status === "cancelled") {
+      throw new Error("Payment time has expired, cannot proceed with payment");
+    }
     const chargeInfo = await stripe.charges.create({
       source: token,
       amount: data.price * 100,

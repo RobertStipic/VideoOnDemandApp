@@ -31,7 +31,7 @@ findPaymentRouter.get(
     if (!payment) {
       return res.status(404).send("Subscription not found");
     }
-    console.log("subscription: ", payment);
+
     res.status(200).send(payment);
   }
 );
