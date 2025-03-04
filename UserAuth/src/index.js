@@ -11,6 +11,8 @@ import { SingUpRouter } from "./routes/SignUp.js";
 import { ChangePasswordRouter } from "./routes/ChangePassword.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
+import { SubscriptionExpiredListener } from "./events/listener/subscription-expired-listener.js";
+
 const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true); //ingress-nginx uses proxies
@@ -56,6 +58,11 @@ const startApp = async () => {
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
       "payment-completed-userauth-service"
+    ).listen();
+    new SubscriptionExpiredListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionExpired,
+      "subscription-expired-userauth-service"
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");

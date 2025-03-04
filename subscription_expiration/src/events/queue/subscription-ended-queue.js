@@ -31,7 +31,7 @@ subscriptionEndedQueue.process(async (job) => {
       userId: subscription.userId,
       subscriptionId: subscription.subscriptionId,
     });
-    await subscription.remove();
+    await Subscription.deleteOne({ _id: subscription._id });
   });
 });
 

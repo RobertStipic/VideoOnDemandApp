@@ -3,7 +3,7 @@ import { Subscription } from "../models/subscription.js";
 import { StripePayment } from "../models/payment.js";
 import { body, validationResult } from "express-validator";
 import { userAuthorization, Subjects } from "@robstipic/middlewares";
-import { PaymentComplitedPublisher } from "../events/publisher/payment-complited-publisher.js";
+import { PaymentCompletedPublisher } from "../events/publisher/payment-completed-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { stripe } from "../stripeClient.js";
 
@@ -79,9 +79,9 @@ paymentRouter.post(
         receipt_url: chargeInfo.receipt_url,
       },
     });
-    await new PaymentComplitedPublisher(
+    await new PaymentCompletedPublisher(
       natsWrapperClient.jsClient,
-      Subjects.PaymentComplited
+      Subjects.PaymentCompleted
     ).publish({
       paymentId: payment.id,
       stripeId: payment.stripeID,
@@ -93,6 +93,8 @@ paymentRouter.post(
       currency: payment.payment_info.currency,
       status: payment.payment_info.status,
       description: payment.payment_info.description,
+      expiresAt: subscription.expiresAt,
+      userId: subscription.userId,
     });
 
     res.status(201).send({ payment });

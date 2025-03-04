@@ -27,17 +27,14 @@ newSubRouter.post(
     const expiresAt = calculateExpiration(plan);
     const paymentExpiresAt = calculatePaymentExpiration();
 
-    await Subscription.create({
+    const subscriptionObj = await Subscription.create({
       userId,
       expiresAt,
       paymentExpiresAt,
       plan,
       price,
       status,
-    });
-
-    const subscriptionObj = await Subscription.findOne({
-      expiresAt,
+      userEmail: req.currentUser.email,
     });
 
     await new SubscriptionCreatedPublisher(
@@ -51,6 +48,7 @@ newSubRouter.post(
       subscriptionId: subscriptionObj._id,
       expiresAt,
       paymentExpiresAt,
+      userEmail: subscriptionObj.email,
     });
 
     res.status(201).send({ subscriptionObj });

@@ -16,6 +16,7 @@ updateSubRouter.put(
       .isInt({ min: 1, max: 3 })
       .withMessage("Valid plans are 1, 2, 3"),
     body("price").isInt({}).withMessage("Price must be a number"),
+    body("receipt_email").isEmail().withMessage("Invalid email"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -47,6 +48,8 @@ updateSubRouter.put(
       price: updatedSubscription.price,
       subscriptionId: updatedSubscription._id,
       expiresAt: updatedSubscription.expiresAt,
+      receiptEmail: req.body.receipt_email,
+      userEmail: updatedSubscription.userEmail,
     });
     res.status(200).send(updatedSubscription);
   }

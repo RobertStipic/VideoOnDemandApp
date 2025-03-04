@@ -6,6 +6,10 @@ const SubscriptionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    userEmail: {
+      type: String,
+      required: true,
+    },
     expiresAt: {
       type: Date,
       required: true,

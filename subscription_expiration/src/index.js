@@ -2,11 +2,13 @@ import { SubscriptionCreatedListener } from "./events/listener/subscription-crea
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
+import { Subscription } from "./models/subscription.js";
+import mongose from "mongoose";
 import {
   subscriptionEndedQueue,
   FIVE_MINUTES,
 } from "./events/queue/subscription-ended-queue.js";
-
+const FIVE_SECONDS = "*/5 * * * * *";
 const start = async () => {
   if (!process.env.NATS_CLIENT_ID) {
     throw new Error("NATS_CLIENT_ID_IS_NEEDED");
@@ -25,22 +27,19 @@ const start = async () => {
     process.on("SIGINT", () => natsWrapperClient.close());
     process.on("SIGTERM", () => natsWrapperClient.close());
 
-    new SubscriptionCreatedListener(
-      natsWrapperClient.jsClient,
-      Subjects.SubscriptionCreated,
-      "subscription-created-sub-expiration-service"
-    ).listen();
-
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
       "subscription-created-sub-expiration-service"
     ).listen();
-
+    await mongose.connect(process.env.DATABASE_URL);
+    console.log("Connected to Database");
+    const count = await Subscription.countDocuments();
+    console.log("active subsciptions: ", count);
     subscriptionEndedQueue.add(
       {},
       {
-        repeat: { cron: FIVE_MINUTES },
+        repeat: { cron: FIVE_SECONDS },
       }
     );
   } catch (error) {

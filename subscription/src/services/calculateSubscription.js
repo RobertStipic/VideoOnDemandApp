@@ -5,7 +5,8 @@ export const calculateExpiration = (plan, date) => {
     let now = Date.now();
     switch (plan) {
       case 1:
-        return new Date(now + 30 * DAY);
+        //return new Date(now + 30 * DAY);
+        return new Date(now + 2 * MINUTE);
       case 2:
         return new Date(now + 180 * DAY);
       case 3:

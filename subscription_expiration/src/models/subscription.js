@@ -6,6 +6,10 @@ const SubscriptionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    paymentId: {
+      type: String,
+      required: true,
+    },
     subscriptionId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

@@ -5,15 +5,8 @@ export class SubscriptionCreatedListener extends Listener {
   queueGroupName = "subscription-created-expiration-service";
 
   async onMessage(data, msg) {
-    const subTime = new Date(data.ExpiresAt).getTime() - Date.now();
-    if (subTime > 0) {
-      await Subscription.create({
-        userId: data.userId,
-        subscriptionId: data.subscriptionId,
-        expiresAt: data.ExpiresAt,
-      });
-    }
-
+    const subscription = await Subscription.findOne();
+    console.log(subscription);
     msg.ack();
   }
 }
