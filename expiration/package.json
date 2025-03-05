@@ -11,7 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@robstipic/middlewares": "^1.0.14",
+    "@robstipic/middlewares": "^1.0.15",
     "bull": "^4.16.5",
     "nats": "^2.29.2",
     "nodemon": "^3.1.9"

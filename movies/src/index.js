@@ -9,6 +9,7 @@ import { MoviesByGenreRouter } from "./routes/MoviesByGenre.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
 import { MoviesByYearRouter } from "./routes/MoviesByYear.js";
 import { startEncoding } from "./services/videoEncoding.js";
+import { natsWrapperClient } from "./nats-client.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -34,7 +35,20 @@ const startApp = async () => {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL must be defined");
   }
+  if (!process.env.NATS_CLIENT_ID) {
+    throw new Error("NATS_CLIENT_ID_IS_NEEDED");
+  }
+  if (!process.env.NATS_CLUSTER_ID) {
+    throw new Error("NAT_CLUSTER_ID_IS_NEEDED");
+  }
+  if (!process.env.NATS_URL) {
+    throw new Error("NATS_URL_IS_REQUIRED");
+  }
   try {
+    await natsWrapperClient.connect(process.env.NATS_URL);
+    console.log("connected to NATS");
+    process.on("SIGINT", () => natsWrapperClient.close());
+    process.on("SIGTERM", () => natsWrapperClient.close());
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
   } catch (err) {
@@ -44,7 +58,7 @@ const startApp = async () => {
     console.log("Server up and running on port 3000!");
   });
   await initizializeCSV();
-  startEncoding();
+  //startEncoding();
 };
 
-//startApp();
+startApp();

@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: userauth-deployment
+  name: watch-history-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: userauth
+      app: watch-history
   template:
     metadata:
       labels:
-        app: userauth
+        app: watch-history
     spec:
       initContainers:
         - name: wait-for-nats
           image: busybox
           command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
       containers:
-        - name: userauth
-          image: stile95/userauth
+        - name: watch-history
+          image: stile95/watch-history
           env:
             - name: DATABASE_URL
-              value: "mongodb://userauth-mongo-srv:27017/userauth"
+              value: "mongodb://watch-history-mongo-srv:27017/watch-history"
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
@@ -39,12 +39,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: userauth-srv
+  name: watch-history-srv
 spec: ##default ClusterIP service
   selector:
-    app: userauth
+    app: watch-history
   ports:
-    - name: auth
+    - name: watch-history
       protocol: TCP
       port: 3000
       targetPort: 3000

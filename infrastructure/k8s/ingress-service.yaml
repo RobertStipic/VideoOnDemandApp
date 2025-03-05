@@ -52,3 +52,10 @@ spec:
                 name: payment-srv
                 port:
                   number: 3000
+          - path: /history/.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: watch-history-srv
+                port:
+                  number: 3000

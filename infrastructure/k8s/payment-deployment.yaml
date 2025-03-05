@@ -12,6 +12,10 @@ spec:
       labels:
         app: payment
     spec:
+      initContainers:
+        - name: wait-for-nats
+          image: busybox
+          command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
       containers:
         - name: payment
           image: stile95/payment:latest

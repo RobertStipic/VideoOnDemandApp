@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watch-history-mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watch-history-mongo
+  template:
+    metadata:
+      labels:
+        app: watch-history-mongo
+    spec:
+      containers:
+        - image: mongo
+          name: watch-history-mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watch-history-mongo-srv
+spec:
+  selector:
+    app: watch-history-mongo
+  ports:
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
