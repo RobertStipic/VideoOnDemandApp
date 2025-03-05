@@ -10,6 +10,7 @@ import { ListMoviesRouter } from "./routes/ListMovies.js";
 import { MoviesByYearRouter } from "./routes/MoviesByYear.js";
 import { startEncoding } from "./services/videoEncoding.js";
 import { natsWrapperClient } from "./nats-client.js";
+import { PlayMovieRouter } from "./routes/PlayMovie.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -25,6 +26,7 @@ app.use(MoviesByLanguageRouter);
 app.use(MoviesByGenreRouter);
 app.use(ListMoviesRouter);
 app.use(MoviesByYearRouter);
+app.use(PlayMovieRouter);
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });

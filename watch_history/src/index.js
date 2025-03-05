@@ -2,7 +2,29 @@ import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 import { MoviePlayedListener } from "./listeners/movie-played-listener.js";
 import mongose from "mongoose";
+import express from "express";
+import "express-async-errors";
+import bodyparser from "body-parser";
+import { UserWatchHistoryRouter } from "./routes/UserWatchHistory.js";
 import { initizializeCSV } from "./services/loadCSVtoDB.js";
+import { currentUser } from "@robstipic/middlewares";
+import cookieSession from "cookie-session";
+const { json } = bodyparser;
+const app = express();
+app.set("trust proxy", true); //ingress-nginx uses proxies
+app.use(
+  cookieSession({
+    signed: false,
+    secure: true,
+  })
+);
+app.use(json());
+app.use(currentUser);
+app.use(UserWatchHistoryRouter);
+
+app.all("*", (req, res) => {
+  res.status(404).send("Route not found");
+});
 const start = async () => {
   if (!process.env.NATS_CLIENT_ID) {
     throw new Error("NATS_CLIENT_ID_IS_NEEDED");
@@ -32,6 +54,9 @@ const start = async () => {
   } catch (error) {
     console.log("[ERROR_CONNECTING_TO_DATABASE/NATS_SERVER", error);
   }
+  app.listen(3000, () => {
+    console.log("Server up and running on port 3000!");
+  });
 };
 
 start();

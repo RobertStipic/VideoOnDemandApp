@@ -4,8 +4,9 @@ import {
   userAuthorization,
   Subjects,
 } from "@robstipic/middlewares";
-import { MoviePlayedPublisher } from "../publishers/movie-played-publisher";
-import { Movie } from "../models/movies";
+import { MoviePlayedPublisher } from "../publishers/movie-played-publisher.js";
+import { Movie } from "../models/movies.js";
+import { natsWrapperClient } from "../nats-client.js";
 const PlayMovieRouter = express.Router();
 
 PlayMovieRouter.get(
@@ -23,8 +24,9 @@ PlayMovieRouter.get(
       Subjects.MoviePlayed
     ).publish({
       movieId: req.params.id,
-      email: req.currentUser.email,
+      userId: req.currentUser.id,
     });
+
     res.status(200).send(movie);
   }
 );

@@ -5,33 +5,28 @@ import { WatchHistory } from "../models/watch_history.js";
 export class MoviePlayedListener extends Listener {
   async onMessage(data, msg) {
     const movieMetadata = await Movie.findOne({
-      movieId: data.imbdId,
+      movieId: data.movieId,
     });
     if (!movieMetadata) {
       throw new Error("Movie not found");
     }
+
     await WatchHistory.updateOne(
       { userId: data.userId },
       {
         $push: {
-          watch_history: { movieId: data.imbdId, watchedAt: new Date() },
+          watch_history: { movieId: data.movieId, watchedAt: new Date() },
         },
       },
-      { upsert: true },
-      function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(
-            "Updated watch history for user: ",
-            data.userId,
-            "and movie: ",
-            data.imbdId,
-            "with result: ",
-            new Date()
-          );
-        }
-      }
+      { upsert: true }
+    );
+    console.log(
+      "Updated watch history for user: ",
+      data.userId,
+      "and movie: ",
+      data.movieId,
+      "with result: ",
+      new Date()
     );
     msg.ack();
   }
