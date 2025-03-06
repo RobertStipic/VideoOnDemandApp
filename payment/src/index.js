@@ -10,6 +10,7 @@ import mongose from "mongoose";
 import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
 import { SubscriptionCancelledListener } from "./events/listener/subscription-cancelled-listener.js";
+import { findPaymentsByUserRouter } from "./routes/paymentsByUser.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { currentUser, Subjects } from "@robstipic/middlewares";
 
@@ -29,6 +30,7 @@ app.use(findBySubIdPaymentRouter);
 app.use(paymentRouter);
 app.use(findPaymentRouter);
 app.use(findAllRouter);
+app.use(findPaymentsByUserRouter);
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });
