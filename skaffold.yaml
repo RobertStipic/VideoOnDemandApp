@@ -68,6 +68,14 @@ build:
             dest: .
       docker:
         dockerfile: Dockerfile
+    - image: stile95/user-login-activity
+      context: login_activity
+      sync:
+        manual:
+          - src: src/**/*.js
+            dest: .
+      docker:
+        dockerfile: Dockerfile
   local:
     push: false
 manifests:

@@ -11,7 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@robstipic/middlewares": "^1.0.15",
+    "@robstipic/middlewares": "^1.0.17",
     "convert-csv-to-json": "^2.50.0",
     "cookie-session": "^2.1.0",
     "csvtojson": "^2.0.10",

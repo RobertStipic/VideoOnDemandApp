@@ -10,8 +10,8 @@ import { LogOutRouter } from "./routes/LogOut.js";
 import { SingUpRouter } from "./routes/SignUp.js";
 import { ChangePasswordRouter } from "./routes/ChangePassword.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
-import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
-import { SubscriptionExpiredListener } from "./events/listener/subscription-expired-listener.js";
+import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";
+import { SubscriptionExpiredListener } from "./events/listeners/subscription-expired-listener.js";
 
 const { json } = bodyparser;
 const app = express();

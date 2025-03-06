@@ -54,7 +54,6 @@ const userSchema = new mongoose.Schema(
 );
 userSchema.pre("save", function () {
   if (this.isModified("password")) {
-    const passwordtest = this.get("password");
     const hashed = PasswordEncription.hashPassword(this.get("password"));
     this.set("password", hashed);
   }

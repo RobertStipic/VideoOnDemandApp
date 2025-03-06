@@ -9,7 +9,7 @@ const collection = database.collection(process.env.COLLECTION_NAME);
 const MoviePlayedRouter = express.Router();
 
 MoviePlayedRouter.get(
-  "/recommendations/play",
+  "/recommendations/:id",
   currentUser,
   userAuthorization,
   async (req, res) => {
@@ -19,7 +19,7 @@ MoviePlayedRouter.get(
       const { id } = req.query;
 
       const record = await collection.findOne({
-        _id: ObjectId.createFromHexString(id),
+        imbdID: id,
       });
 
       const pipeline = [

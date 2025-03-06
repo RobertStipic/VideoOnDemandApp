@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-login-activity-mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-login-activity-mongo
+  template:
+    metadata:
+      labels:
+        app: user-login-activity-mongo
+    spec:
+      containers:
+        - image: mongo
+          name: user-login-activity-mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-login-activity-mongo-srv
+spec:
+  selector:
+    app: user-login-activity-mongo
+  ports:
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

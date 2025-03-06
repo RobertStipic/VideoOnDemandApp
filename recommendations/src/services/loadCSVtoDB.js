@@ -49,6 +49,7 @@ async function CSVtoDatabase(collection) {
               temp.Title = csvData[i]["Title"];
               temp.Plot = csvData[i]["Plot"];
               temp.Poster = csvData[i]["Poster"];
+              temp.imbdID = csvData[i]["imdbID"];
               temp.embedding = embedding;
               collection.insertOne(temp);
               console.log(

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-login-activity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-login-activity
+  template:
+    metadata:
+      labels:
+        app: user-login-activity
+    spec:
+      containers:
+        - name: user-login-activity
+          image: stile95/user-login-activity
+          env:
+            - name: DATABASE_URL
+              value: "mongodb://user-login-activity-mongo-srv:27017/user-login-activity"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_CLUSTER_ID
+              value: "vodapp"
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET_KEY
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-login-activity-srv
+spec: ##default ClusterIP service
+  selector:
+    app: user-login-activity
+  ports:
+    - name: user-login-activity
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

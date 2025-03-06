@@ -4,7 +4,7 @@ import {
   userAuthorization,
   Subjects,
 } from "@robstipic/middlewares";
-import { MoviePlayedPublisher } from "../publishers/movie-played-publisher.js";
+import { MoviePlayedPublisher } from "../events/publishers/movie-played-publisher.js";
 import { Movie } from "../models/movies.js";
 import { natsWrapperClient } from "../nats-client.js";
 const PlayMovieRouter = express.Router();

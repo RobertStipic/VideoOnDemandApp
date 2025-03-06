@@ -1,44 +1,31 @@
+import { Subjects, currentUser } from "@robstipic/middlewares";
+import { natsWrapperClient } from "./nats-client.js";
+import { UserAuthListener } from "./events/listeners/user-login-listener.js";
+import mongose from "mongoose";
 import express from "express";
 import "express-async-errors";
 import bodyparser from "body-parser";
-import mongose from "mongoose";
+import { lastActivityRouter } from "./routes/FindLastActivity.js";
+import { userActivityRouter } from "./routes/FindAllActivity.js";
 import cookieSession from "cookie-session";
-import { initizializeCSV } from "./services/loadCSVtoDB.js";
-import { MoviesByLanguageRouter } from "./routes/MoviesByLanguage.js";
-import { MoviesByGenreRouter } from "./routes/MoviesByGenre.js";
-import { ListMoviesRouter } from "./routes/ListMovies.js";
-import { MoviesByYearRouter } from "./routes/MoviesByYear.js";
-import { startEncoding } from "./services/videoEncoding.js";
-import { Subjects } from "@robstipic/middlewares";
-import { natsWrapperClient } from "./nats-client.js";
-import { PlayMovieRouter } from "./routes/PlayMovie.js";
-
 const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true); //ingress-nginx uses proxies
-app.use(json());
 app.use(
   cookieSession({
     signed: false,
     secure: true,
   })
 );
-app.use(MoviesByLanguageRouter);
-app.use(MoviesByGenreRouter);
-app.use(ListMoviesRouter);
-app.use(MoviesByYearRouter);
-app.use(PlayMovieRouter);
+app.use(json());
+app.use(currentUser);
+app.use(userActivityRouter);
+app.use(lastActivityRouter);
+
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });
-
-const startApp = async () => {
-  if (!process.env.JWT_PRIVATE_KEY) {
-    throw new Error("JWT_PRIVATE_KEY must be defined");
-  }
-  if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL must be defined");
-  }
+const start = async () => {
   if (!process.env.NATS_CLIENT_ID) {
     throw new Error("NATS_CLIENT_ID_IS_NEEDED");
   }
@@ -48,24 +35,27 @@ const startApp = async () => {
   if (!process.env.NATS_URL) {
     throw new Error("NATS_URL_IS_REQUIRED");
   }
+
   try {
+    // Connect to NATS client.
     await natsWrapperClient.connect(process.env.NATS_URL);
     console.log("connected to NATS");
     process.on("SIGINT", () => natsWrapperClient.close());
     process.on("SIGTERM", () => natsWrapperClient.close());
 
+    new UserAuthListener(
+      natsWrapperClient.jsClient,
+      Subjects.UserAuth,
+      "login-activity-service"
+    ).listen();
     await mongose.connect(process.env.DATABASE_URL);
-
     console.log("Connected to Database");
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log("[ERROR_CONNECTING_TO_DATABASE/NATS_SERVER", error);
   }
   app.listen(3000, () => {
     console.log("Server up and running on port 3000!");
   });
-
-  await initizializeCSV();
-  //startEncoding();
 };
 
-startApp();
+start();

@@ -2,7 +2,10 @@ import express from "express";
 import { body, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.js";
+import { natsWrapperClient } from "../nats-wrapper.js";
 import { PasswordEncription } from "../services/passwordHash.js";
+import { UserAuthPublisher } from "../events/publishers/user-auth-publisher.js";
+import { Subjects } from "@robstipic/middlewares";
 
 const LogInRouter = express.Router();
 
@@ -46,6 +49,23 @@ LogInRouter.post(
     );
     //process.env.JWT_PRIVATE_KEY is saved in secret inside kubernetes cluster
     req.session.jwt = userJwt;
+    console.log(
+      "Publisher data",
+      "id",
+      existingEmail.id,
+      "email",
+      email,
+      "login"
+    );
+    new UserAuthPublisher(
+      natsWrapperClient.jsClient,
+      Subjects.UserAuth
+    ).publish({
+      id: existingEmail.id,
+      email,
+      type: "login",
+    });
+
     res.status(200).send(existingEmail);
   }
 );
