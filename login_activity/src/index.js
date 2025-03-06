@@ -7,6 +7,7 @@ import "express-async-errors";
 import bodyparser from "body-parser";
 import { lastActivityRouter } from "./routes/FindLastActivity.js";
 import { userActivityRouter } from "./routes/FindAllActivity.js";
+import { registrationDateRouter } from "./routes/RegistrationDate.js";
 import cookieSession from "cookie-session";
 const { json } = bodyparser;
 const app = express();
@@ -21,7 +22,7 @@ app.use(json());
 app.use(currentUser);
 app.use(userActivityRouter);
 app.use(lastActivityRouter);
-
+app.use(registrationDateRouter);
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });

@@ -12,6 +12,10 @@ spec:
       labels:
         app: user-login-activity
     spec:
+      initContainers:
+        - name: wait-for-nats
+          image: busybox
+          command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
       containers:
         - name: user-login-activity
           image: stile95/user-login-activity
