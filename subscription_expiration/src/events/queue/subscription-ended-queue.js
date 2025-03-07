@@ -3,15 +3,16 @@ import { Subscription } from "../../models/subscription.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "../../nats-client.js";
 import { SubscriptionExpiredPublisher } from "../publisher/subscription-expired-publisher.js";
+import { bullQueues } from "../../consants/queues.js";
 
-const FIVE_MINUTES = "*/5 * * * *";
-const queueName = "subscription-expiration-queue";
-
-const subscriptionEndedQueue = new Queue(queueName, {
-  redis: {
-    host: process.env.REDIS_HOST,
-  },
-});
+const subscriptionEndedQueue = new Queue(
+  bullQueues.subscriptionExpirationQueue,
+  {
+    redis: {
+      host: process.env.REDIS_HOST,
+    },
+  }
+);
 
 subscriptionEndedQueue.process(async (job) => {
   let now = Date.now();
@@ -35,4 +36,4 @@ subscriptionEndedQueue.process(async (job) => {
   });
 });
 
-export { subscriptionEndedQueue, FIVE_MINUTES };
+export { subscriptionEndedQueue };

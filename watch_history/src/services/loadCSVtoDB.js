@@ -2,6 +2,7 @@ import { Movie } from "../models/movie.js";
 import csvtojson from "csvtojson";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { constants } from "../consants/general.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -11,29 +12,27 @@ const csvFilePath = path.join(
   "csv",
   "MOVIES_WATCH_DATA_final.csv"
 );
-const empty = 0;
-const MoviesCount = 100;
 
 export async function initizializeCSV() {
   //await Movie.deleteMany({}); //test function
   let count = await Movie.countDocuments();
-  if (count === empty) {
+  if (count === constants.numbers.empty) {
     console.log("Importing csv data from: ", csvFilePath);
     await CSVtoDatabase();
     return console.log("All movies inserted in database");
-  } else if (count === MoviesCount)
+  } else if (count === constants.numbers.MoviesCount)
     console.log("Movie collection have all CSV records loaded");
   else
     console.log(
       "Number of records in Database doesnt match value set by application: ",
-      MoviesCount
+      constants.numbers.MoviesCount
     );
 }
 async function CSVtoDatabase() {
   return new Promise((resolve, reject) => {
     try {
       csvtojson()
-        .fromFile(csvFilePath, { encoding: "utf-8" })
+        .fromFile(csvFilePath, { encoding: constants.encoding })
         .then((csvData) => {
           for (let i = 0; i < csvData.length; i++) {
             let temp = {};

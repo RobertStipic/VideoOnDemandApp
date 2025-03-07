@@ -6,14 +6,20 @@ import { natsWrapperClient } from "../nats-wrapper.js";
 import { PasswordEncription } from "../services/passwordHash.js";
 import { UserAuthPublisher } from "../events/publishers/user-auth-publisher.js";
 import { Subjects } from "@robstipic/middlewares";
+import { constantsRoutes, constants } from "../consants/general.js";
 
 const LogInRouter = express.Router();
 
 LogInRouter.post(
   "/users/login",
   [
-    body("email").isEmail().withMessage("Email must be valid"),
-    body("password").trim().notEmpty().withMessage("Please supply password"),
+    body(constantsRoutes.email)
+      .isEmail()
+      .withMessage(constantsRoutes.emailMessage),
+    body(constantsRoutes.password)
+      .trim()
+      .notEmpty()
+      .withMessage(constantsRoutes.passwordMessage),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -63,7 +69,7 @@ LogInRouter.post(
     ).publish({
       id: existingEmail.id,
       email,
-      type: "login",
+      type: constants.activity.login,
     });
 
     res.status(200).send(existingEmail);

@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 import { getEmbedding } from "./getEmbeddings.js";
-
+import { constants } from "../constants/general.js";
 const client = new MongoClient(process.env.MONGOATLAS_URL);
 const database = client.db(process.env.DATABASE_NAME);
 const collection = database.collection(process.env.COLLECTION_NAME);
@@ -13,9 +13,9 @@ export async function searchQuery(query) {
     const pipeline = [
       {
         $vectorSearch: {
-          index: "vector_index",
+          index: constants.vector.name,
           queryVector: queryEmbedding,
-          path: "embedding",
+          path: constants.vector.path,
           exact: true,
           limit: 8,
         },
@@ -27,7 +27,7 @@ export async function searchQuery(query) {
           Title: 1,
           Poster: 1,
           score: {
-            $meta: "vectorSearchScore",
+            $meta: constants.vector.meta,
           },
         },
       },

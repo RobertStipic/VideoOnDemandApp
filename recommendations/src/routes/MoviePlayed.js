@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId } from "mongodb";
 import express from "express";
 import { currentUser, userAuthorization } from "@robstipic/middlewares";
-
+import { constants } from "../constants/general.js";
 const client = new MongoClient(process.env.MONGOATLAS_URL);
 const database = client.db(process.env.DATABASE_NAME);
 const collection = database.collection(process.env.COLLECTION_NAME);
@@ -25,9 +25,9 @@ MoviePlayedRouter.get(
       const pipeline = [
         {
           $vectorSearch: {
-            index: "vector_index",
+            index: constants.vector.name,
             queryVector: record.embedding,
-            path: "embedding",
+            path: constants.vector.path,
             exact: true,
             limit: 8,
           },
@@ -39,7 +39,7 @@ MoviePlayedRouter.get(
             Title: 1,
             Poster: 1,
             score: {
-              $meta: "vectorSearchScore",
+              $meta: constants.vector.meta,
             },
           },
         },

@@ -4,11 +4,9 @@ import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 import { Subscription } from "./models/subscription.js";
 import mongose from "mongoose";
-import {
-  subscriptionEndedQueue,
-  FIVE_MINUTES,
-} from "./events/queue/subscription-ended-queue.js";
-const FIVE_SECONDS = "*/5 * * * * *";
+import { subscriptionEndedQueue } from "./events/queue/subscription-ended-queue.js";
+import { constants } from "./consants/general.js";
+
 const start = async () => {
   if (!process.env.NATS_CLIENT_ID) {
     throw new Error("NATS_CLIENT_ID_IS_NEEDED");
@@ -39,7 +37,7 @@ const start = async () => {
     subscriptionEndedQueue.add(
       {},
       {
-        repeat: { cron: FIVE_SECONDS },
+        repeat: { cron: constants.cronTime.FIVE_SECONDS },
       }
     );
   } catch (error) {

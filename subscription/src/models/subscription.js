@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { constants } from "../consants/general";
 const SubscriptionSchema = new mongoose.Schema(
   {
     userId: {
@@ -28,7 +28,12 @@ const SubscriptionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "cancelled", "failed", "succeeded"],
+      enum: [
+        constants.status.pending,
+        constants.status.cancelled,
+        constants.status.failed,
+        constants.status.succeeded,
+      ],
       required: true,
     },
   },

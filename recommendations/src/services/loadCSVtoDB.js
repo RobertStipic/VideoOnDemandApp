@@ -3,7 +3,7 @@ import csvtojson from "csvtojson";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { getEmbedding } from "./getEmbeddings.js";
-
+import { constants } from "../constants/general.js";
 const client = new MongoClient(process.env.MONGOATLAS_URL);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,8 +14,7 @@ const csvFilePath = path.join(
   "csv",
   "MOVIES_RECOMMENDATION_DATA_final.csv"
 );
-const empty = 0;
-const MoviesCount = 100;
+
 export async function initializeCSV() {
   console.log("Connecting to database: ", process.env.DATABASE_NAME);
   try {
@@ -25,7 +24,7 @@ export async function initializeCSV() {
     const collection = db.collection(process.env.COLLECTION_NAME);
 
     let count = await collection.countDocuments();
-    if (count === empty) {
+    if (count === constants.numbers.empty) {
       console.log("Importing csv data from: ", csvFilePath);
       await CSVtoDatabase(collection);
       console.log("All movies inserted in database");
@@ -41,7 +40,7 @@ async function CSVtoDatabase(collection) {
   return new Promise((resolve, reject) => {
     try {
       csvtojson()
-        .fromFile(csvFilePath, { encoding: "utf-8" })
+        .fromFile(csvFilePath, { encoding: constants.encoding })
         .then((csvData) => {
           for (let i = 0; i < csvData.length; i++) {
             getEmbedding(csvData[i]["Plot"]).then((embedding) => {

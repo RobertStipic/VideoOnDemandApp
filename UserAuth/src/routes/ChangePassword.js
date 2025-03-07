@@ -3,23 +3,28 @@ import { body, validationResult } from "express-validator";
 import { userAuthorization, currentUser } from "@robstipic/middlewares";
 import { User } from "../models/user.js";
 import { PasswordEncription } from "../services/passwordHash.js";
+import {
+  constantsChangePassword,
+  constantsRoutes,
+} from "../consants/general.js";
+
 const ChangePasswordRouter = express.Router();
 
 ChangePasswordRouter.patch(
   "/users/changepassword",
   [
-    body("password")
+    body(constantsRoutes.password)
       .trim()
       .notEmpty()
-      .withMessage("Please supply current password"),
-    body("newPassword")
+      .withMessage(constantsRoutes.passwordMessage),
+    body(constantsChangePassword.newPassword)
       .trim()
       .notEmpty()
-      .withMessage("Please supply new password"),
-    body("confirmNewPassword")
+      .withMessage(constantsChangePassword.newPasswordMessage),
+    body(constantsChangePassword.confirmNewPassword)
       .trim()
       .notEmpty()
-      .withMessage("Please confirm new password"),
+      .withMessage(constantsChangePassword.confirmNewPasswordMessage),
   ],
   currentUser,
   userAuthorization,

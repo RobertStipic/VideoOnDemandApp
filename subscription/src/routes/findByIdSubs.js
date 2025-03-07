@@ -2,7 +2,7 @@ import express from "express";
 import { Subscription } from "../models/subscription.js";
 import { body, validationResult } from "express-validator";
 import { currentUser, userAuthorization } from "@robstipic/middlewares";
-
+import { constantsFindId } from "../consants/general.js";
 const idRouter = express.Router();
 
 idRouter.post(
@@ -10,9 +10,9 @@ idRouter.post(
   currentUser,
   userAuthorization,
   [
-    body("subscriptionId")
+    body(constantsFindId.subscriptionId)
       .isMongoId()
-      .withMessage("subscriptionId is not valid MongoId"),
+      .withMessage(constantsFindId.subscriptionIdMessage),
   ],
   async (req, res) => {
     const errors = validationResult(req);

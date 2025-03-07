@@ -5,34 +5,41 @@ import jwt from "jsonwebtoken";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { UserAuthPublisher } from "../events/publishers/user-auth-publisher.js";
 import { Subjects } from "@robstipic/middlewares";
-const SingUpRouter = express.Router();
+import {
+  constantsSignUP,
+  constants,
+  constantsRoutes,
+} from "../consants/general.js";
+const SignUpRouter = express.Router();
 
-SingUpRouter.post(
+SignUpRouter.post(
   "/users/signup",
   [
-    body("email").isEmail().withMessage("Email is not valid"),
-    body("password")
+    body(constantsRoutes.email)
+      .isEmail()
+      .withMessage(constantsRoutes.emailMessage),
+    body(constantsRoutes.password)
       .exists({ checkFalsy: true })
-      .withMessage("Please enter password")
+      .withMessage(constantsRoutes.passwordMessage)
       .isString()
-      .withMessage("Password should be string")
+      .withMessage(constantsSignUP.passwordTypeMessage)
       .isLength({ min: 8, max: 20 })
-      .withMessage("Password must be between 8 and 20 characters"),
-    body("firstName")
+      .withMessage(constantsSignUP.passwordLengthMessage),
+    body(constantsSignUP.firstName)
       .exists({ checkFalsy: true })
-      .withMessage("Please enter firstname")
+      .withMessage(constantsSignUP.firstNameMessage)
       .isAlpha("sr-RS@latin")
-      .withMessage("first name is not valid(only characters)"),
-    body("lastName")
+      .withMessage(constantsSignUP.firstNameValidMessage),
+    body(constantsSignUP.lastName)
       .exists({ checkFalsy: true })
-      .withMessage("Please enter lastname")
+      .withMessage(constantsSignUP.lastNameMessage)
       .isAlpha("sr-RS@latin")
-      .withMessage("first name is not valid(only characters)"),
-    body("dateOfBirth")
+      .withMessage(constantsSignUP.lastNameValidMessage),
+    body(constantsSignUP.dateOfBirth)
       .exists({ checkFalsy: true })
-      .withMessage("Please provide Date of Birth")
+      .withMessage(constantsSignUP.dateOfBirthMessage)
       .isDate()
-      .withMessage("Date format must be: YYYY-MM-DD")
+      .withMessage(constantsSignUP.dateOfBirthFormatMessage)
       .custom((value) => {
         let userDate = new Date(value);
         let todayDate = new Date();
@@ -53,18 +60,18 @@ SingUpRouter.post(
         }
         return true;
       }),
-    body("country")
+    body(constantsSignUP.country)
       .isISO31661Alpha2()
-      .withMessage("Please provide valid 2 letter ISO 3166-1 Country code"),
-    body("city")
+      .withMessage(constantsSignUP.countryMessage),
+    body(constantsSignUP.city)
       .exists({ checkFalsy: true })
       .isAlpha("sr-RS@latin")
-      .withMessage("City name is not valid(only characters)"),
-    body("gender")
+      .withMessage(constantsSignUP.cityMessage),
+    body(constantsSignUP.gender)
       .exists({ checkFalsy: true })
-      .withMessage("Please provide gender")
-      .isIn(["Male", "Female", "Other"])
-      .withMessage("Valid gender values: Male,Female,Other"),
+      .withMessage(constantsSignUP.genderMessage)
+      .isIn(constants.genderArray)
+      .withMessage(constantsSignUP.genderValidMessage),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -115,11 +122,11 @@ SingUpRouter.post(
     ).publish({
       id: user.id,
       email: user.email,
-      type: "registration",
+      type: constants.activity.registration,
     });
 
     res.status(201).send(user);
   }
 );
 
-export { SingUpRouter };
+export { SignUpRouter };

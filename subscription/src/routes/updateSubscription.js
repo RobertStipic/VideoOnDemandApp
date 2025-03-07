@@ -4,6 +4,7 @@ import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { SubscriptionUpdatedPublisher } from "../events/publisher/subscription-updated-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
+import { constantsUpdateSub } from "../consants/general.js";
 import {
   calculateExpiration,
   calculatePaymentExpiration,
@@ -15,11 +16,15 @@ updateSubRouter.put(
   "/subscription/update/:id",
   userAuthorization,
   [
-    body("plan")
+    body(constantsUpdateSub.plan)
       .isInt({ min: 1, max: 3 })
-      .withMessage("Valid plans are 1, 2, 3"),
-    body("price").isInt({}).withMessage("Price must be a number"),
-    body("receipt_email").isEmail().withMessage("Invalid email"),
+      .withMessage(constantsUpdateSub.planMessage),
+    body(constantsUpdateSub.price)
+      .isInt({})
+      .withMessage(constantsUpdateSub.priceMessage),
+    body(constantsUpdateSub.receiptEmail)
+      .isEmail()
+      .withMessage(constantsUpdateSub.receiptEmailMessage),
   ],
   async (req, res) => {
     const errors = validationResult(req);

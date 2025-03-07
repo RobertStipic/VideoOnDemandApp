@@ -8,6 +8,7 @@ import {
   calculateExpiration,
   calculatePaymentExpiration,
 } from "../services/calculateSubscription.js";
+import { constants, constantsNewSub } from "../consants/general.js";
 
 const newSubRouter = express.Router();
 
@@ -15,10 +16,12 @@ newSubRouter.post(
   "/subscription/new",
   userAuthorization,
   [
-    body("plan")
-      .isInt({ min: 1, max: 3 })
-      .withMessage("Valid plans are 1, 2, 3"),
-    body("price").isInt({}).withMessage("Price must be a number"),
+    body(constantsNewSub.plan)
+      .isInt({ min: constants.plan.min, max: constants.plan.max })
+      .withMessage(constantsNewSub.planMessage),
+    body(constantsNewSub.price)
+      .isInt({})
+      .withMessage(constantsNewSub.priceMessage),
   ],
   async (req, res) => {
     const { plan, price, status } = req.body;

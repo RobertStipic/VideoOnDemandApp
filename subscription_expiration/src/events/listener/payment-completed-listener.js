@@ -1,9 +1,9 @@
 import { Listener } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
-
+import { constants } from "../../consants/general.js";
 export class PaymentCompletedListener extends Listener {
   async onMessage(data, msg) {
-    if (data.status !== "succeeded") {
+    if (data.status !== constants.status.succeeded) {
       throw new Error(
         "Payment has not succeeded, subscription not updated for",
         data.subscriptionId

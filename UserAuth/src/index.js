@@ -7,7 +7,7 @@ import { CurrentUserRouter } from "./routes/CurrentUser.js";
 import { Subjects } from "@robstipic/middlewares";
 import { LogInRouter } from "./routes/LogIn.js";
 import { LogOutRouter } from "./routes/LogOut.js";
-import { SingUpRouter } from "./routes/SignUp.js";
+import { SignUpRouter } from "./routes/SignUp.js";
 import { natsQueues } from "./consants/queues.js";
 import { ChangePasswordRouter } from "./routes/ChangePassword.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
@@ -27,7 +27,7 @@ app.use(
 app.use(CurrentUserRouter);
 app.use(LogInRouter);
 app.use(LogOutRouter);
-app.use(SingUpRouter);
+app.use(SignUpRouter);
 app.use(ChangePasswordRouter);
 
 app.all("*", (req, res) => {

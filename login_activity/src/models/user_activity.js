@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { constants } from "../consants/general.js";
 
 const UserActivitySchema = new mongoose.Schema({
   _id: false,
@@ -15,7 +16,7 @@ const UserActivitySchema = new mongoose.Schema({
       activityType: {
         type: String,
         required: true,
-        enum: ["login", "registration"],
+        enum: [constants.activity.login, constants.activity.registration],
       },
       loggedAt: {
         type: Date,

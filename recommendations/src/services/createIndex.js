@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-
+import { constants } from "../constants/general.js";
 const client = new MongoClient(process.env.MONGOATLAS_URL);
 
 export async function createVectorSearch() {
@@ -9,15 +9,15 @@ export async function createVectorSearch() {
 
     // MongoDB Atlas Vector Search index
     const index = {
-      name: "vector_index",
-      type: "vectorSearch",
+      name: constants.vector.name,
+      type: constants.vector.type,
       definition: {
         fields: [
           {
-            type: "vector",
-            path: "embedding",
-            similarity: "cosine",
-            numDimensions: 1536,
+            type: constants.vector.filedType,
+            path: constants.vector.path,
+            similarity: constants.vector.similarity,
+            numDimensions: constants.vector.numDimensions,
           },
         ],
       },
