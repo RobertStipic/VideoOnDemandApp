@@ -8,13 +8,18 @@ const __dirname = path.dirname(__filename);
 const csvFilePath = path.join(__dirname, "..", "csv", "MOVIES_DATA_final.csv");
 const empty = 0;
 const MoviesCount = 100;
-
+// prettier-ignore
+const columns = [
+  "Title", "Year", "Rated", "Released", "Runtime", "Genre", "Director", "Writer", "Actors", "Plot",
+  "Language", "Country", "Awards", "Poster", "Ratings_0_Source", "Ratings_0_Value", "imdbRating", "imdbVotes", "imdbID",
+  "Type", "DVD", "BoxOffice", "Path"
+];
 export async function initizializeCSV() {
-  //await Movie.deleteMany({}); //test function
+  await Movie.deleteMany({}); //test function
   let count = await Movie.countDocuments();
   if (count === empty) {
     console.log("Importing csv data from: ", csvFilePath);
-    await CSVtoDatabase();
+    await CSVtoDatabase(columns);
     return console.log("All movies inserted in database");
   } else if (count === MoviesCount)
     console.log("Movie collection have all CSV records loaded");
@@ -24,45 +29,20 @@ export async function initizializeCSV() {
       MoviesCount
     );
 }
-async function CSVtoDatabase() {
+async function CSVtoDatabase(columns) {
   return new Promise((resolve, reject) => {
     try {
       csvtojson()
         .fromFile(csvFilePath, { encoding: "utf-8" })
         .then((csvData) => {
-          for (let i = 0; i < csvData.length; i++) {
-            let temp = {};
-            temp.Title = csvData[i]["Title"];
-            temp.Year = csvData[i]["Year"];
-            temp.Rated = csvData[i]["Rated"];
-            temp.Released = csvData[i]["Released"];
-            temp.Runtime = csvData[i]["Runtime"];
-            temp.Genre = csvData[i]["Genre"];
-            temp.Director = csvData[i]["Genre"];
-            temp.Writer = csvData[i]["Writer"];
-            temp.Actors = csvData[i]["Actors"];
-            temp.Plot = csvData[i]["Plot"];
-            temp.Language = csvData[i]["Language"];
-            temp.Country = csvData[i]["Country"];
-            temp.Awards = csvData[i]["Awards"];
-            temp.Poster = csvData[i]["Poster"];
-            temp.Ratings_0_Source = csvData[i]["Ratings_0_Source"];
-            temp.Ratings_0_Value = csvData[i]["Ratings_0_Value"];
-            temp.imdbRating = csvData[i]["imdbRating"];
-            temp.imdbVotes = csvData[i]["imdbVotes"];
-            temp.imdbID = csvData[i]["imdbID"];
-            temp.Type = csvData[i]["Type"];
-            temp.DVD = csvData[i]["DVD"];
-            temp.BoxOffice = csvData[i]["BoxOffice"];
-            temp.Path = csvData[i]["Path"];
+          csvData.forEach((row) => {
+            const temp = {};
+            columns.forEach((column) => {
+              temp[column] = row[column];
+            });
             Movie.create(temp);
-            console.log(
-              "Movie inserted in database: ",
-              i + 1,
-              ". ",
-              temp.Title
-            );
-          }
+            console.log("Movie inserted in database: ", temp.Title);
+          });
           resolve();
         });
     } catch (err) {

@@ -14,7 +14,7 @@ const csvFilePath = path.join(
   "csv",
   "MOVIES_RECOMMENDATION_DATA_final.csv"
 );
-
+const columns = ["Title", "Plot", "Poster", "imdbID"];
 export async function initializeCSV() {
   console.log("Connecting to database: ", process.env.DATABASE_NAME);
   try {
@@ -22,11 +22,10 @@ export async function initializeCSV() {
     console.log("Connected successfully to server");
     const db = client.db(process.env.DATABASE_NAME);
     const collection = db.collection(process.env.COLLECTION_NAME);
-
     let count = await collection.countDocuments();
     if (count === constants.numbers.empty) {
       console.log("Importing csv data from: ", csvFilePath);
-      await CSVtoDatabase(collection);
+      await CSVtoDatabase(collection, columns);
       console.log("All movies inserted in database");
     } else {
       console.log("Movie collection already has all CSV records loaded");
@@ -36,34 +35,33 @@ export async function initializeCSV() {
   }
 }
 
-async function CSVtoDatabase(collection) {
+async function CSVtoDatabase(collection, columns) {
   return new Promise((resolve, reject) => {
     try {
       csvtojson()
         .fromFile(csvFilePath, { encoding: constants.encoding })
         .then((csvData) => {
-          for (let i = 0; i < csvData.length; i++) {
-            getEmbedding(csvData[i]["Plot"]).then((embedding) => {
-              let temp = {};
-              temp.Title = csvData[i]["Title"];
-              temp.Plot = csvData[i]["Plot"];
-              temp.Poster = csvData[i]["Poster"];
-              temp.imbdID = csvData[i]["imdbID"];
-              temp.embedding = embedding;
+          console.log(
+            `CSV data imported successfully. Total rows: ${csvData.length}`
+          );
+          csvData.forEach((row) => {
+            getEmbedding(row["Plot"]).then((embedding) => {
+              const temp = {};
+              columns.forEach((column) => {
+                if (column === "Plot") {
+                  temp[column] = row[column];
+                  temp.embedding = embedding;
+                } else {
+                  temp[column] = row[column];
+                }
+              });
               collection.insertOne(temp);
-              console.log(
-                "Movie inserted in database: ",
-                i + 1,
-                ". ",
-                temp.Title
-              );
             });
-          }
+          });
           resolve();
         });
     } catch (err) {
       console.log(err);
-      reject(err);
     }
   });
 }

@@ -12,13 +12,13 @@ const csvFilePath = path.join(
   "csv",
   "MOVIES_WATCH_DATA_final.csv"
 );
-
+const columns = ["Title", "Year", "Runtime", "imdbID", "Poster"];
 export async function initizializeCSV() {
   //await Movie.deleteMany({}); //test function
   let count = await Movie.countDocuments();
   if (count === constants.numbers.empty) {
     console.log("Importing csv data from: ", csvFilePath);
-    await CSVtoDatabase();
+    await CSVtoDatabase(columns);
     return console.log("All movies inserted in database");
   } else if (count === constants.numbers.MoviesCount)
     console.log("Movie collection have all CSV records loaded");
@@ -28,21 +28,21 @@ export async function initizializeCSV() {
       constants.numbers.MoviesCount
     );
 }
-async function CSVtoDatabase() {
+
+async function CSVtoDatabase(columns) {
   return new Promise((resolve, reject) => {
     try {
       csvtojson()
-        .fromFile(csvFilePath, { encoding: constants.encoding })
+        .fromFile(csvFilePath, { encoding: "utf-8" })
         .then((csvData) => {
-          for (let i = 0; i < csvData.length; i++) {
-            let temp = {};
-            temp.Title = csvData[i]["Title"];
-            temp.Year = csvData[i]["Year"];
-            temp.Runtime = csvData[i]["Runtime"];
-            temp.movieId = csvData[i]["imdbID"];
-            temp.Poster = csvData[i]["Poster"];
+          csvData.forEach((row) => {
+            const temp = {};
+            columns.forEach((column) => {
+              temp[column] = row[column];
+            });
             Movie.create(temp);
-          }
+            console.log("Movie inserted in database: ", temp.Title);
+          });
           resolve();
         });
     } catch (err) {
