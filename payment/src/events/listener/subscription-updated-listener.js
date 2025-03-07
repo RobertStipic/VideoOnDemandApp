@@ -1,12 +1,10 @@
-import { Listener } from "@robstipic/middlewares";
+import { Listener, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
 import { StripePayment } from "../../models/payment.js";
 import { PaymentCompletedPublisher } from "../publisher/payment-completed-publisher.js";
 import { stripe } from "../../stripeClient.js";
-import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "../../nats-wrapper.js";
-
-const token = "tok_visa";
+import { constants } from "../../consants/general.js";
 
 export class SubscriptionUpdatedListener extends Listener {
   async onMessage(data, msg) {
@@ -14,17 +12,17 @@ export class SubscriptionUpdatedListener extends Listener {
       "Subscription updated event received with id: ",
       data.subscriptionId
     );
-    if (data.status === "cancelled") {
+    if (data.status === constants.status.cancelled) {
       throw new Error("Payment time has expired, cannot proceed with payment");
     }
     const chargeInfo = await stripe.charges.create({
-      source: token,
+      source: constants.token,
       amount: data.price * 100,
       currency: "eur",
       description: `Payment for user ${data.userEmail} with subscription id ${data.subscriptionId}`,
       receipt_email: data.receipt_email,
     });
-    if (chargeInfo.status !== "succeeded") {
+    if (chargeInfo.status !== constants.status.succeeded) {
       throw new Error("Payment has not succeeded");
     }
     console.log("Payment succeeded, creating user");
@@ -34,7 +32,7 @@ export class SubscriptionUpdatedListener extends Listener {
       expiresAt: data.expiresAt,
       price: data.price,
       userId: data.userId,
-      status: "succeeded",
+      status: constants.status.succeeded,
       paymentExpiresAt: data.expiresAt,
     });
     await subscription.save();

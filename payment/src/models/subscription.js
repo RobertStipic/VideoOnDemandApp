@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { constants } from "../consants/general.js";
 import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 const Subscriptionchema = new mongoose.Schema(
   {
@@ -28,7 +29,12 @@ const Subscriptionchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "cancelled", "failed", "succeeded"],
+      enum: [
+        constants.status.pending,
+        constants.status.cancelled,
+        constants.status.failed,
+        constants.status.succeeded,
+      ],
       required: true,
     },
   },

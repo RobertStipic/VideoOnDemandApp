@@ -2,17 +2,17 @@ import express from "express";
 import { StripePayment } from "../models/payment.js";
 import { body, validationResult } from "express-validator";
 import { userAuthorization } from "@robstipic/middlewares";
-
+import { constantsSubId } from "../consants/general.js";
 const findBySubIdPaymentRouter = express.Router();
 
 findBySubIdPaymentRouter.get(
   "/payment/findBySubId",
   userAuthorization,
   [
-    body("subscriptionId")
+    body(constantsSubId.subscriptionId)
       .not()
       .isEmpty()
-      .withMessage("Subscription ID is required"),
+      .withMessage(constantsSubId.subscriptionMessage),
   ],
   async (req, res) => {
     const errors = validationResult(req);

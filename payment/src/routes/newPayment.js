@@ -6,7 +6,7 @@ import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { PaymentCompletedPublisher } from "../events/publisher/payment-completed-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { stripe } from "../stripeClient.js";
-
+import { constantsNewPayment } from "../consants/general.js";
 const paymentRouter = express.Router();
 
 const SubStatus = "cancelled";
@@ -14,12 +14,17 @@ paymentRouter.post(
   "/payment/new",
   userAuthorization,
   [
-    body("token").not().isEmpty().withMessage("Token is required"),
-    body("subscriptionId")
+    body(constantsNewPayment.token)
       .not()
       .isEmpty()
-      .withMessage("Subscription ID is required"),
-    body("receipt_email").isEmail().withMessage("Invalid email"),
+      .withMessage(constantsNewPayment.tokenMessage),
+    body(constantsNewPayment.subscriptionId)
+      .not()
+      .isEmpty()
+      .withMessage(constantsNewPayment.subscriptionMessage),
+    body(constantsNewPayment.receiptEmail)
+      .isEmail()
+      .withMessage(constantsNewPayment.receiptEmailMessage),
   ],
   async (req, res) => {
     const errors = validationResult(req);

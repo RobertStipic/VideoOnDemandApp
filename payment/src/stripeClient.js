@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-
+import { constants } from "./consants/general.js";
 export const stripe = new Stripe(process.env.STRIPE_KEY, {
-  apiVersion: "2025-02-24.acacia",
+  apiVersion: constants.stripeAPIversion,
 });

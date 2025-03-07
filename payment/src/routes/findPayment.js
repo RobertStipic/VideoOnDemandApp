@@ -1,9 +1,8 @@
 import express from "express";
-import { Subscription } from "../models/subscription.js";
 import { StripePayment } from "../models/payment.js";
 import { body, validationResult } from "express-validator";
-import { userAuthorization, Subjects } from "@robstipic/middlewares";
-
+import { userAuthorization } from "@robstipic/middlewares";
+import { constantsSubId } from "../consants/general.js";
 const findPaymentRouter = express.Router();
 
 const SubStatus = "cancelled";
@@ -11,10 +10,10 @@ findPaymentRouter.get(
   "/payment/find",
   userAuthorization,
   [
-    body("subscriptionId")
+    body(constantsSubId.subscriptionId)
       .not()
       .isEmpty()
-      .withMessage("Subscription ID is required"),
+      .withMessage(constantsSubId.subscriptionMessage),
   ],
   async (req, res) => {
     const errors = validationResult(req);

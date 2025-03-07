@@ -10,9 +10,13 @@ findPaymentsByUserRouter.get(
   async (req, res) => {
     const userEmail = req.currentUser.email;
 
-    const payments = await StripePayment.find({ userEmail }).select(
-      "stripeID subscriptionId paymentTime receipt_info.receipt_email receipt_info.receipt_url"
-    );
+    const payments = await StripePayment.find({ userEmail }).select({
+      stripeID: true,
+      subscriptionId: true,
+      paymentTime: true,
+      "receipt_info.receipt_email": true,
+      "receipt_info.receipt_url": true,
+    });
 
     if (!payments) {
       return res.status(404).send("User not found");
