@@ -2,31 +2,25 @@ import { Movie } from "../models/movies.js";
 import csvtojson from "csvtojson";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { constants } from "../constants/general.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const csvFilePath = path.join(__dirname, "..", "csv", "MOVIES_DATA_final.csv");
-const empty = 0;
-const MoviesCount = 100;
-// prettier-ignore
-const columns = [
-  "Title", "Year", "Rated", "Released", "Runtime", "Genre", "Director", "Writer", "Actors", "Plot",
-  "Language", "Country", "Awards", "Poster", "Ratings_0_Source", "Ratings_0_Value", "imdbRating", "imdbVotes", "imdbID",
-  "Type", "DVD", "BoxOffice", "Path"
-];
+
 export async function initizializeCSV() {
-  await Movie.deleteMany({}); //test function
+  //await Movie.deleteMany({}); //test function
   let count = await Movie.countDocuments();
-  if (count === empty) {
+  if (count === constants.empty) {
     console.log("Importing csv data from: ", csvFilePath);
-    await CSVtoDatabase(columns);
+    await CSVtoDatabase(constants.columns);
     return console.log("All movies inserted in database");
-  } else if (count === MoviesCount)
+  } else if (count === constants.MoviesCount)
     console.log("Movie collection have all CSV records loaded");
   else
     console.log(
       "Number of records in Database doesnt match value set by application: ",
-      MoviesCount
+      constants.MoviesCount
     );
 }
 async function CSVtoDatabase(columns) {

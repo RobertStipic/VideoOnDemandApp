@@ -1,12 +1,12 @@
 import express from "express";
 import { userAuthorization } from "@robstipic/middlewares";
-import { listMovies } from "../constants/general.js";
+import { constants } from "../constants/general.js";
 import { Movie } from "../models/movies.js";
 
 const ListMoviesRouter = express.Router();
 
-let temp_pagesize = listMovies.TEMP_PAGESIZE;
-let temp_n = 0;
+let temp_pagesize = constants.TEMP_PAGESIZE;
+let temp_n = constants.TEMP_N;
 
 ListMoviesRouter.get(
   "/movies/listmovies",

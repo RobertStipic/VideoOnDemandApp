@@ -37,6 +37,15 @@ export const requestGenres = {
     Fantasy, Thriller, Comedy, "Horror", Animation, Music, War, Family, Film-Noir`,
 };
 
-export const listMovies = {
+export const constants = {
+  // prettier-ignore
+  columns : [
+  "Title", "Year", "Rated", "Released", "Runtime", "Genre", "Director", "Writer", "Actors", "Plot",
+  "Language", "Country", "Awards", "Poster", "Ratings_0_Source", "Ratings_0_Value", "imdbRating", "imdbVotes", "imdbID",
+  "Type", "DVD", "BoxOffice", "Path"
+],
+  empty: 0,
+  MoviesCount: 100,
   TEMP_PAGESIZE: 10,
+  TEMP_N: 0,
 };

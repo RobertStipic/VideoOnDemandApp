@@ -14,7 +14,7 @@ const csvFilePath = path.join(
   "csv",
   "MOVIES_RECOMMENDATION_DATA_final.csv"
 );
-const columns = ["Title", "Plot", "Poster", "imdbID"];
+
 export async function initializeCSV() {
   console.log("Connecting to database: ", process.env.DATABASE_NAME);
   try {
@@ -25,7 +25,7 @@ export async function initializeCSV() {
     let count = await collection.countDocuments();
     if (count === constants.numbers.empty) {
       console.log("Importing csv data from: ", csvFilePath);
-      await CSVtoDatabase(collection, columns);
+      await CSVtoDatabase(collection, constants.columns);
       console.log("All movies inserted in database");
     } else {
       console.log("Movie collection already has all CSV records loaded");

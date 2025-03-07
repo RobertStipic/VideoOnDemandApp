@@ -12,13 +12,13 @@ const csvFilePath = path.join(
   "csv",
   "MOVIES_WATCH_DATA_final.csv"
 );
-const columns = ["Title", "Year", "Runtime", "imdbID", "Poster"];
+
 export async function initizializeCSV() {
   //await Movie.deleteMany({}); //test function
   let count = await Movie.countDocuments();
   if (count === constants.numbers.empty) {
     console.log("Importing csv data from: ", csvFilePath);
-    await CSVtoDatabase(columns);
+    await CSVtoDatabase(constants.columns);
     return console.log("All movies inserted in database");
   } else if (count === constants.numbers.MoviesCount)
     console.log("Movie collection have all CSV records loaded");

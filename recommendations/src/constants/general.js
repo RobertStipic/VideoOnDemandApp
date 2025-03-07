@@ -1,5 +1,3 @@
-import e from "express";
-
 export const constants = {
   vector: {
     numDimensions: 1536,
@@ -19,4 +17,5 @@ export const constants = {
     MoviesCount: 100,
   },
   encoding: "utf-8",
+  columns: ["Title", "Plot", "Poster", "imdbID"],
 };

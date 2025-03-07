@@ -4,4 +4,5 @@ export const constants = {
     MoviesCount: 100,
   },
   encoding: "utf-8",
+  columns: ["Title", "Year", "Runtime", "imdbID", "Poster"],
 };
