@@ -1,3 +1,3 @@
 export const natsQueues = {
-  MoviePlayed: "subscription-created-payment-service",
+  MoviePlayed: "watch-history-service",
 };
