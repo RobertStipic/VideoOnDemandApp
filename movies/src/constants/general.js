@@ -25,3 +25,18 @@ export const requestLanguages = {
 Hebrew, Polish, Quenya, Czech, Portuguese, Swahili, Xhosa, Zhulu, Hungarian, Cantonese, Vietnamese, Arabic, Nepali, Hindi,
 Esperanto, Korean, Gaelic, Yiddish, Turkish, Amharic, Danish`,
 };
+
+export const requestGenres = {
+  genre: "genre",
+  // prettier-ignore
+  genresArray: [
+    "Drama", "Crime", "Action", "History", "Biography", "Action", "Adventure", "Western", "Romance", "Sci-Fi", "Mystery",
+    "Fantasy", "Thriller", "Comedy", "Horror", "Animation", "Music", "War", "Family", "Film-Noir"
+  ],
+  genresMessage: `List of valid movie genres: Drama, Crime, Action, History, Biography, Action, Adventure, Western, Romance, Sci-Fi, Mystery,
+    Fantasy, Thriller, Comedy, "Horror", Animation, Music, War, Family, Film-Noir`,
+};
+
+export const listMovies = {
+  TEMP_PAGESIZE: 10,
+};
