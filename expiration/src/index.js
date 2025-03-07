@@ -2,7 +2,7 @@ import { SubscriptionCreatedListener } from "./events/listeners/subscription-cre
 import { SubscriptionUpdatedListener } from "./events/listeners/subscription-updated-listener.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
-import { natsQueues } from "./events/consants/queues.js";
+import { natsQueues } from "./consants/queues.js";
 
 const start = async () => {
   if (!process.env.NATS_CLIENT_ID) {

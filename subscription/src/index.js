@@ -5,7 +5,7 @@ import cookieSession from "cookie-session";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import mongose from "mongoose";
 import { currentUser, Subjects } from "@robstipic/middlewares";
-import { natsQueues } from "./events/consants/queues.js";
+import { natsQueues } from "./consants/queues.js";
 import { removeRouter } from "./routes/removeSubs.js";
 import { newSubRouter } from "./routes/newSubs.js";
 import { idRouter } from "./routes/findByIdSubs.js";

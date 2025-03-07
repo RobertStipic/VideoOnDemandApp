@@ -1,5 +1,5 @@
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
-import { natsQueues } from "./events/consants/queues.js";
+import { natsQueues } from "./consants/queues.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 import { Subscription } from "./models/subscription.js";

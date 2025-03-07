@@ -8,7 +8,7 @@ import { Subjects } from "@robstipic/middlewares";
 import { LogInRouter } from "./routes/LogIn.js";
 import { LogOutRouter } from "./routes/LogOut.js";
 import { SingUpRouter } from "./routes/SignUp.js";
-import { natsQueues } from "./events/consants/queues.js";
+import { natsQueues } from "./consants/queues.js";
 import { ChangePasswordRouter } from "./routes/ChangePassword.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";

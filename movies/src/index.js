@@ -9,7 +9,6 @@ import { MoviesByGenreRouter } from "./routes/MoviesByGenre.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
 import { MoviesByYearRouter } from "./routes/MoviesByYear.js";
 import { startEncoding } from "./services/videoEncoding.js";
-import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 import { PlayMovieRouter } from "./routes/PlayMovie.js";
 

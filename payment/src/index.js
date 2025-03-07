@@ -13,7 +13,7 @@ import { SubscriptionCancelledListener } from "./events/listener/subscription-ca
 import { findPaymentsByUserRouter } from "./routes/paymentsByUser.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { currentUser, Subjects } from "@robstipic/middlewares";
-import { natsQueues } from "./events/consants/queues.js";
+import { natsQueues } from "./consants/queues.js";
 
 const { json } = bodyparser;
 const app = express();

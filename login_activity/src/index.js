@@ -1,5 +1,5 @@
 import { Subjects, currentUser } from "@robstipic/middlewares";
-import { natsQueues } from "./events/consants/queues.js";
+import { natsQueues } from "./consants/queues.js";
 import { natsWrapperClient } from "./nats-client.js";
 import { UserAuthListener } from "./events/listeners/user-login-listener.js";
 import mongose from "mongoose";
