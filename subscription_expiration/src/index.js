@@ -1,5 +1,5 @@
-import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
+import { natsQueues } from "./events/consants/queues.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 import { Subscription } from "./models/subscription.js";
@@ -30,7 +30,7 @@ const start = async () => {
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
-      "subscription-created-sub-expiration-service"
+      natsQueues.paymentCompleted
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");

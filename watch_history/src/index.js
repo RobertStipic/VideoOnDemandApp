@@ -1,13 +1,13 @@
-import { Subjects } from "@robstipic/middlewares";
+import { Subjects, currentUser } from "@robstipic/middlewares";
+import { natsQueues } from "./events/consants/queues.js";
 import { natsWrapperClient } from "./nats-client.js";
-import { MoviePlayedListener } from "./listeners/movie-played-listener.js";
+import { MoviePlayedListener } from "./events/listeners/movie-played-listener.js";
 import mongose from "mongoose";
 import express from "express";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import { UserWatchHistoryRouter } from "./routes/UserWatchHistory.js";
 import { initizializeCSV } from "./services/loadCSVtoDB.js";
-import { currentUser } from "@robstipic/middlewares";
 import cookieSession from "cookie-session";
 const { json } = bodyparser;
 const app = express();
@@ -46,7 +46,7 @@ const start = async () => {
     new MoviePlayedListener(
       natsWrapperClient.jsClient,
       Subjects.MoviePlayed,
-      "watch-history-service"
+      natsQueues.MoviePlayed
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");

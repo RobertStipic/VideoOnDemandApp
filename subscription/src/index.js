@@ -5,6 +5,7 @@ import cookieSession from "cookie-session";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import mongose from "mongoose";
 import { currentUser, Subjects } from "@robstipic/middlewares";
+import { natsQueues } from "./events/consants/queues.js";
 import { removeRouter } from "./routes/removeSubs.js";
 import { newSubRouter } from "./routes/newSubs.js";
 import { idRouter } from "./routes/findByIdSubs.js";
@@ -57,12 +58,12 @@ const startApp = async () => {
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
-      "payment-completed-subscription-service"
+      natsQueues.paymentCompleted
     ).listen();
     new PaymentExpirationListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentExpirationCompleted,
-      "payment-expiration-completed-subscription-service"
+      natsQueues.PaymentExpirationCompleted
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");

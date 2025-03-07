@@ -1,4 +1,5 @@
 import { Subjects, currentUser } from "@robstipic/middlewares";
+import { natsQueues } from "./events/consants/queues.js";
 import { natsWrapperClient } from "./nats-client.js";
 import { UserAuthListener } from "./events/listeners/user-login-listener.js";
 import mongose from "mongoose";
@@ -47,7 +48,7 @@ const start = async () => {
     new UserAuthListener(
       natsWrapperClient.jsClient,
       Subjects.UserAuth,
-      "login-activity-service"
+      natsQueues.UserAuth
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");

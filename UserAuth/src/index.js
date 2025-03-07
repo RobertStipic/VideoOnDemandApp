@@ -8,6 +8,7 @@ import { Subjects } from "@robstipic/middlewares";
 import { LogInRouter } from "./routes/LogIn.js";
 import { LogOutRouter } from "./routes/LogOut.js";
 import { SingUpRouter } from "./routes/SignUp.js";
+import { natsQueues } from "./events/consants/queues.js";
 import { ChangePasswordRouter } from "./routes/ChangePassword.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";
@@ -57,12 +58,12 @@ const startApp = async () => {
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
-      "payment-completed-userauth-service"
+      natsQueues.paymentCompleted
     ).listen();
     new SubscriptionExpiredListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionExpired,
-      "subscription-expired-userauth-service"
+      natsQueues.subscriptionExpired
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");

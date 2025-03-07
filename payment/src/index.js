@@ -13,6 +13,7 @@ import { SubscriptionCancelledListener } from "./events/listener/subscription-ca
 import { findPaymentsByUserRouter } from "./routes/paymentsByUser.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { currentUser, Subjects } from "@robstipic/middlewares";
+import { natsQueues } from "./events/consants/queues.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -61,18 +62,18 @@ const startApp = async () => {
     new SubscriptionCreatedListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCreated,
-      "subscription-created-payment-service"
+      natsQueues.subscriptionCreated
     ).listen();
 
     new SubscriptionUpdatedListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionUpdated,
-      "subscription-updated-payment-service"
+      natsQueues.SubscriptionUpdated
     ).listen();
     new SubscriptionCancelledListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCancelled,
-      "subscription-cancelled-payment-service"
+      natsQueues.SubscriptionCancelled
     ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);

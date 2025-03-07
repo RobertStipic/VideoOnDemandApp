@@ -1,6 +1,6 @@
 import { Listener } from "@robstipic/middlewares";
-import { Movie } from "../models/movie.js";
-import { WatchHistory } from "../models/watch_history.js";
+import { Movie } from "../../models/movie.js";
+import { WatchHistory } from "../../models/watch_history.js";
 
 export class MoviePlayedListener extends Listener {
   async onMessage(data, msg) {

@@ -1,7 +1,8 @@
-import { SubscriptionCreatedListener } from "./listener/subscription-created-listener.js";
-import { SubscriptionUpdatedListener } from "./listener/subscription-updated-listener.js";
+import { SubscriptionCreatedListener } from "./events/listeners/subscription-created-listener.js";
+import { SubscriptionUpdatedListener } from "./events/listeners/subscription-updated-listener.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
+import { natsQueues } from "./events/consants/queues.js";
 
 const start = async () => {
   if (!process.env.NATS_CLIENT_ID) {
@@ -24,12 +25,12 @@ const start = async () => {
     new SubscriptionCreatedListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCreated,
-      "subscription-created-expiration-service"
+      natsQueues.SubscriptionCreated
     ).listen();
     new SubscriptionUpdatedListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionUpdated,
-      "subscription-updated-expiration-service"
+      natsQueues.SubscriptionUpdated
     ).listen();
   } catch (error) {
     console.log("[ERROR_CONNECTING_TO_REDIS/NATS_SERVER", error);

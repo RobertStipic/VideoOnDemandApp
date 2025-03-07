@@ -1,7 +1,7 @@
 import Queue from "bull";
 import { Subjects } from "@robstipic/middlewares";
-import { natsWrapperClient } from "../nats-client.js";
-import { PaymentExpirationPublisher } from "../publisher/payment-expiration-complete-publisher.js";
+import { natsWrapperClient } from "../../nats-client.js";
+import { PaymentExpirationPublisher } from "../publishers/payment-expiration-complete-publisher.js";
 
 const queueName = "subscription-payment-expiration-queue";
 const paymentExpirationQueue = new Queue(queueName, {
