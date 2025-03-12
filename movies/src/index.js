@@ -8,6 +8,8 @@ import { MoviesByLanguageRouter } from "./routes/MoviesByLanguage.js";
 import { MoviesByGenreRouter } from "./routes/MoviesByGenre.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
 import { MoviesByYearRouter } from "./routes/MoviesByYear.js";
+import { SendMovieRouter } from "./routes/SendMovie.js";
+import { currentUser } from "@robstipic/middlewares";
 import { startEncoding } from "./services/videoEncoding.js";
 import { natsWrapperClient } from "./nats-client.js";
 import { PlayMovieRouter } from "./routes/PlayMovie.js";
@@ -22,11 +24,13 @@ app.use(
     secure: true,
   })
 );
+app.use(currentUser);
 app.use(MoviesByLanguageRouter);
 app.use(MoviesByGenreRouter);
 app.use(ListMoviesRouter);
 app.use(MoviesByYearRouter);
 app.use(PlayMovieRouter);
+app.use(SendMovieRouter);
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });
@@ -58,7 +62,7 @@ const startApp = async () => {
   });
 
   await initizializeCSV();
-  //startEncoding();
+  startEncoding();
 };
 
 startApp();
