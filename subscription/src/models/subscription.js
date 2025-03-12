@@ -31,8 +31,9 @@ const SubscriptionSchema = new mongoose.Schema(
       enum: [
         constants.status.pending,
         constants.status.cancelled,
-        constants.status.failed,
+        constants.status.expired,
         constants.status.succeeded,
+        constants.status.paymentExpired,
       ],
       required: true,
     },

@@ -7,8 +7,9 @@ export const constants = {
   status: {
     succeeded: "succeeded",
     cancelled: "cancelled",
-    failed: "failed",
+    expired: "expired",
     pending: "pending",
+    paymentExpired: "paymentExpired",
   },
   activity: {
     registration: "registration",

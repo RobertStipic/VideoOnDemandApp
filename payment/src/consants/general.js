@@ -3,8 +3,9 @@ export const constants = {
   status: {
     succeeded: "succeeded",
     cancelled: "cancelled",
-    failed: "failed",
+    expired: "expired",
     pending: "pending",
+    paymentExpired: "paymentExpired",
   },
   token: "tok_visa",
 };

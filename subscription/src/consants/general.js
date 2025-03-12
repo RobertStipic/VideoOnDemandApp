@@ -2,8 +2,9 @@ export const constants = {
   status: {
     succeeded: "succeeded",
     cancelled: "cancelled",
-    failed: "failed",
+    expired: "expired",
     pending: "pending",
+    paymentExpired: "paymentExpired",
   },
   time: {
     DAY: 24 * 60 * 60 * 1000,
