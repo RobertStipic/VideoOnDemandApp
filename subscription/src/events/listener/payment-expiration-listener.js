@@ -21,7 +21,7 @@ export class PaymentExpirationListener extends Listener {
         Subjects.SubscriptionCancelled
       ).publish({
         subscriptionId: data.subscriptionId,
-        status: ORDER_CANCELLED,
+        status: constants.status.cancelled,
       });
     }
     msg.ack();

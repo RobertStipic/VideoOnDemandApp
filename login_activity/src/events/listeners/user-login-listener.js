@@ -12,11 +12,12 @@ export class UserAuthListener extends Listener {
       },
       { upsert: true }
     );
+    const date = new Date();
     console.log(
       "User logged:",
       data.email,
-      "current time:",
-      new Date(),
+      "at time:",
+      date.toUTCString(),
       "type:",
       data.type
     );

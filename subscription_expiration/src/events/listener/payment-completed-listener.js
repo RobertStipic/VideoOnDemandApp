@@ -21,11 +21,12 @@ export class PaymentCompletedListener extends Listener {
       );
       await Subscription.deleteOne({ subscriptionId: data.subscriptionId });
     }
+    const date = new Date(data.expiresAt);
     console.log(
       "Inserting new subscription for user: ",
       data.userId,
       "ending at: ",
-      data.expiresAt
+      date.toUTCString()
     );
     const sub = await Subscription.create({
       userId: data.userId,

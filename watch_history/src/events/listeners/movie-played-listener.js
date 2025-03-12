@@ -20,13 +20,14 @@ export class MoviePlayedListener extends Listener {
       },
       { upsert: true }
     );
+    const date = new Date();
     console.log(
       "Updated watch history for user: ",
       data.userId,
       "and movie: ",
       data.movieId,
       "with result: ",
-      new Date()
+      date.toUTCString()
     );
     msg.ack();
   }

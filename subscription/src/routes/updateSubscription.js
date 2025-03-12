@@ -4,7 +4,7 @@ import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { SubscriptionUpdatedPublisher } from "../events/publisher/subscription-updated-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
-import { constantsUpdateSub } from "../consants/general.js";
+import { constantsUpdateSub, constants } from "../consants/general.js";
 import {
   calculateExpiration,
   calculatePaymentExpiration,
@@ -50,7 +50,7 @@ updateSubRouter.put(
       price,
       paymentExpiresAt,
       expiresAt: expiresAtObj,
-      status: "pending",
+      status: constants.status.pending,
     });
     await subscription.save();
     const updatedSubscription = await Subscription.findById(req.params.id);

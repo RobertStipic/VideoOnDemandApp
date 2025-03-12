@@ -25,7 +25,7 @@ export class SubscriptionUpdatedListener extends Listener {
     if (chargeInfo.status !== constants.status.succeeded) {
       throw new Error("Payment has not succeeded");
     }
-    console.log("Payment succeeded, creating user");
+    console.log("Payment succeeded, creating subscription:");
     const subscription = await Subscription.create({
       subscriptionId: data.subscriptionId,
       plan: data.plan,
