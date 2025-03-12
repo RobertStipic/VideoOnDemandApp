@@ -6,7 +6,8 @@ import { natsWrapperClient } from "./nats-wrapper.js";
 import mongose from "mongoose";
 import { currentUser, Subjects } from "@robstipic/middlewares";
 import { natsQueues } from "./consants/queues.js";
-import { removeRouter } from "./routes/removeSubs.js";
+import { cancelSubRouter } from "./routes/cancelSub.js";
+import { activeSubsRouter } from "./routes/findAllActiveSubs.js";
 import { newSubRouter } from "./routes/newSubs.js";
 import { idRouter } from "./routes/findByIdSubs.js";
 import { findRouter } from "./routes/findAllSubs.js";
@@ -28,9 +29,10 @@ app.use(
 
 app.use(currentUser);
 app.use(newSubRouter);
+app.use(activeSubsRouter);
 app.use(idRouter);
 app.use(findRouter);
-app.use(removeRouter);
+app.use(cancelSubRouter);
 app.use(updateSubRouter);
 
 app.all("*", (req, res) => {

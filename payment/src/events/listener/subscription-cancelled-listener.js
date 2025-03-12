@@ -2,7 +2,10 @@ import { Listener } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
 export class SubscriptionCancelledListener extends Listener {
   async onMessage(data, msg) {
-    console.log("Payment time expired for subscription: ", data.subscriptionId);
+    console.log(
+      "Changing subscription status to cancelled: ",
+      data.subscriptionId
+    );
     const subscription = await Subscription.findOne({
       subscriptionId: data.subscriptionId,
     });
