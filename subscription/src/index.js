@@ -14,7 +14,7 @@ import { findRouter } from "./routes/findAllSubs.js";
 import { updateSubRouter } from "./routes/updateSubscription.js";
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
 import { PaymentExpirationListener } from "./events/listener/payment-expiration-listener.js";
-
+import { SubscriptionExpiredListener } from "./events/listener/subscription-expired-listener.js";
 const { json } = bodyparser;
 const app = express();
 
@@ -61,6 +61,12 @@ const startApp = async () => {
       Subjects.PaymentExpirationCompleted,
       natsQueues.PaymentExpirationCompleted
     ).listen();
+    new SubscriptionExpiredListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionExpired,
+      natsQueues.subscriptionExpired
+    ).listen();
+
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
   } catch (error) {
