@@ -25,6 +25,7 @@ PlayMovieRouter.get(
     ).publish({
       movieId: req.params.id,
       userId: req.currentUser.id,
+      userEmail: req.currentUser.email,
     });
 
     res.status(200).send(movie);

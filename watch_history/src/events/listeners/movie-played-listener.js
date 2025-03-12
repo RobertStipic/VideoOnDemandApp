@@ -12,7 +12,7 @@ export class MoviePlayedListener extends Listener {
     }
 
     await WatchHistory.updateOne(
-      { userId: data.userId },
+      { userId: data.userId, userEmail: data.userEmail },
       {
         $push: {
           watch_history: { movieId: data.movieId, watchedAt: new Date() },

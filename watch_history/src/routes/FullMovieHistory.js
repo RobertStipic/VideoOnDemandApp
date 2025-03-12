@@ -3,10 +3,10 @@ import { userAuthorization } from "@robstipic/middlewares";
 import { Movie } from "../models/movie.js";
 import { WatchHistory } from "../models/watch_history.js";
 
-const MovieWatchHistoryRouter = express.Router();
+const FullMovieHistory = express.Router();
 
-MovieWatchHistoryRouter.get(
-  "/history/movie/:movieId",
+FullMovieHistory.get(
+  "/history/full/:movieId",
   userAuthorization,
   async (req, res) => {
     const movieId = req.params.movieId;
@@ -23,13 +23,9 @@ MovieWatchHistoryRouter.get(
     if (!watchHistory) {
       return res
         .status(404)
-        .send(
-          "Watch history not found for movie, ",
-          movieTitle,
-          "for user",
-          req.currentUser.email
-        );
+        .send("Watch history not found for movie, ", movieTitle);
     }
+
     const movieHistory = {};
 
     watchHistory.forEach((userWatchHistory) => {
@@ -38,17 +34,19 @@ MovieWatchHistoryRouter.get(
         (watchedMovie) => watchedMovie.movieId === movieId
       );
 
-      movieHistory[userEmail] = userWatchHistoryForMovie.map(
-        (watchedMovie) => ({
-          movieId: watchedMovie.movieId,
-          title: movieTitle,
+      userWatchHistoryForMovie.forEach((watchedMovie) => {
+        if (!movieHistory[movieTitle]) {
+          movieHistory[movieTitle] = [];
+        }
+        movieHistory[movieTitle].push({
+          userEmail: userEmail,
           watchedAt: watchedMovie.watchedAt,
-        })
-      );
+        });
+      });
     });
 
     res.status(200).send(movieHistory);
   }
 );
 
-export { MovieWatchHistoryRouter };
+export { FullMovieHistory };

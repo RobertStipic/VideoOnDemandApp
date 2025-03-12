@@ -7,6 +7,10 @@ const WatchHistorySchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    userEmail: {
+      type: String,
+      required: true,
+    },
     watch_history: [
       {
         movieId: {

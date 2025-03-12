@@ -14,8 +14,8 @@ export class SubscriptionExpiredListener extends Listener {
     }
 
     subscription.set({ status: constants.status.expired });
-    await user.save();
-    console.log("Subscription for user:", data.subscriptionId, "has expired");
+    await subscription.save();
+    console.log("Subscription ID:", data.subscriptionId, "has expired");
     msg.ack();
   }
 }

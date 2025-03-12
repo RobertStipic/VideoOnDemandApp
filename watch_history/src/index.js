@@ -9,6 +9,8 @@ import bodyparser from "body-parser";
 import { UserWatchHistoryRouter } from "./routes/UserWatchHistory.js";
 import { initizializeCSV } from "./services/loadCSVtoDB.js";
 import cookieSession from "cookie-session";
+import { MovieWatchHistoryRouter } from "./routes/MovieWatchHistory.js";
+import { FullMovieHistory } from "./routes/FullMovieHistory.js";
 const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true); //ingress-nginx uses proxies
@@ -21,6 +23,8 @@ app.use(
 app.use(json());
 app.use(currentUser);
 app.use(UserWatchHistoryRouter);
+app.use(MovieWatchHistoryRouter);
+app.use(FullMovieHistory);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
