@@ -20,8 +20,6 @@ spec:
         - name: recommendation
           image: stile95/recommendation
           env:
-            - name: DATABASE_URL
-              value: "mongodb://recommendation-mongo-srv:27017/"
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:

@@ -12,7 +12,14 @@ export class UserAuthListener extends Listener {
       },
       { upsert: true }
     );
-    console.log("User logged: ", data.email, "current time: ", new Date());
+    console.log(
+      "User logged:",
+      data.email,
+      "current time:",
+      new Date(),
+      "type:",
+      data.type
+    );
     msg.ack();
   }
 }

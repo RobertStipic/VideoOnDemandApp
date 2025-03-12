@@ -38,7 +38,11 @@ async function CSVtoDatabase(columns) {
           csvData.forEach((row) => {
             const temp = {};
             columns.forEach((column) => {
-              temp[column] = row[column];
+              if (column === "imdbID") {
+                temp.movieId = row[column];
+              } else {
+                temp[column] = row[column];
+              }
             });
             Movie.create(temp);
             console.log("Movie inserted in database: ", temp.Title);

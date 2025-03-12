@@ -5,12 +5,6 @@ import { natsWrapperClient } from "./nats-client.js";
 import { natsQueues } from "./consants/queues.js";
 
 const start = async () => {
-  if (!process.env.NATS_CLIENT_ID) {
-    throw new Error("NATS_CLIENT_ID_IS_NEEDED");
-  }
-  if (!process.env.NATS_CLUSTER_ID) {
-    throw new Error("NAT_CLUSTER_ID_IS_NEEDED");
-  }
   if (!process.env.NATS_URL) {
     throw new Error("NATS_URL_IS_REQUIRED");
   }
