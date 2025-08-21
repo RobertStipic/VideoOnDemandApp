@@ -25,7 +25,7 @@ MoviesByYearRouter.get(
       .optional()
       .isInt({ min: requestYears.minValue, max: requestYears.maxValue })
       .withMessage(
-        `Valid ${requestYears.endyear} values: ${requestYears.minValue}-${requestYears.maxValue}1`
+        `Valid ${requestYears.endyear} values: ${requestYears.minValue}-${requestYears.maxValue}`
       ),
     body(requestYears.sorting)
       .optional()

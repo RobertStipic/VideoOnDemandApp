@@ -4,7 +4,7 @@ import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { SubscriptionUpdatedPublisher } from "../events/publisher/subscription-updated-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
-import { constantsUpdateSub, constants } from "../consants/general.js";
+import { constantsUpdateSub, constants, calculatePrice } from "../consants/general.js";
 import {
   calculateExpiration,
   calculatePaymentExpiration,
@@ -19,9 +19,6 @@ updateSubRouter.put(
     body(constantsUpdateSub.plan)
       .isInt({ min: 1, max: 3 })
       .withMessage(constantsUpdateSub.planMessage),
-    body(constantsUpdateSub.price)
-      .isInt({})
-      .withMessage(constantsUpdateSub.priceMessage),
     body(constantsUpdateSub.receiptEmail)
       .isEmail()
       .withMessage(constantsUpdateSub.receiptEmailMessage),
@@ -38,7 +35,8 @@ updateSubRouter.put(
     if (!subscription.userId.equals(req.currentUser.id)) {
       return res.status(401).send("Not authorized");
     }
-    const { plan, price } = req.body;
+    const { plan } = req.body;
+    const price = calculatePrice(plan);
     console.log(subscription.expiresAt);
     const expiresAtObj = calculateExpiration(
       plan,

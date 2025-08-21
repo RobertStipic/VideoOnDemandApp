@@ -18,6 +18,12 @@ const x264Options = 'keyint=24:min-keyint=24:no-scenecut';
 const videoBitrates = '2000k';
 
 
+  if (!fs.existsSync(outputPath)) {
+    fs.mkdirSync(outputPath, { recursive: true });
+  } 
+
+
+
 export async function startEncoding(){
   if (isEmpty(output)) {
     getMovies();
@@ -32,7 +38,7 @@ export async function startEncoding(){
       const movies = await Movie.find(
         {},
         { imdbID: 1, Path: 1, Title: 1, _id: 0 }
-      ).limit(1);
+      ).limit(3);
       for (const movie of movies) {
         await processMovie(movie);
       }
