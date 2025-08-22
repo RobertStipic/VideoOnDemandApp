@@ -1,7 +1,7 @@
 import express from "express";
 import "express-async-errors";
 import bodyparser from "body-parser";
-import mongose from "mongoose";
+import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import { CurrentUserRouter } from "./routes/CurrentUser.js";
 import { Subjects } from "@robstipic/middlewares";
@@ -13,6 +13,7 @@ import { ChangePasswordRouter } from "./routes/ChangePassword.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";
 import { SubscriptionExpiredListener } from "./events/listeners/subscription-expired-listener.js";
+import { SubscriptionStatusRouter } from "./routes/SubscriptionStatus.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -24,11 +25,13 @@ app.use(
     secure: true,
   })
 );
+app.use(SubscriptionStatusRouter);
 app.use(CurrentUserRouter);
 app.use(LogInRouter);
 app.use(LogOutRouter);
 app.use(SignUpRouter);
 app.use(ChangePasswordRouter);
+
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
@@ -48,7 +51,7 @@ const startApp = async () => {
     console.log("connected to NATS");
     process.on("SIGINT", () => natsWrapperClient.close());
     process.on("SIGTERM", () => natsWrapperClient.close());
-
+    
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
@@ -59,10 +62,11 @@ const startApp = async () => {
       Subjects.SubscriptionExpired,
       natsQueues.subscriptionExpired
     ).listen();
-    await mongose.connect(process.env.DATABASE_URL);
+
+    await mongoose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
   } catch (err) {
-    console.log("Error connecting to Database or NATS");
+    console.log("Error connecting to Database or NATS", err);
   }
   app.listen(3000, () => {
     console.log("Server up and running on port 3000!");
