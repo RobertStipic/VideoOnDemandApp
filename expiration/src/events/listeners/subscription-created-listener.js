@@ -11,10 +11,10 @@ export class SubscriptionCreatedListener extends Listener {
         60
       ).toFixed(0)} minutes`
     );
-
+    const jobId = `expiration-${data.subscriptionId}`;
     await paymentExpirationQueue.add(
       { subscriptionId: data.subscriptionId },
-      { delay: 45000 }
+      { delay, jobId }
     );
 
     msg.ack();
