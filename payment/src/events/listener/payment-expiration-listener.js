@@ -4,7 +4,9 @@ import { constants } from "../../consants/general.js";
 export class PaymentExpirationListener extends Listener {
   async onMessage(data, msg) {
     // console.log("data: ", data);
-    const subscription = await Subscription.findById(data.subscriptionId);
+    const subscription = await Subscription.findOne({
+      subscriptionId: data.subscriptionId,
+    });
 
     if (!subscription) {
       throw new Error("Subscription not found");
