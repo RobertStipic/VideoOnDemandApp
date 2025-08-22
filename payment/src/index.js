@@ -8,7 +8,6 @@ import { findAllRouter } from "./routes/findAllPayments.js";
 import { findSubscriptionStatus } from "./routes/SubscriptionStatus.js";
 import mongose from "mongoose";
 import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
-import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
 import { SubscriptionCancelledListener } from "./events/listener/subscription-cancelled-listener.js";
 import { PaymentExpirationListener } from "./events/listener/payment-expiration-listener.js";
 import { findPaymentsByUserRouter } from "./routes/paymentsByUser.js";
@@ -60,11 +59,6 @@ const startApp = async () => {
       natsQueues.subscriptionCreated
     ).listen();
 
-    new SubscriptionUpdatedListener(
-      natsWrapperClient.jsClient,
-      Subjects.SubscriptionUpdated,
-      natsQueues.SubscriptionUpdated
-    ).listen();
     new SubscriptionCancelledListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCancelled,

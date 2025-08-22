@@ -54,6 +54,7 @@ updateSubRouter.put(
       status: constants.status.pending,
     });
     await subscription.save();
+  
     const updatedSubscription = await Subscription.findById(req.params.id);
     await new SubscriptionUpdatedPublisher(
       natsWrapperClient.client,

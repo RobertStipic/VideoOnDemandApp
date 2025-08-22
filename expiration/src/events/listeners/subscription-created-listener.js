@@ -14,7 +14,7 @@ export class SubscriptionCreatedListener extends Listener {
 
     await paymentExpirationQueue.add(
       { subscriptionId: data.subscriptionId },
-      { delay }
+      { delay: 45000 }
     );
 
     msg.ack();
