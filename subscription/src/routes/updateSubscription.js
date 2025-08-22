@@ -35,6 +35,9 @@ updateSubRouter.put(
     if (!subscription.userId.equals(req.currentUser.id)) {
       return res.status(401).send("Not authorized");
     }
+    if (subscription.status !== constants.status.pending) {
+      return res.status(400).send("Subscription can only be updated when status is pending status");
+    }
     const { plan } = req.body;
     const price = calculatePrice(plan);
     console.log(subscription.expiresAt);
