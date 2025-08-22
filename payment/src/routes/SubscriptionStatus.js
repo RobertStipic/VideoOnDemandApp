@@ -1,12 +1,12 @@
 import express from "express";
-import { StripePayment } from "../models/payment.js";
+import { Subscription } from "../models/subscription.js";
 import { body, validationResult } from "express-validator";
 import { userAuthorization } from "@robstipic/middlewares";
 import { constantsSubId } from "../consants/general.js";
-const findBySubIdPaymentRouter = express.Router();
+const findSubscriptionStatus = express.Router();
 
-findBySubIdPaymentRouter.get(
-  "/payment/findBySubId",
+findSubscriptionStatus.get(
+  "/payment/subscriptionstatus",
   userAuthorization,
   [
     body(constantsSubId.subscriptionId)
@@ -22,16 +22,19 @@ findBySubIdPaymentRouter.get(
 
     const { subscriptionId } = req.body;
 
-    const payment = await StripePayment.find({
+    const subscription = await Subscription.findOne({
       subscriptionId,
     });
 
-    if (!payment) {
+    if (!subscription) {
       return res.status(404).send("Subscription not found");
     }
 
-    res.status(200).send(payment);
+    res.status(200).send({
+  status: subscription.status,
+  subscriptionId: subscription.subscriptionId
+});
   }
 );
 
-export { findBySubIdPaymentRouter };
+export { findSubscriptionStatus };

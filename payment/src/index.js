@@ -5,7 +5,7 @@ import cookieSession from "cookie-session";
 import { paymentRouter } from "./routes/newPayment.js";
 import { findPaymentRouter } from "./routes/findPayment.js";
 import { findAllRouter } from "./routes/findAllPayments.js";
-import { findBySubIdPaymentRouter } from "./routes/paymentsBySubId.js";
+import { findSubscriptionStatus } from "./routes/SubscriptionStatus.js";
 import mongose from "mongoose";
 import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
@@ -28,7 +28,7 @@ app.use(
   })
 );
 app.use(currentUser);
-app.use(findBySubIdPaymentRouter);
+app.use(findSubscriptionStatus);
 app.use(paymentRouter);
 app.use(findPaymentRouter);
 app.use(findAllRouter);
@@ -78,8 +78,6 @@ const startApp = async () => {
     ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);
-
-    console.log("Connected to Database");
   } catch (error) {
     console.log("[ERROR_CONNECTING_TO_MONGO/NATS_SERVER", error);
   }
@@ -88,4 +86,5 @@ const startApp = async () => {
   });
 };
 
+   
 startApp();

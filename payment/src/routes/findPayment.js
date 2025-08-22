@@ -5,7 +5,7 @@ import { userAuthorization } from "@robstipic/middlewares";
 import { constantsSubId } from "../consants/general.js";
 const findPaymentRouter = express.Router();
 
-const SubStatus = "cancelled";
+
 findPaymentRouter.get(
   "/payment/find",
   userAuthorization,

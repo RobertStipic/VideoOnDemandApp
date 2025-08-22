@@ -2,6 +2,7 @@ import express from "express";
 import { Subscription } from "../models/subscription.js";
 import { StripePayment } from "../models/payment.js";
 import { body, validationResult } from "express-validator";
+import { constants } from "../consants/general.js";
 import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { PaymentCompletedPublisher } from "../events/publisher/payment-completed-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
@@ -9,7 +10,7 @@ import { stripe } from "../stripeClient.js";
 import { constantsNewPayment } from "../consants/general.js";
 const paymentRouter = express.Router();
 
-const SubStatus = "cancelled";
+
 paymentRouter.post(
   "/payment/new",
   userAuthorization,
@@ -42,8 +43,20 @@ paymentRouter.post(
       return res.status(404).send("Subscription not found");
     }
 
-    if (subscription.status === SubStatus) {
-      return res.status(400).send("Bad request, subscription is cancelled");
+    if (subscription.status === constants.status.cancelled) {
+      return res.status(400).send("Subscription is cancelled");
+}
+
+    if (subscription.status === constants.status.expired) {
+      return res.status(400).send("Given subscription has expired");
+    }
+
+    if (subscription.status === constants.status.succeeded) {
+      return res.status(400).send("Subscription already paid");
+    }
+
+    if (subscription.status === constants.status.paymentExpired) {
+      return res.status(400).send("Payment period expired");
     }
     const chargeInfo = await stripe.charges.create({
       source: token,
@@ -101,7 +114,11 @@ paymentRouter.post(
       expiresAt: subscription.expiresAt,
       userId: subscription.userId,
     });
-
+    subscription.set({
+      status:constants.status.succeeded
+      });
+      await subscription.save();
+      
     res.status(201).send({ payment });
   }
 );
