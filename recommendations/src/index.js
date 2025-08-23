@@ -2,6 +2,7 @@ import express from "express";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import cookieSession from "cookie-session";
+import { constants } from "./constants/general.js";
 import { VectorQueryRouter } from "./routes/VectorQuery.js";
 import { initializeCSV } from "./services/loadCSVtoDB.js";
 import { MoviePlayedRouter } from "./routes/MoviePlayed.js";
@@ -15,6 +16,7 @@ app.use(
   cookieSession({
     signed: false,
     secure: true,
+    maxAge: constants.cookieAge, //12 H
   })
 );
 app.use(VectorQueryRouter);

@@ -1,6 +1,6 @@
 import { Listener } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
-import { constants } from "../../consants/general.js";
+import { constants } from "../../constants/general.js";
 export class SubscriptionExpiredListener extends Listener {
   async onMessage(data, msg) {
     // console.log("data: ", data);

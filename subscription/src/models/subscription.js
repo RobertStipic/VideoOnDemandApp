@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { constants } from "../consants/general.js";
+import { constants } from "../constants/general.js";
 const SubscriptionSchema = new mongoose.Schema(
   {
     userId: {

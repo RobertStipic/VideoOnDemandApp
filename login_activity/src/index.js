@@ -6,6 +6,7 @@ import mongose from "mongoose";
 import express from "express";
 import "express-async-errors";
 import bodyparser from "body-parser";
+import { constants } from "./consants/general.js";
 import { lastActivityRouter } from "./routes/FindLastActivity.js";
 import { userActivityRouter } from "./routes/FindAllActivity.js";
 import { registrationDateRouter } from "./routes/RegistrationDate.js";
@@ -17,6 +18,7 @@ app.use(
   cookieSession({
     signed: false,
     secure: true,
+    maxAge: constants.cookieAge // 12 H
   })
 );
 app.use(json());

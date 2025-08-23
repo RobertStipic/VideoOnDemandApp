@@ -2,7 +2,7 @@ import express from "express";
 import { Subscription } from "../models/subscription.js";
 import { body, validationResult } from "express-validator";
 import { currentUser, userAuthorization } from "@robstipic/middlewares";
-import { constantsFindId } from "../consants/general.js";
+import { constantsFindId } from "../constants/general.js";
 const idRouter = express.Router();
 
 idRouter.post(

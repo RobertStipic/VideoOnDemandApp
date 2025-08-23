@@ -5,7 +5,8 @@ import cookieSession from "cookie-session";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import mongose from "mongoose";
 import { currentUser, Subjects } from "@robstipic/middlewares";
-import { natsQueues } from "./consants/queues.js";
+import { natsQueues } from "./constants/queues.js";
+import { constants } from "./constants/general.js";
 import { cancelSubRouter } from "./routes/cancelSub.js";
 import { activeSubsRouter } from "./routes/findAllActiveSubs.js";
 import { newSubRouter } from "./routes/newSubs.js";
@@ -24,6 +25,7 @@ app.use(
   cookieSession({
     signed: false,
     secure: true,
+    maxAge: constants.cookieAge, //12 H
   })
 );
 

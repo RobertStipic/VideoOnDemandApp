@@ -1,7 +1,7 @@
 import express from "express";
 import { currentUser, userAuthorization } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
-import { constants } from "../consants/general.js";
+import { constants } from "../constants/general.js";
 
 const activeSubsRouter = express.Router();
 activeSubsRouter.get(

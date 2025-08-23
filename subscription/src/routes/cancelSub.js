@@ -1,7 +1,7 @@
 import express from "express";
 import { Subscription } from "../models/subscription.js";
 import { userAuthorization, Subjects } from "@robstipic/middlewares";
-import { constants } from "../consants/general.js";
+import { constants } from "../constants/general.js";
 import { SubscriptionCancelledPublisher } from "../events/publisher/subscription-cancelled-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
 

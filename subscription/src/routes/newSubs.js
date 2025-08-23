@@ -8,7 +8,7 @@ import {
   calculateExpiration,
   calculatePaymentExpiration,
 } from "../services/calculateSubscription.js";
-import { constants, constantsNewSub, calculatePrice } from "../consants/general.js";
+import { constants, constantsNewSub, calculatePrice } from "../constants/general.js";
 
 const newSubRouter = express.Router();
 

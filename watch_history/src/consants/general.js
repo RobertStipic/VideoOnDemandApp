@@ -5,4 +5,5 @@ export const constants = {
   },
   encoding: "utf-8",
   columns: ["Title", "Year", "Runtime", "imdbID", "Poster"],
+  cookieAge : 12 * 60 * 60 * 1000,
 };

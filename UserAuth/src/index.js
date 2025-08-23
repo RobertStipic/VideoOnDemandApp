@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import { CurrentUserRouter } from "./routes/CurrentUser.js";
 import { Subjects } from "@robstipic/middlewares";
+import { constants } from "./consants/general.js";
 import { LogInRouter } from "./routes/LogIn.js";
 import { LogOutRouter } from "./routes/LogOut.js";
 import { SignUpRouter } from "./routes/SignUp.js";
@@ -23,6 +24,7 @@ app.use(
   cookieSession({
     signed: false,
     secure: true,
+    maxAge: constants.cookieAge, // 12 H
   })
 );
 app.use(SubscriptionStatusRouter);

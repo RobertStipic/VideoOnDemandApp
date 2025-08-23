@@ -1,4 +1,4 @@
-import { constants } from "../consants/general.js";
+import { constants } from "../constants/general.js";
 export const calculateExpiration = (plan, date) => {
   if (!date) {
     let now = Date.now();

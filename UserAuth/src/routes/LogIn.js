@@ -49,11 +49,11 @@ LogInRouter.post(
       {
         id: existingEmail.id,
         email: existingEmail.email,
-        subscription: existingEmail.isSubscribed,
       },
-      process.env.JWT_PRIVATE_KEY
+      process.env.JWT_PRIVATE_KEY,
+      { expiresIn: '12h' }
     );
-    //process.env.JWT_PRIVATE_KEY is saved in secret inside kubernetes cluster
+    
     req.session.jwt = userJwt;
     console.log(
       "Publisher data",

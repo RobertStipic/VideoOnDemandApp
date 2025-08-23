@@ -110,9 +110,9 @@ SignUpRouter.post(
       {
         id: user.id,
         email: user.email,
-        subscription: user.isSubscribed,
       },
-      process.env.JWT_PRIVATE_KEY
+      process.env.JWT_PRIVATE_KEY,
+      { expiresIn: '12h' }
     );
     //process.env.JWT_PRIVATE_KEY is saved in secret inside kubernetes cluster
     req.session.jwt = userJwt;

@@ -10,6 +10,7 @@ export const constants = {
     registration: "registration",
     login: "login",
   },
+  cookieAge : 12 * 60 * 60 * 1000,
 };
 export const constantsRoutes = {
   password: "password",

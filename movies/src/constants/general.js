@@ -10,6 +10,7 @@ export const requestYears = {
     descending: "descending",
     values: ["ascending", "descending"],
   },
+  cookieAge : 12 * 60 * 60 * 1000,
 };
 export const requestLanguages = {
   language: "language",

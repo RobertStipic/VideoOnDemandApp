@@ -7,6 +7,7 @@ import { initizializeCSV } from "./services/loadCSVtoDB.js";
 import { MoviesByLanguageRouter } from "./routes/MoviesByLanguage.js";
 import { MoviesByGenreRouter } from "./routes/MoviesByGenre.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
+import { constants } from "./constants/general.js";
 import { MoviesByYearRouter } from "./routes/MoviesByYear.js";
 import { SendMovieRouter } from "./routes/SendMovie.js";
 import { currentUser } from "@robstipic/middlewares";
@@ -22,6 +23,7 @@ app.use(
   cookieSession({
     signed: false,
     secure: true,
+    maxAge: constants.cookieAge, //12 H
   })
 );
 app.use(currentUser);

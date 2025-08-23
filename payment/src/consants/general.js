@@ -8,6 +8,7 @@ export const constants = {
     paymentExpired: "paymentExpired",
   },
   token: "tok_visa",
+  cookieAge : 12 * 60 * 60 * 1000,
 };
 export const constantsSubId = {
   subscriptionId: "subscriptionId",

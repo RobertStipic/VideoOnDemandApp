@@ -14,6 +14,7 @@ export const constants = {
     min: 1,
     max: 3,
   },
+  cookieAge : 12 * 60 * 60 * 1000,
 };
 
 export const constantsFindId = {

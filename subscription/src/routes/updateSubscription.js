@@ -4,7 +4,7 @@ import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { SubscriptionUpdatedPublisher } from "../events/publisher/subscription-updated-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
-import { constantsUpdateSub, constants, calculatePrice } from "../consants/general.js";
+import { constantsUpdateSub, constants, calculatePrice } from "../constants/general.js";
 import {
   calculateExpiration,
   calculatePaymentExpiration,

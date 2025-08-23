@@ -2,12 +2,14 @@ import express from "express";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import cookieSession from "cookie-session";
+import mongose from "mongoose";
 import { paymentRouter } from "./routes/newPayment.js";
 import { findPaymentRouter } from "./routes/findPayment.js";
 import { findAllRouter } from "./routes/findAllPayments.js";
 import { findSubscriptionStatus } from "./routes/SubscriptionStatus.js";
-import mongose from "mongoose";
+import { constants } from "./consants/general.js";
 import { SubscriptionCreatedListener } from "./events/listener/subscription-created-listener.js";
+import { SubscriptionUpdatedListener } from "./events/listener/subscription-updated-listener.js";
 import { SubscriptionCancelledListener } from "./events/listener/subscription-cancelled-listener.js";
 import { PaymentExpirationListener } from "./events/listener/payment-expiration-listener.js";
 import { findPaymentsByUserRouter } from "./routes/paymentsByUser.js";
@@ -24,6 +26,7 @@ app.use(
   cookieSession({
     signed: false,
     secure: true,
+    maxAge: constants.cookieAge, // 12 H
   })
 );
 app.use(currentUser);
@@ -59,6 +62,11 @@ const startApp = async () => {
       natsQueues.subscriptionCreated
     ).listen();
 
+    new SubscriptionUpdatedListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionUpdated,
+      natsQueues.SubscriptionUpdated
+    ).listen();
     new SubscriptionCancelledListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCancelled,
