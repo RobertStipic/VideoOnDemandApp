@@ -1,16 +1,16 @@
 import express from "express";
-import { userAuthorization } from "@robstipic/middlewares";
+import { userAuthorization, currentUser } from "@robstipic/middlewares";
 import { Movie } from "../models/movie.js";
 import { WatchHistory } from "../models/watch_history.js";
 
 const UserWatchHistoryRouter = express.Router();
 
 UserWatchHistoryRouter.get(
-  "/history/:userId",
+  "/history/user",
   userAuthorization,
   async (req, res) => {
     const userWatchHistory = await WatchHistory.findOne({
-      userId: req.params.userId,
+      userId: req.currentUser.id,
     });
     if (!userWatchHistory) {
       return res.status(404).send("Watch history not found for user");

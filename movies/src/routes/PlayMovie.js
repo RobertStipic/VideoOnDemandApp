@@ -18,7 +18,7 @@ PlayMovieRouter.get(
   async (req, res) => {
 
     
-    const movie = await Movie.findOne({ imdbID: req.params.id });
+    const movie = await Movie.findOne({ imdbID: req.params.id }, { imdbID: 1, Title: 1, Poster: 1, _id: 0  });
 
     if (!movie) {
       return res.status(404).send("Movie not found");

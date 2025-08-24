@@ -13,7 +13,7 @@ ListMoviesRouter.get(
   userAuthorization,
   async (req, res) => {
     if (temp_n < 10) {
-      let movies = await Movie.find({}, { Title: 1, Plot: 1, Poster: 1 })
+      let movies = await Movie.find({}, { Title: 1, Plot: 1, Poster: 1, _id: 0})
         .skip(temp_pagesize * temp_n)
         .limit(temp_pagesize);
       temp_n++;
