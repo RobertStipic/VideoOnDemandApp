@@ -10,7 +10,7 @@ import { UserWatchHistoryRouter } from "./routes/UserWatchHistory.js";
 import { initizializeCSV } from "./services/loadCSVtoDB.js";
 import { constants } from "./consants/general.js";
 import cookieSession from "cookie-session";
-import { MovieWatchHistoryRouter } from "./routes/MovieWatchHistory.js";
+import { CompleteHistoryRouter } from "./routes/CompleteWatchHistory.js";
 import { FullMovieHistory } from "./routes/FullMovieHistory.js";
 const { json } = bodyparser;
 const app = express();
@@ -25,7 +25,7 @@ app.use(
 app.use(json());
 app.use(currentUser);
 app.use(UserWatchHistoryRouter);
-app.use(MovieWatchHistoryRouter);
+app.use(CompleteHistoryRouter);
 app.use(FullMovieHistory);
 
 app.all("*", (req, res) => {
