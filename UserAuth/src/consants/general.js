@@ -17,6 +17,8 @@ export const constantsRoutes = {
   passwordMessage: "Please enter password",
   email: "email",
   emailMessage: "Email must be valid",
+  confirmPassword: "confirmPassword",
+  confirmPasswordMessage: "Please confirm password",
 };
 
 export const constantsChangePassword = {

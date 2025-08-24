@@ -12,12 +12,23 @@ spec:
       labels:
         app: userauth-mongo
     spec:
+      initContainers:
+        - name: remove-lockfile
+          image: busybox
+          command: ["sh", "-c", "rm -f /data/db/mongod.lock /data/db/WiredTiger.lock"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
       containers:
         - image:  mongo
           name:  userauth-mongo
-          #env:
-          #- name:  ENVVARNAME
-          #  value:  ENVVARVALUE
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: userauth-mongo-pvc
 ---
 apiVersion: v1 
 kind: Service

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: userauth-mongo-pv
+  labels:
+    app: userauth-mongo
+spec:
+  capacity:
+    storage: 5Gi 
+  accessModes:
+    - ReadWriteOnce 
+  persistentVolumeReclaimPolicy: Retain 
+  storageClassName: standard 
+  hostPath: 
+    path: /mnt/userauth-mongo-data 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: userauth-mongo-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi 
+  storageClassName: standard
+  selector:
+    matchLabels:
+      app: userauth-mongo

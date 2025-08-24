@@ -9,6 +9,7 @@ import { constants } from "./consants/general.js";
 import { LogInRouter } from "./routes/LogIn.js";
 import { LogOutRouter } from "./routes/LogOut.js";
 import { SignUpRouter } from "./routes/SignUp.js";
+import { DeleteRouter } from "./routes/DeleteAccount.js";
 import { natsQueues } from "./consants/queues.js";
 import { ChangePasswordRouter } from "./routes/ChangePassword.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
@@ -33,7 +34,7 @@ app.use(LogInRouter);
 app.use(LogOutRouter);
 app.use(SignUpRouter);
 app.use(ChangePasswordRouter);
-
+app.use(DeleteRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
