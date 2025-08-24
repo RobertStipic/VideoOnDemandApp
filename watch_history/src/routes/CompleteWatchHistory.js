@@ -29,11 +29,11 @@ CompleteHistoryRouter.get(
             _id: 0,
           });
 
-          const movieTitle = movieInfo;
+          const movieTitle = movieInfo.Title;
 
           movieHistory[userEmail].push({
             movieId: watchedMovie.movieId,
-            title: movieTitle, // Zamjenjuje title: movieTitle
+            Title: movieTitle, 
             watchedAt: watchedMovie.watchedAt,
           });
         }
