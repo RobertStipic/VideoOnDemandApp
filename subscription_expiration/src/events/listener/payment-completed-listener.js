@@ -3,24 +3,35 @@ import { Subscription } from "../../models/subscription.js";
 import { constants } from "../../consants/general.js";
 export class PaymentCompletedListener extends Listener {
   async onMessage(data, msg) {
+    try {
     if (data.status !== constants.status.succeeded) {
-      throw new Error(
+      console.error(
         "Payment has not succeeded, subscription not updated for",
         data.subscriptionId
       );
+      msg.ack();
+      return;
     }
-    const subscriptionExists = await Subscription.findOne({
-      subscriptionId: data.subscriptionId,
+    const subscription = await Subscription.findOne({
+      userId: data.userId,
     });
-    if (subscriptionExists) {
-      console.log(
-        "Deleteing old subscription for: ",
-        data.userId,
-        "ending at: ",
-        subscriptionExists.expiresAt
-      );
-      await Subscription.deleteOne({ subscriptionId: data.subscriptionId });
-    }
+     const date = new Date(data.expiresAt);
+    if (subscription) {
+        console.log(
+          "Updating existing subscription for user:",
+          data.userId,
+          "current expiresAt:",
+          subscription.expiresAt.toUTCString()
+        );
+        const currentExpiresAt = new Date(subscription.expiresAt);
+        const updatedExpiresAt = new Date(
+          Math.max(currentExpiresAt.getTime(), Date.now()) + (date.getTime() - Date.now())
+        );
+        subscription.subscriptionId = data.subscriptionId; 
+        subscription.paymentId = data.paymentId; 
+        subscription.expiresAt = updatedExpiresAt; 
+        subscription.isSubscribed = true;
+    } else {
     const date = new Date(data.expiresAt);
     console.log(
       "Inserting new subscription for user: ",
@@ -28,14 +39,21 @@ export class PaymentCompletedListener extends Listener {
       "ending at: ",
       date.toUTCString()
     );
-    const sub = await Subscription.create({
+    subscription = await Subscription.create({
       userId: data.userId,
       subscriptionId: data.subscriptionId,
       paymentId: data.paymentId,
       expiresAt: data.expiresAt,
       isSubscribed: true,
     });
-    sub.save();
+
+  }
+    subscription.save();
     msg.ack();
   }
+  catch(error) {
+    console.error("Error processing payment completed event");
+    msg.ack();
+  }
+}
 }
