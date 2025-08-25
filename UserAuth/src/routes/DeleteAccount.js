@@ -3,6 +3,9 @@ import { body, validationResult } from "express-validator";
 import { User } from "../models/user.js";
 import { PasswordEncription } from "../services/passwordHash.js";
 import { constantsRoutes, constants } from "../consants/general.js";
+import { AccountDeletedPublisher } from "../events/publishers/account-deleted-publisher.js";
+import { Subjects } from "@robstipic/middlewares";
+import { natsWrapperClient } from "../nats-wrapper.js";
 
 const DeleteRouter = express.Router();
 
@@ -50,8 +53,17 @@ DeleteRouter.delete(
     }
  
     req.session = null;
+
+    const tempId = existingUser.id;
+
     await existingUser.deleteOne();
 
+    new AccountDeletedPublisher(
+      natsWrapperClient.jsClient,
+      Subjects.AccountDeleted
+    ).publish({
+      id: tempId,
+    });
 
     res.status(200).send("Account deleted");
   }
