@@ -7,7 +7,9 @@ export class PaymentExpirationListener extends Listener {
     const subscription = await Subscription.findById(data.subscriptionId);
 
     if (!subscription) {
-      throw new Error("Subscription not found");
+      console.error("Subscription not found");
+      msg.ack();
+      return;
     }
 
     if (subscription.status === constants.status.pending) {

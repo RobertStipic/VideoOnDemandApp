@@ -2,6 +2,7 @@ import { Subjects, currentUser } from "@robstipic/middlewares";
 import { natsQueues } from "./consants/queues.js";
 import { natsWrapperClient } from "./nats-client.js";
 import { MoviePlayedListener } from "./events/listeners/movie-played-listener.js";
+import { AccountDeletedListener } from "./events/listeners/account-deleted-listener.js";
 import mongose from "mongoose";
 import express from "express";
 import "express-async-errors";
@@ -47,6 +48,11 @@ const start = async () => {
       natsWrapperClient.jsClient,
       Subjects.MoviePlayed,
       natsQueues.MoviePlayed
+    ).listen();
+    new AccountDeletedListener(
+      natsWrapperClient.jsClient,
+      Subjects.AccountDeleted,
+      natsQueues.AccountDeleted
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
