@@ -16,6 +16,9 @@ spec:
         - name: wait-for-nats
           image: busybox
           command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
+        - name: wait-for-mongo
+          image: busybox
+          command: ["sh", "-c", "until nc -z user-login-activity-mongo-srv:27017; do sleep 1; done"]  
       containers:
         - name: user-login-activity
           image: stile95/user-login-activity

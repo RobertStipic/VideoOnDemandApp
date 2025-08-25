@@ -12,22 +12,39 @@ spec:
       labels:
         app: movies-mongo
     spec:
+      initContainers:
+        - name: remove-lockfile
+          image: busybox
+          command: ["sh", "-c", "rm -f /data/db/mongod.lock /data/db/WiredTiger.lock"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 999:999 /data/db && chmod -R u+rwX /data/db"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
       containers:
-        - image:  mongo
-          name:  movies-mongo
-          #env:
-          #- name:  ENVVARNAME
-          #  value:  ENVVARVALUE
+        - image: mongo
+          name: movies-mongo
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: movies-mongo-pvc
 ---
-apiVersion: v1 
+apiVersion: v1
 kind: Service
 metadata:
-  name:  movies-mongo-srv
+  name: movies-mongo-srv
 spec:
   selector:
-    app:  movies-mongo
+    app: movies-mongo
   ports:
-  - name:  mongodb
-    protocol: TCP
-    port:  27017
-    targetPort:  27017
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

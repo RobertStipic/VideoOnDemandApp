@@ -12,9 +12,29 @@ spec:
       labels:
         app: user-login-activity-mongo
     spec:
+      initContainers:
+        - name: remove-lockfile
+          image: busybox
+          command: ["sh", "-c", "rm -f /data/db/mongod.lock /data/db/WiredTiger.lock"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 999:999 /data/db && chmod -R u+rwX /data/db"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
       containers:
         - image: mongo
           name: user-login-activity-mongo
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: user-login-activity-mongo-pvc
 ---
 apiVersion: v1
 kind: Service
