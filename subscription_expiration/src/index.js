@@ -1,5 +1,6 @@
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
 import { SubscriptionCancelledListener } from "./events/listener/subscription-cancelled-listener.js";
+import { AccountDeletedListener } from "./events/listener/account-deleted-listener.js";
 import { natsQueues } from "./consants/queues.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
@@ -31,6 +32,12 @@ const start = async () => {
       Subjects.SubscriptionCancelled,
       natsQueues.SubscriptionCancelled
     ).listen(); 
+    new AccountDeletedListener(
+      natsWrapperClient.jsClient,
+      Subjects.AccountDeleted,
+      natsQueues.AccountDeleted
+    ).listen();
+
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
     const count = await Subscription.countDocuments();

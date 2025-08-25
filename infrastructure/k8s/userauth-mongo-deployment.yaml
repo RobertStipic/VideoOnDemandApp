@@ -19,6 +19,12 @@ spec:
           volumeMounts:
             - name: mongo-storage
               mountPath: /data/db
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 999:999 /data/db && chmod -R u+rwX /data/db"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
       containers:
         - image:  mongo
           name:  userauth-mongo

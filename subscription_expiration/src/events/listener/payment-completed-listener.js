@@ -12,7 +12,7 @@ export class PaymentCompletedListener extends Listener {
       msg.ack();
       return;
     }
-    const subscription = await Subscription.findOne({
+    let subscription = await Subscription.findOne({
       userId: data.userId,
     });
      const date = new Date(data.expiresAt);
@@ -52,7 +52,7 @@ export class PaymentCompletedListener extends Listener {
     msg.ack();
   }
   catch(error) {
-    console.error("Error processing payment completed event");
+    console.error("Error processing payment completed event", error);
     msg.ack();
   }
 }
