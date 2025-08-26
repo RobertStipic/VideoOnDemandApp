@@ -16,7 +16,7 @@ try {
 
       msg.ack();
     } catch (error) {
-      console.error("Error in SubscriptionCancelledListener:", error);
+      console.error("Error processing subscription cancelled event:", error);
       msg.ack();
     }
   }

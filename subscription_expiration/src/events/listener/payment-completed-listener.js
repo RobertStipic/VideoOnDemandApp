@@ -53,7 +53,6 @@ export class PaymentCompletedListener extends Listener {
   }
   catch(error) {
     console.error("Error processing payment completed event", error);
-    msg.ack();
   }
 }
 }

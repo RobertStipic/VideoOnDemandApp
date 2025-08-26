@@ -21,6 +21,7 @@ newSubRouter.post(
       .withMessage(constantsNewSub.planMessage)
   ],
   async (req, res) => {
+    try{
     const { plan, status } = req.body;
     const userId = req.currentUser.id;
 
@@ -52,6 +53,9 @@ newSubRouter.post(
     });
 
     res.status(201).send({ subscriptionObj });
+  }catch (error) {
+     res.status(500).send("Error while creating new subscription");
+    }
   }
 );
 

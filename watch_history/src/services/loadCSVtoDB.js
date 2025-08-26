@@ -49,8 +49,8 @@ async function CSVtoDatabase(columns) {
           });
           resolve();
         });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error(`Failed to export CSV to database: ${error.message}`);
     }
   });
 }

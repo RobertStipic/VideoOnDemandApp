@@ -17,9 +17,7 @@ activeSubsRouter.get(
 
       res.status(200).send(subscription);
     } catch (error) {
-      console.log("error:", error);
-
-      return res.status(404).send("Not Found");
+       res.status(500).send("Error while retriving all active subscriptions");
     }
   }
 );

@@ -8,6 +8,7 @@ lastActivityRouter.get(
   "/activity/lastactivity",
   userAuthorization,
   async (req, res) => {
+    try{
     const userEmail = req.currentUser.email;
 
     const activity = await UserActivity.aggregate([
@@ -29,6 +30,9 @@ lastActivityRouter.get(
     }
 
     res.send(activity[0]);
+  }catch (error) {
+     res.status(500).send("Error retriving last user activity");
+    }
   }
 );
 

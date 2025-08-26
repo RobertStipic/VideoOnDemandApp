@@ -9,6 +9,7 @@ UserWatchHistoryRouter.get(
   "/history/user",
   userAuthorization,
   async (req, res) => {
+    try{
     const userWatchHistory = await WatchHistory.findOne({
       userId: req.currentUser.id,
     });
@@ -40,6 +41,9 @@ UserWatchHistoryRouter.get(
     };
 
     res.status(200).send(response);
+  }catch (error) {
+      res.status(500).send("Error fetching user watch history");
+    }
   }
 );
 export { UserWatchHistoryRouter };

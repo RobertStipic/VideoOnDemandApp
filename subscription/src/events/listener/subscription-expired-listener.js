@@ -3,7 +3,7 @@ import { Subscription } from "../../models/subscription.js";
 import { constants } from "../../constants/general.js";
 export class SubscriptionExpiredListener extends Listener {
   async onMessage(data, msg) {
-    // console.log("data: ", data);
+    try{
     const subscription = await Subscription.findById(data.subscriptionId);
 
     if (!subscription) {
@@ -17,5 +17,8 @@ export class SubscriptionExpiredListener extends Listener {
     await subscription.save();
     console.log("Subscription ID:", data.subscriptionId, "has expired");
     msg.ack();
+  }catch(error) {
+    console.error("Error processing subscription expiration event", error);
+  }
   }
 }

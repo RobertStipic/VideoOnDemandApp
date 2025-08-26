@@ -37,6 +37,7 @@ MoviesByYearRouter.get(
   currentUser,
   userAuthorization,
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -65,6 +66,9 @@ MoviesByYearRouter.get(
         .select({ Title: true, Year: true });
       res.status(200).send(movies);
     }
-  }
+    }catch (error) {
+     res.status(500).send("Error while retriving movies by year");
+    }
+    }
 );
 export { MoviesByYearRouter };

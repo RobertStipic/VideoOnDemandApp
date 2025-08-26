@@ -28,6 +28,7 @@ DeleteRouter.delete(
       }),
   ],
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -66,6 +67,9 @@ DeleteRouter.delete(
     });
 
     res.status(200).send("Account deleted");
+  }catch (error) {
+      res.status(500).send("Unexpected error while deleting account");
+    }
   }
 );
 

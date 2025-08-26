@@ -16,6 +16,7 @@ findPaymentRouter.get(
       .withMessage(constantsSubId.subscriptionMessage),
   ],
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -32,6 +33,9 @@ findPaymentRouter.get(
     }
 
     res.status(200).send(payment);
+  }catch (error) {
+     res.status(500).send("Error while retriving payment");
+    }
   }
 );
 

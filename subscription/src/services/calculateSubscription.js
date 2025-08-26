@@ -1,5 +1,6 @@
 import { constants } from "../constants/general.js";
 export const calculateExpiration = (plan, date) => {
+  try{
   if (!date) {
     let now = Date.now();
     switch (plan) {
@@ -26,8 +27,15 @@ export const calculateExpiration = (plan, date) => {
         throw new Error("Invalid subscription plan");
     }
   }
+} catch(error) {
+    console.error("Error calculating subscription expiration", error);
+  }
 };
 export const calculatePaymentExpiration = () => {
+  try{
   let now = Date.now();
   return new Date(now + 10 * constants.time.MINUTE);
+  }catch(error) {
+    console.error("Error calculating payment expiration", error);
+  }
 };

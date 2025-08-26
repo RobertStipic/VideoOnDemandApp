@@ -7,6 +7,7 @@ userActivityRouter.get(
   "/activity/useractivity",
   userAuthorization,
   async (req, res) => {
+    try{
     const userEmail = req.currentUser.email;
 
     const activity = await UserActivity.findOne({ userEmail }).select({
@@ -19,6 +20,9 @@ userActivityRouter.get(
     }
 
     res.send(activity);
+  }catch (error) {
+     res.status(500).send("Error retriving all user activity");
+    }
   }
 );
 

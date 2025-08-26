@@ -19,13 +19,13 @@ PlayMovieRouter.get(
 
     
     const movie = await Movie.findOne({ imdbID: req.params.id }, { imdbID: 1, Title: 1, Poster: 1, _id: 0  });
-
+    try {
     if (!movie) {
       return res.status(404).send("Movie not found");
     }
 
     const userInfo = { userId: req.currentUser.id };
-    try {
+    
       console.log("Checking subscription status for user:", userInfo.userId);
       const subscriptionStatus = await axios.get(
         `http://userauth-srv:3000/users/${userInfo.userId}/subscription`
@@ -36,9 +36,7 @@ PlayMovieRouter.get(
       if (!Response.isSubscribed) {
         return res.status(403).send("Subscription not valid");
       }
-    } catch (err) {
-      return res.status(500).send("Error checking subscription status");
-    }
+ 
 
     await new MoviePlayedPublisher(
       natsWrapperClient.jsClient,
@@ -49,7 +47,10 @@ PlayMovieRouter.get(
       userEmail: req.currentUser.email,
     });
 
-    res.status(200).send(movie);
+    res.status(200).send(movie);   
+  }catch (error) {
+      return res.status(500).send("Error while playing movie");
+    }
   }
 );
 

@@ -15,6 +15,7 @@ findSubscriptionStatus.get(
       .withMessage(constantsSubId.subscriptionMessage),
   ],
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -34,6 +35,9 @@ findSubscriptionStatus.get(
   status: subscription.status,
   subscriptionId: subscription.subscriptionId
 });
+}catch (error) {
+     res.status(500).send("Error while retriving subscription status");
+    }
   }
 );
 

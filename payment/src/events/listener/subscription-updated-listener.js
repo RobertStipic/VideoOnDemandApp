@@ -4,6 +4,7 @@ import { constants } from "../../consants/general.js";
 
 export class SubscriptionUpdatedListener extends Listener {
   async onMessage(data, msg) {
+    try{
     console.log(
       "Subscription updated event received with id: ",
       data.subscriptionId
@@ -17,5 +18,8 @@ export class SubscriptionUpdatedListener extends Listener {
     subscription.set({plan: data.plan});
     await subscription.save();
     msg.ack();
+  }catch(error) {
+    console.error("Error processing subscription updated event", error);
   }
+}
 }

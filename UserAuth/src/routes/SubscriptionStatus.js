@@ -10,7 +10,7 @@ router.get("/users/:id/subscription", async (req, res) => {
     }
     res.status(200).send({ isSubscribed: user.isSubscribed });
   } catch (err) {
-    res.status(500).send("Error checking subscription");
+    res.status(500).send("Unexpected checking subscription error");
   }
 });
 

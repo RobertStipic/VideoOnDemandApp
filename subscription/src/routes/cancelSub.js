@@ -11,6 +11,7 @@ cancelSubRouter.delete(
   "/subscription/remove/:id",
   userAuthorization,
   async (req, res) => {
+    try{
     const subscription = await Subscription.findById(req.params.id);
     if (!subscription) {
       return res.status(404).send("Subscription not found");
@@ -31,6 +32,9 @@ cancelSubRouter.delete(
       status: subscription.status,
     });
     res.status(200).send({ "Subscription cancelled with id": subscription._id });
+  }catch (error) {
+      res.status(500).send("Error while cancelling subscription");
+    }
   }
 );
 

@@ -3,6 +3,7 @@ import { Subscription } from "../../models/subscription.js";
 
 export class SubscriptionCreatedListener extends Listener {
   async onMessage(data, msg) {
+    try{
     console.log("Subscription created event received ");
     await Subscription.create({
       subscriptionId: data.subscriptionId,
@@ -15,5 +16,8 @@ export class SubscriptionCreatedListener extends Listener {
     });
 
     msg.ack();
+  }catch(error) {
+    console.error("Error processing subscription created event", error);
+  }
   }
 }

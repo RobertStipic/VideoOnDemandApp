@@ -3,6 +3,7 @@ import { paymentExpirationQueue } from "./expiration-queue.js";
 
 export class SubscriptionCreatedListener extends Listener {
   async onMessage(data, msg) {
+    try {
     const delay = new Date(data.paymentExpiresAt).getTime() - Date.now();
     console.log(
       `Scheduling expiration for subscription ${data.subscriptionId} in ${(
@@ -19,4 +20,9 @@ export class SubscriptionCreatedListener extends Listener {
 
     msg.ack();
   }
-}
+
+    catch (error) {
+    console.error("Error processing subscription created event", error);
+      }
+    }
+  }

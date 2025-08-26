@@ -4,6 +4,7 @@ import { WatchHistory } from "../../models/watch_history.js";
 
 export class MoviePlayedListener extends Listener {
   async onMessage(data, msg) {
+    try {
     const movieMetadata = await Movie.findOne({
       movieId: data.movieId,
     });
@@ -30,5 +31,9 @@ export class MoviePlayedListener extends Listener {
       date.toUTCString()
     );
     msg.ack();
+  } catch (error) {
+        console.error("Error processing movie played event", error)
+      }
+  
   }
 }

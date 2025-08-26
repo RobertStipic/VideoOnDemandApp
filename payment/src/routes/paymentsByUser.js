@@ -8,6 +8,7 @@ findPaymentsByUserRouter.get(
   "/payment/userpayments",
   userAuthorization,
   async (req, res) => {
+    try{
     const userEmail = req.currentUser.email;
 
     const payments = await StripePayment.find({ userEmail }).select({
@@ -23,6 +24,9 @@ findPaymentsByUserRouter.get(
     }
 
     res.status(200).json(payments);
+  }catch (error) {
+     res.status(500).send("Error while retriving payment by user");
+    }
   }
 );
 

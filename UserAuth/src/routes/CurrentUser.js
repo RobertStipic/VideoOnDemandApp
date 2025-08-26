@@ -8,10 +8,14 @@ CurrentUserRouter.get(
   currentUser,
   userAuthorization,
   async (req, res) => {
+    try{
     const user = await User.findOne({
       email: req.currentUser.email,
     });
-    res.send(user);
+    res.status(200).send(user);
+    }catch (error) {
+      res.status(500).send("Unexpected password change error");
+    }
   }
 );
 

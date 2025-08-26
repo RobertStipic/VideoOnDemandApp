@@ -9,6 +9,7 @@ FullMovieHistory.get(
   "/history/full/:movieId",
   userAuthorization,
   async (req, res) => {
+    try{
     const movieId = req.params.movieId;
     const movieInfo = await Movie.findOne({ movieId });
 
@@ -46,6 +47,9 @@ FullMovieHistory.get(
     });
 
     res.status(200).send(movieHistory);
+  } catch (error) {
+      res.status(500).send("Error fetching movie watch history");
+    }
   }
 );
 

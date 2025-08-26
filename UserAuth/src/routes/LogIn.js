@@ -22,6 +22,7 @@ LogInRouter.post(
       .withMessage(constantsRoutes.passwordMessage),
   ],
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -73,6 +74,9 @@ LogInRouter.post(
     });
 
     res.status(200).send(existingEmail);
+  }catch (error) {
+      res.status(500).send("Unexpected log in error");
+    }
   }
 );
 

@@ -3,7 +3,7 @@ import { Subscription } from "../../models/subscription.js";
 
 export class PaymentCompletedListener extends Listener {
   async onMessage(data, msg) {
-    // console.log("data: ", data);
+    try{
     const subscription = await Subscription.findById({
       _id: data.subscriptionId,
     });
@@ -19,18 +19,10 @@ export class PaymentCompletedListener extends Listener {
       "for subscriptionId:",
       data.subscriptionId
     );
-    //DATA OBJECT FROM PAYMENT:
-    //const payment = {
-    // paymentId: data.paymentId,
-    //subscriptionId: data.subscriptionId,
-    //stripeId: data.stripeId,
-    //userEmail: data.userEmail,
-    //receiptUrl: data.receiptUrl,
-    //receiptEmail: data.receiptEmail,
-    //status: data.status,
-    //price: data.amount,
-    //currency: data.currency,
-    //};
     msg.ack();
+  }catch(error) {
+    console.error("Error processing payment completed event", error);
   }
+  }
+  
 }

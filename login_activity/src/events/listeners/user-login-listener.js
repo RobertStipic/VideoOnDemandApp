@@ -3,6 +3,7 @@ import { UserActivity } from "../../models/user_activity.js";
 
 export class UserAuthListener extends Listener {
   async onMessage(data, msg) {
+    try{
     await UserActivity.updateOne(
       { userEmail: data.email },
       {
@@ -22,5 +23,8 @@ export class UserAuthListener extends Listener {
       data.type
     );
     msg.ack();
+    }    catch (error) {
+        console.error("Error processing login activity event", error)
+      }
   }
 }

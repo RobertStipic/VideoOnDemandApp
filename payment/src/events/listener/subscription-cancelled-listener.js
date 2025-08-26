@@ -2,6 +2,7 @@ import { Listener } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
 export class SubscriptionCancelledListener extends Listener {
   async onMessage(data, msg) {
+    try {
     console.log(
       "Changing subscription status to cancelled: ",
       data.subscriptionId
@@ -15,5 +16,8 @@ export class SubscriptionCancelledListener extends Listener {
     await subscription.save();
 
     msg.ack();
+  }catch(error) {
+    console.error("Error processing subscription cancelled event", error);
+  }
   }
 }

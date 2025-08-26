@@ -12,6 +12,7 @@ ListMoviesRouter.get(
   "/movies/listmovies",
   userAuthorization,
   async (req, res) => {
+    try{
     if (temp_n < 10) {
       let movies = await Movie.find({}, { Title: 1, Plot: 1, Poster: 1, _id: 0})
         .skip(temp_pagesize * temp_n)
@@ -19,6 +20,9 @@ ListMoviesRouter.get(
       temp_n++;
       res.status(200).send(movies);
     } else res.status(200).send("All movies loaded");
+  }catch (error) {
+     res.status(500).send("Error listing movies");
+    }
   }
 );
 

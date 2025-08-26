@@ -10,6 +10,7 @@ const csvFilePath = path.join(__dirname, "..", "csv", "MOVIES_DATA_final.csv");
 
 export async function initizializeCSV() {
   //await Movie.deleteMany({}); //test function
+  try {
   let count = await Movie.countDocuments();
   if (count === constants.empty) {
     console.log("Importing csv data from: ", csvFilePath);
@@ -22,6 +23,9 @@ export async function initizializeCSV() {
       "Number of records in Database doesnt match value set by application: ",
       constants.MoviesCount
     );
+}catch(error) {
+    console.error("Error while initizialing CSV", error);
+  } 
 }
 async function CSVtoDatabase(columns) {
   return new Promise((resolve, reject) => {
@@ -39,8 +43,8 @@ async function CSVtoDatabase(columns) {
           });
           resolve();
         });
-    } catch (err) {
-      console.log(err);
-    }
+    } catch(error) {
+    console.error("Error while inserting CSV to database", error);
+  } 
   });
 }

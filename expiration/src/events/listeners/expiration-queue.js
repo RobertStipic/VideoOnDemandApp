@@ -4,7 +4,10 @@ import { natsWrapperClient } from "../../nats-client.js";
 import { PaymentExpirationPublisher } from "../publishers/payment-expiration-complete-publisher.js";
 import { bullQueues } from "../../consants/queues.js";
 
-const paymentExpirationQueue = new Queue(
+let paymentExpirationQueue;
+
+try {
+ paymentExpirationQueue = new Queue(
   bullQueues.subscriptionExpirationQueue,
   {
     redis: {
@@ -21,5 +24,8 @@ paymentExpirationQueue.process(async (job) => {
     subscriptionId: job.data.subscriptionId,
   });
 });
-
+}
+  catch (error) {
+  console.error(`Failed to proccess redis job: ${error.message}`);
+      }
 export { paymentExpirationQueue };

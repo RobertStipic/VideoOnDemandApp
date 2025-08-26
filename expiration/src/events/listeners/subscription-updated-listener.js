@@ -7,13 +7,11 @@ export class SubscriptionUpdatedListener extends Listener {
 
     const jobId = `expiration-${data.subscriptionId}`;
     const existingJob = await paymentExpirationQueue.getJob(jobId);
-
+try {
     if (existingJob) {
-      try {
+      
         await existingJob.remove();
-      } catch (error) {
-        console.log(`Failed to remove existing job: ${error.message}`);
-      }
+     
     }
 
       await paymentExpirationQueue.add(
@@ -21,7 +19,7 @@ export class SubscriptionUpdatedListener extends Listener {
         { delay, jobId }
       );
     console.log(
-      `Scheduling expiration for subscription ${data.subscriptionId} in ${(
+      `Scheduling payment expiration for subscription ${data.subscriptionId} in ${(
         delay /
         1000 /
         60
@@ -29,4 +27,8 @@ export class SubscriptionUpdatedListener extends Listener {
     );
     msg.ack();
   }
+    catch (error) {
+        console.error("Error processing subscription updated event", error)
+      }
+}
 }

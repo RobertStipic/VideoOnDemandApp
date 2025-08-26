@@ -8,6 +8,7 @@ const SendMovieRouter = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 SendMovieRouter.get("/movies/:id", userAuthorization, async (req, res) => {
+  try{
   const movie = await Movie.findOne({ imdbID: req.params.id }, { imdbID: 1 });
   if (!movie) {
     return res.status(404).send("Movie not found");
@@ -20,6 +21,9 @@ SendMovieRouter.get("/movies/:id", userAuthorization, async (req, res) => {
     movie.imdbID + ".mpd"
   );
   res.status(200).sendFile(movieLocation);
+} catch (error) {
+      return res.status(500).send("Error while sending movie");
+    }
 });
 
 export { SendMovieRouter };

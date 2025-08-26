@@ -28,6 +28,7 @@ paymentRouter.post(
       .withMessage(constantsNewPayment.receiptEmailMessage),
   ],
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -120,6 +121,9 @@ paymentRouter.post(
       await subscription.save();
       
     res.status(201).send({ payment });
+  }catch (error) {
+     res.status(500).send("Error while creating new payment");
+    }
   }
 );
 

@@ -3,7 +3,7 @@ import { Subscription } from "../../models/subscription.js";
 import { constants } from "../../constants/general.js";
 export class PaymentExpirationListener extends Listener {
   async onMessage(data, msg) {
-    // console.log("data: ", data);
+    try{
     const subscription = await Subscription.findById(data.subscriptionId);
 
     if (!subscription) {
@@ -18,5 +18,8 @@ export class PaymentExpirationListener extends Listener {
       console.log(Subjects.PaymentExpirationCompleted);
     }
     msg.ack();
+    }catch(error) {
+    console.error("Error processing payment expiration event", error);
+  }
   }
 }

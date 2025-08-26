@@ -57,12 +57,14 @@ const start = async () => {
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
     await initizializeCSV();
-  } catch (error) {
-    console.log("[ERROR_CONNECTING_TO_DATABASE/NATS_SERVER", error);
-  }
+  
   app.listen(3000, () => {
     console.log("Server up and running on port 3000!");
-  });
+  }); 
+}
+  catch (error) {
+    console.log("[ERROR_CONNECTING_TO_DATABASE/NATS_SERVER", error);
+  }
 };
 
 start();

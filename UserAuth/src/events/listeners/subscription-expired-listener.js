@@ -3,7 +3,7 @@ import { User } from "../../models/user.js";
 
 export class SubscriptionExpiredListener extends Listener {
   async onMessage(data, msg) {
-    // console.log("data: ", data);
+    try{
     const user = await User.findById(data.userId);
 
     if (!user) {
@@ -21,19 +21,9 @@ export class SubscriptionExpiredListener extends Listener {
       " User subscription status:",
       user.isSubscribed
     );
-
-    //DATA OBJECT FROM PAYMENT:
-    //const payment = {
-    // paymentId: data.paymentId,
-    //subscriptionId: data.subscriptionId,
-    //stripeId: data.stripeId,
-    //userEmail: data.userEmail,
-    //receiptUrl: data.receiptUrl,
-    //receiptEmail: data.receiptEmail,
-    //status: data.status,
-    //price: data.amount,
-    //currency: data.currency,
-    //};
     msg.ack();
+  }catch (error) {
+      console.error("Error processing subscription expired event", error)
+    }
   }
 }

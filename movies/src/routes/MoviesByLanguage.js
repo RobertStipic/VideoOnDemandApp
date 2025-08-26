@@ -18,6 +18,7 @@ MoviesByLanguageRouter.get(
   currentUser,
   userAuthorization,
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -28,6 +29,9 @@ MoviesByLanguageRouter.get(
       { Title: 1, Language: 1 }
     );
     res.status(200).send(movies);
+  }catch (error) {
+     res.status(500).send("Error while retriving movies by language");
+    }
   }
 );
 

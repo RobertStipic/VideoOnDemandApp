@@ -2,19 +2,23 @@ import bcrypt from 'bcrypt';
 
 export class PasswordEncription {
 static hashPassword(password){
+        try{
         const saltRounds = 10;
         const hash = bcrypt.hashSync(password, saltRounds);
-        //same as
-        // Technique 1 (generate a salt and hash on separate function calls):
-        //const salt = bcrypt.genSaltSync(saltRounds);
-        //const hash = bcrypt.hashSync(myPlaintextPassword, salt);
-        // Store hash in your password DB.
-
         return hash;
+        } catch (error) {
+      console.error(`Unexpected password hash error: ${error.message}`);
+      return; 
+    }
 }
 
 static comparePassword(plainTextPassword, storedPassword){
+    try{
     const passwordsMatch = bcrypt.compareSync(plainTextPassword, storedPassword);
     return passwordsMatch;
+    }catch (error) {
+      console.error(`Unexpected password compare error: ${error.message}`);
+      return; 
+    }
 }
 }

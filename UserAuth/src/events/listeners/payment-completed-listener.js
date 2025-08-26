@@ -3,7 +3,7 @@ import { User } from "../../models/user.js";
 import { constants } from "../../consants/general.js";
 export class PaymentCompletedListener extends Listener {
   async onMessage(data, msg) {
-    // console.log("data: ", data);
+    try{
     if (data.status !== constants.status.succeeded) {
       throw new Error(
         "Payment not succeeded, subscription not updated for user: " +
@@ -31,18 +31,9 @@ export class PaymentCompletedListener extends Listener {
       user.isSubscribed
     );
 
-    //DATA OBJECT FROM PAYMENT:
-    //const payment = {
-    // paymentId: data.paymentId,
-    //subscriptionId: data.subscriptionId,
-    //stripeId: data.stripeId,
-    //userEmail: data.userEmail,
-    //receiptUrl: data.receiptUrl,
-    //receiptEmail: data.receiptEmail,
-    //status: data.status,
-    //price: data.amount,
-    //currency: data.currency,
-    //};
     msg.ack();
+    }catch (error) {
+      console.error("Error processing payment completed event", error)
+    }
   }
 }

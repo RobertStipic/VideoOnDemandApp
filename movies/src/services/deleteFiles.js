@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 export function removeAllFilesSync(directory) {
+  try {
   const files = fs.readdirSync(directory);
 
   for (const file of files) {
@@ -13,4 +14,7 @@ export function removeAllFilesSync(directory) {
       fs.unlinkSync(filePath);
     }
   }
+}catch(error) {
+    console.error("Error deleting files from output directory", error);
+  } 
 }

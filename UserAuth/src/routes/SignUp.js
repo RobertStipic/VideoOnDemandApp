@@ -74,6 +74,7 @@ SignUpRouter.post(
       .withMessage(constantsSignUP.genderValidMessage),
   ],
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -126,6 +127,9 @@ SignUpRouter.post(
     });
 
     res.status(201).send(user);
+  }catch (error) {
+      res.status(500).send("Unexpected sign up error");
+    }
   }
 );
 

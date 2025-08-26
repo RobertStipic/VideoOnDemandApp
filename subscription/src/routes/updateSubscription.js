@@ -24,6 +24,7 @@ updateSubRouter.put(
       .withMessage(constantsUpdateSub.receiptEmailMessage),
   ],
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -71,6 +72,9 @@ updateSubRouter.put(
       paymentExpiresAt: updatedSubscription.paymentExpiresAt,
     });
     res.status(200).send(updatedSubscription);
+  }catch (error) {
+     res.status(500).send("Error while updating subscription");
+    }
   }
 );
 

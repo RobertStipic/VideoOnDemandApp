@@ -8,6 +8,7 @@ registrationDateRouter.get(
   "/activity/registrationdate",
   userAuthorization,
   async (req, res) => {
+    try{
     const userEmail = req.currentUser.email;
 
     const registrationActivity = await UserActivity.aggregate([
@@ -28,6 +29,9 @@ registrationDateRouter.get(
     }
 
     res.send(registrationActivity[0]);
+  }catch (error) {
+     res.status(500).send("Error retriving user registration date");
+    }
   }
 );
 

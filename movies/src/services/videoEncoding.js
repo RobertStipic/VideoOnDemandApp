@@ -120,9 +120,9 @@ async function videosTranscoding(
         .run();
       console.log(`Transcoding completed successfully for: ${newMovieName}`);
     });
-  } catch (err) {
-    console.error(`Transcoding failed: ${err.message}`);
-    removeAllFilesSync(outputPath);
-    process.exit(1);
-  }
+  }  catch(error) {
+    console.error("Encoding video files error:", error);
+        removeAllFilesSync(outputPath);
+      process.exit(1);
+  } 
 }

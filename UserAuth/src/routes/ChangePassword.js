@@ -29,6 +29,7 @@ ChangePasswordRouter.patch(
   currentUser,
   userAuthorization,
   async (req, res) => {
+    try{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
@@ -55,6 +56,9 @@ ChangePasswordRouter.patch(
       res.status(400).send("New passwords doesn't match");
     }
     res.status(200).send("Password succesfully changed");
+    }catch (error) {
+      res.status(500).send("Unexpected password change error");
+    }
   }
 );
 
