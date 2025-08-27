@@ -19,6 +19,12 @@ spec:
         - name: wait-for-mongo
           image: busybox
           command: ["sh", "-c", "until nc -z movies-mongo-srv:27017; do sleep 1; done"]
+        - name: set-output-permissions
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /app/src/output && chown -R 1000:1000 /app/src/output"]
+          volumeMounts:
+            - name: output-volume
+              mountPath: /app/src/output  
       containers:
         - name: movies
           image: stile95/movies:latest
@@ -32,6 +38,14 @@ spec:
                   key: JWT_SECRET_KEY
             - name: NATS_URL
               value: "http://nats-srv:4222"
+
+          volumeMounts:
+            - name: output-volume
+              mountPath: /app/src/output
+      volumes:
+        - name: output-volume
+          persistentVolumeClaim:
+            claimName: movies-output-pvc
 ---
 apiVersion: v1
 kind: Service
