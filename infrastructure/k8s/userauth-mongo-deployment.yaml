@@ -12,6 +12,7 @@ spec:
       labels:
         app: userauth-mongo
     spec:
+      terminationGracePeriodSeconds: 60
       initContainers:
         - name: remove-lockfile
           image: busybox
@@ -28,6 +29,10 @@ spec:
       containers:
         - image:  mongo
           name:  userauth-mongo
+          lifecycle:
+            preStop:
+              exec:
+                command: ["mongod", "--dbpath", "/data/db", "--shutdown"]
           volumeMounts:
             - name: mongo-storage
               mountPath: /data/db
