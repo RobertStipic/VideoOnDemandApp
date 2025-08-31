@@ -25,30 +25,32 @@ const videoBitrates = '2000k';
 
 
 export async function startEncoding(){
-  if (isEmpty(output)) {
-    getMovies();
-  } else console.log("Files have been already decoded");
-}
 
-
-  function isEmpty(path) {
-    return fs.readdirSync(path).length === 0;
-  }   
-  async function getMovies() {
-      const movies = await Movie.find(
-        {},
-        { imdbID: 1, Path: 1, Title: 1, _id: 0 }
-      ).limit(3);
+   const movies = await Movie.find({},
+      { imdbID: 1, Path: 1, Title: 1, _id: 0 }
+      );
       for (const movie of movies) {
         await processMovie(movie);
       }
     };
+
+
   async function processMovie(movie) {
     const moviePath = movie.Path;
-    const newMovieName = movie.imdbID + ".mpd";
+    const newMovieName = movie.imdbID;
     const title = movie.Title;
-    await videosTranscoding(videoPath, moviePath, newMovieName, outputPath, title);
+    const folderPath = path.join(outputPath, movie.imdbID);
+
+    
+    if (fs.existsSync(folderPath)) {
+    console.log(`Movie ${movie.Title} (${movie.imdbID}) already encoded`);
+    return
   }
+
+    await videosTranscoding(videoPath, moviePath, newMovieName, outputPath, title);
+}
+ 
+
 
 async function videosTranscoding(
   videoPath,
