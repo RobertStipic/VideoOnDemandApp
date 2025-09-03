@@ -29,16 +29,3 @@ spec:
               value: "http://nats-srv:4222"
             - name: REDIS_HOST
               value: "subscription-expiration-redis-srv"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: subscription-srv
-spec: ##default ClusterIP service
-  selector:
-    app: subscription
-  ports:
-    - name: subscription
-      protocol: TCP
-      port: 3000
-      targetPort: 3000

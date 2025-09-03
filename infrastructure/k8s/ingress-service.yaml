@@ -31,13 +31,6 @@ spec:
                 name: recommendation-srv
                 port:
                   number: 3000
-          - path: /subscription/expiration/.*
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: subscription-expiration-srv
-                port:
-                  number: 3000
           - path: /subscription/.*
             pathType: ImplementationSpecific
             backend:
