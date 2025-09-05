@@ -48,7 +48,7 @@ spec:
   selector:
     app: recommendation
   ports:
-    - name: auth
+    - name: recommendation
       protocol: TCP
       port: 3000
       targetPort: 3000

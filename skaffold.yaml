@@ -45,7 +45,7 @@ build:
       docker:
         dockerfile: Dockerfile
     - image: stile95/expiration
-      context: expiration
+      context: payment_expiration
       sync:
         manual:
           - src: src/**/*.js
