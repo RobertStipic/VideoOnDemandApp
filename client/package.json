@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "axios": "^1.16.1",
     "baseline-browser-mapping": "^2.10.31",
     "bootstrap": "^5.3.8",
     "caniuse-lite": "^1.0.30001793",
