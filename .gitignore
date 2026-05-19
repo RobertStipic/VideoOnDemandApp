@@ -7,3 +7,4 @@ middlewares_shared/
 middlewares/
 movies/src/output
 nats-test/
+client/.next
