@@ -12,22 +12,24 @@ spec:
       labels:
         app: subscription-expiration-mongo
     spec:
-      terminationGracePeriodSeconds: 60      
+      terminationGracePeriodSeconds: 60
       initContainers:
         - name: remove-lockfile
           image: busybox
-          command: ["sh", "-c", "rm -f /data/db/mongod.lock /data/db/WiredTiger.lock"]
+          command:
+            ["sh", "-c", "rm -f /data/db/mongod.lock /data/db/WiredTiger.lock"]
           volumeMounts:
             - name: mongo-storage
               mountPath: /data/db
         - name: fix-permissions
           image: busybox
-          command: ["sh", "-c", "chown -R 999:999 /data/db && chmod -R u+rwX /data/db"]
+          command:
+            ["sh", "-c", "chown -R 999:999 /data/db && chmod -R u+rwX /data/db"]
           volumeMounts:
             - name: mongo-storage
               mountPath: /data/db
       containers:
-        - image: mongo
+        - image: mongo:7.0
           name: subscription-expiration-mongo
           lifecycle:
             preStop:

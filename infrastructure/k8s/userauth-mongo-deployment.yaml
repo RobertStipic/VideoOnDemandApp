@@ -16,19 +16,21 @@ spec:
       initContainers:
         - name: remove-lockfile
           image: busybox
-          command: ["sh", "-c", "rm -f /data/db/mongod.lock /data/db/WiredTiger.lock"]
+          command:
+            ["sh", "-c", "rm -f /data/db/mongod.lock /data/db/WiredTiger.lock"]
           volumeMounts:
             - name: mongo-storage
               mountPath: /data/db
         - name: fix-permissions
           image: busybox
-          command: ["sh", "-c", "chown -R 999:999 /data/db && chmod -R u+rwX /data/db"]
+          command:
+            ["sh", "-c", "chown -R 999:999 /data/db && chmod -R u+rwX /data/db"]
           volumeMounts:
             - name: mongo-storage
               mountPath: /data/db
       containers:
-        - image:  mongo
-          name:  userauth-mongo
+        - image: mongo:7.0
+          name: userauth-mongo
           lifecycle:
             preStop:
               exec:
@@ -41,15 +43,15 @@ spec:
           persistentVolumeClaim:
             claimName: userauth-mongo-pvc
 ---
-apiVersion: v1 
+apiVersion: v1
 kind: Service
 metadata:
-  name:  userauth-mongo-srv
+  name: userauth-mongo-srv
 spec:
   selector:
-    app:  userauth-mongo
+    app: userauth-mongo
   ports:
-  - name:  mongodb
-    protocol: TCP
-    port:  27017
-    targetPort:  27017
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
