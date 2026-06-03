@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
+import Router from "next/router";
 
 export default () => {
   const [email, setEmail] = useState("");
@@ -30,6 +31,9 @@ export default () => {
       });
       if (response.status === 201) {
         setSuccessMessage("Registration completed succesfully.");
+        setTimeout(() => {
+          Router.push("/");
+        }, 2800);
       }
     } catch (err) {
       if (err.response.status === 400) {
