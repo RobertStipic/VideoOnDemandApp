@@ -1,25 +1,15 @@
-import axios from "axios";
+import buildAxios from "../api/init-axios.js";
 
 const HomePage = ({ currentUser }) => {
   return <div>Home page</div>;
 };
-HomePage.getInitialProps = async ({ req }) => {
-  if (typeof window === "undefined") {
-    console.log(req.headers);
-    const response = await axios.get(
-      "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/users/currentuser",
-      {
-        headers: {
-          Host: req.headers.host,
-          cookie: req.headers.cookie,
-        },
-      },
-    );
-    return { currentUser: response.data };
-  } else {
-    const response = await axios.get("/users/currentuser");
-    return { currentUser: response.data };
+export const getServerSideProps = async (context) => {
+  if (!context.req.headers.cookie) {
+    return { props: { currentUser: null } };
   }
+  const client = buildAxios(context);
+  const response = await client.get("/users/currentuser");
+  return { props: { currentUser: response.data } };
 };
 
 export default HomePage;
