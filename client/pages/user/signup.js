@@ -39,9 +39,9 @@ export default () => {
       if (err.response.status === 400) {
         setErrors(err.response.data);
       } else if (err.response.status === 409) {
-        setErrors([{ msg: "Email already exists." }]);
+        setErrors([{ msg: err.response.data  }]);
       } else if (err.response.status === 500) {
-        setErrors([{ msg: "Unexpected sign up error." }]);
+        setErrors([{ msg: err.response.data  }]);
       }
     }
   };
