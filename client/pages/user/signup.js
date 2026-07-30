@@ -32,7 +32,9 @@ export default () => {
       if (response.status === 201) {
         setSuccessMessage("Registration completed succesfully.");
         setTimeout(() => {
-          Router.push("/");
+          Router.push("/").then(() => {
+                window.location.reload();
+            });
         }, 2800);
       }
     } catch (err) {

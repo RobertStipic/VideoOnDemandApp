@@ -16,7 +16,9 @@ export default () => {
         password,
       });
       if (response.status === 200) {
-        Router.push("/");
+        Router.push("/").then(() => {
+                window.location.reload();
+            });
       }
     } catch (err) {
       if (err.response.status === 400) {
