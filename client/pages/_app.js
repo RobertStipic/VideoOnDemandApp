@@ -26,10 +26,14 @@ if (typeof window !== "undefined") {
 if (!context.ctx.req || !context.ctx.req.headers.cookie) {
     return {pageProps: {currentUser: null}};
   }
-
+try {
   const client = buildAxios(context.ctx);
   const response = await client.get("/users/currentuser");
-return {pageProps: { currentUser: response.data}};
+  return {pageProps: { currentUser: response.data}};
+  }
+catch (error){
+    return { pageProps: { currentUser: null } };
+   } 
 };
 
 export default AppComponent;
