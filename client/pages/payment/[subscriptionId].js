@@ -34,7 +34,9 @@ const PaymentForm = ({ subscription }) => {
     const { token, error: tokenError } = await stripe.createToken(cardElement);
 
     if (tokenError) {
-
+    setErrors([{ msg: tokenError.message }]);
+    setLoading(false);
+    return;
     }
 
     try {
