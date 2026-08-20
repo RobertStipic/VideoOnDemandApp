@@ -19,8 +19,10 @@ cancelSubRouter.delete(
     if (!subscription.userId.equals(req.currentUser.id)) {
       return res.status(401).send("Not authorized");
     }
-        if (subscription.status !== constants.status.succeeded) {
-      return res.status(400).send("Subscription can only be canceled when status is succeeded");
+        if (subscription.status === constants.status.cancelled ||
+           subscription.status === constants.status.expired || 
+           subscription.status === constants.status.paymentExpired) {
+      return res.status(400).send("Subscription can only be cancelled when status is succeeded or pending");
     }
     subscription.set({ status: constants.status.cancelled });
     await subscription.save();
