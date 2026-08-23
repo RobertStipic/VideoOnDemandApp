@@ -1,21 +1,13 @@
 import Sidebar from "../../components/sidebar.js";
 import buildAxios from "../../api/init-axios.js";
+import { formatDate, formatDateShort } from "../../common/formatDate.js";
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleString('en-GB', {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "Europe/Zagreb"
-});
-};
 const formatSubscriptionStatus = (isSubscribed) => {
     return isSubscribed ? 'Subscribed' : 'Not subscribed';
 };
 
 const AccountInformation = ({ currentUser, subscription }) => {
-    
+
     return (
     <div className="d-flex">
         <Sidebar />
@@ -30,7 +22,7 @@ const AccountInformation = ({ currentUser, subscription }) => {
               <strong>Email:</strong> {currentUser.email}
             </p>
             <p>
-              <strong>Date of birth:</strong> {formatDate(currentUser.dateOfBirth)}
+              <strong>Date of birth:</strong> {formatDateShort(currentUser.dateOfBirth)}
             </p>
             <p>
               <strong>Country:</strong> {currentUser.country}
@@ -46,7 +38,7 @@ const AccountInformation = ({ currentUser, subscription }) => {
             </p>
             {subscription && (
             <p>
-              <strong>Valid until:</strong> {subscription.expiresAt}
+              <strong>Valid until:</strong> {formatDate(subscription.expiresAt)}
             </p>
             )}
           </>

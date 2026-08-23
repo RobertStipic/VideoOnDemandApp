@@ -3,19 +3,7 @@ import Router from "next/router";
 import axios from "axios";
 import buildAxios from "../../api/init-axios.js";
 import Link from "next/link";
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleString('en-GB', {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZone: "Europe/Zagreb"
-});
-};
+import { formatDate } from "../../common/formatDate.js";
 
 
 const subscriptionPayment = ({ subscription }) => {
@@ -39,7 +27,6 @@ const subscriptionPayment = ({ subscription }) => {
             });
       }      
     } catch (err) {
-      const data = err.response?.data;
       if (err.response.status === 400) {
         setErrors([{ msg: err.response.data }]);
         }
