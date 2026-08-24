@@ -15,6 +15,11 @@ export default () => {
         Change password
       </a>
     </li>
+    <li className="nav-item">
+      <a className="nav-link" href="/account/activity">
+        My Activity
+      </a>
+    </li>
   </ul>
 </div>
 )};
