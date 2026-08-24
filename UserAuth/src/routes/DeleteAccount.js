@@ -4,7 +4,7 @@ import { User } from "../models/user.js";
 import { PasswordEncription } from "../services/passwordHash.js";
 import { constantsRoutes, constants } from "../consants/general.js";
 import { AccountDeletedPublisher } from "../events/publishers/account-deleted-publisher.js";
-import { Subjects } from "@robstipic/middlewares";
+import { Subjects, currentUser, userAuthorization } from "@robstipic/middlewares";
 import { natsWrapperClient } from "../nats-wrapper.js";
 
 const DeleteRouter = express.Router();
@@ -26,7 +26,10 @@ DeleteRouter.delete(
             }
             return true;
       }),
-  ],
+    body(constantsRoutes.email)
+      .isEmail()
+      .withMessage(constantsRoutes.emailMessage),
+  ], currentUser, userAuthorization,
   async (req, res) => {
     try{
     const errors = validationResult(req);
@@ -40,6 +43,9 @@ DeleteRouter.delete(
       return res
         .status(404)
         .send("Provided information doesn't match any record");
+    }
+    if (email !== req.currentUser.email) {
+      return res.status(401).send("Unauthorized")
     }
 
     const passwordsMatch = PasswordEncription.comparePassword(

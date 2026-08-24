@@ -25,6 +25,11 @@ export default () => {
         Activity
       </a>
     </li>
+    <li className="nav-item">
+      <a className="nav-link text-danger" href="/account/deleteaccount">
+        <b>Account deletion</b>
+      </a>
+    </li>
   </ul>
 </div>
 )};
