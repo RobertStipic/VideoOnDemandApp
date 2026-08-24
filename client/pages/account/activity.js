@@ -7,9 +7,9 @@ const ActivityInformation = ({ currentUser, loginHistory }) => {
   const activityColor = (activityType) => {
     switch (activityType) {
       case "registration":
-        return "badge bg-success";
+        return "badge bg-success text-dark";
       case "login":
-        return "badge bg-warning text-dark";
+        return "badge bg-info";
     }};
 
   return (
