@@ -16,8 +16,13 @@ export default () => {
       </a>
     </li>
     <li className="nav-item">
+      <a className="nav-link" href="/account/subscriptions">
+        Subscriptions
+      </a>
+    </li>
+    <li className="nav-item">
       <a className="nav-link" href="/account/activity">
-        My Activity
+        Activity
       </a>
     </li>
   </ul>
