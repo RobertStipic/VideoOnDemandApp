@@ -21,6 +21,11 @@ export default () => {
       </a>
     </li>
     <li className="nav-item">
+      <a className="nav-link" href="/account/payments">
+        Payments
+      </a>
+    </li>
+    <li className="nav-item">
       <a className="nav-link" href="/account/activity">
         Activity
       </a>
