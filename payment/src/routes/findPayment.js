@@ -2,7 +2,7 @@ import express from "express";
 import { StripePayment } from "../models/payment.js";
 import { body, validationResult } from "express-validator";
 import { userAuthorization } from "@robstipic/middlewares";
-import { constantsSubId } from "../consants/general.js";
+import { constantsStripeID } from "../consants/general.js";
 const findPaymentRouter = express.Router();
 
 
@@ -10,10 +10,10 @@ findPaymentRouter.get(
   "/payment/find",
   userAuthorization,
   [
-    body(constantsSubId.subscriptionId)
+    body(constantsStripeID.stripeID)
       .not()
       .isEmpty()
-      .withMessage(constantsSubId.subscriptionMessage),
+      .withMessage(constantsStripeID.paymentMessage),
   ],
   async (req, res) => {
     try{
@@ -22,14 +22,14 @@ findPaymentRouter.get(
       return res.status(400).send(errors.array());
     }
 
-    const { subscriptionId } = req.body;
+    const { stripeID } = req.body;
 
     const payment = await StripePayment.findOne({
-      subscriptionId,
+      stripeID,
     });
 
     if (!payment) {
-      return res.status(404).send("Subscription not found");
+      return res.status(404).send("Payment not found");
     }
 
     res.status(200).send(payment);

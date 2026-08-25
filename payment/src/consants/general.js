@@ -14,6 +14,10 @@ export const constantsSubId = {
   subscriptionId: "subscriptionId",
   subscriptionMessage: "Subscription ID is required",
 };
+export const constantsStripeID = {
+  stripeID: "stripeID",
+  paymentMessage: "Stripe ID is required",
+};
 
 export const constantsNewPayment = {
   token: "token",
