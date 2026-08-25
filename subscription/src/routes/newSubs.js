@@ -24,6 +24,15 @@ newSubRouter.post(
     try{
     const { plan, status } = req.body;
     const userId = req.currentUser.id;
+    
+    const activeSub = await Subscription.findOne({
+      userId: userId,
+      status: constants.status.succeeded
+    })
+
+    if (activeSub){
+      return res.send(400).send("Yea already have active subscription. Please extend existing subscription.")
+    }
 
     const expiresAt = calculateExpiration(plan);
     const paymentExpiresAt = calculatePaymentExpiration();
