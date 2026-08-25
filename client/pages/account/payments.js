@@ -40,7 +40,8 @@ const PaymentsInformation = ({ currentUser, payments }) => {
                             </td>
                             <td>                         
                                 <>    
-                                    <Link href="/" className="btn btn-sm btn-primary me-2">
+                                    <Link href={`/account/payments/${payment.stripeID}`}
+                                     className="btn btn-sm btn-primary me-2">
                                         More Details
                                     </Link>
                                 </>
