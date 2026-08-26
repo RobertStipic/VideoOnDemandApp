@@ -8,26 +8,48 @@ const plans = [
   { id: 3, name: "Yearly", price: 100, duration: "365 days", monthly: "8,33"},
 ];
 
-export default function PlanSelection({ currentUser }) {
+const PlanSelection = ({ subscription }) => {
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState([]);
 
   const handleSubscribe = async () => {
     if (!selectedPlan) return;
-    setError("");
+    setErrors("");
     try {
+    if(!subscription){
       const response = await axios.post("/subscription/new", {
         plan: selectedPlan,
         status: "pending",  
       });
-
       const subscriptionId = response.data.subscriptionObj.id;
-      Router.push(`/subscriptions/${subscriptionId}`);
+      Router.push(`/subscriptions/${subscriptionId}`); 
+   
+  } else {
+      const response = await axios.put(`/subscription/extend/${subscription.id}`, {
+        plan: selectedPlan
+      })
+      const newSubscriptionId = response.data.subscriptionObj.id;
 
-    } catch (err) {
-      setError("Failed to create subscription. Please try again.");
-    } 
-  };
+      Router.push(`/subscriptions/${newSubscriptionId}`);
+        }  
+   }catch (error) {
+      if (error.response.status === 400){
+        setErrors(error.response.data);
+      }
+      else if (error.response.status === 401){
+        setErrors([{ msg: error.response.data }]);
+      }
+      else if (error.response.status === 404){
+        setErrors([{ msg: error.response.data }]);
+      }
+      else if (error.response.status === 500){
+        setErrors([{ msg: error.response.data }]);
+      }
+      else {
+        setErrors([{ msg: "Unextected error. Please try again" }]);
+      }
+    }
+ };
 
   return (
     <div>
@@ -51,15 +73,34 @@ export default function PlanSelection({ currentUser }) {
           </div>
         ))}
       </div>
-      {error && <div className="alert alert-danger">
-        <strong>Something went wrong:</strong>
-        {error}</div>}
+      {errors.length > 0 && (
+        <div className="alert alert-danger">
+          <strong>Something went wrong:</strong>
+          <ul className="my-0">
+            {errors.map((err) => (
+              <li key={err.msg}>{err.msg}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {subscription ? (
+        <button
+        className="btn btn-warning"
+        disabled={!selectedPlan}
+        onClick={handleSubscribe}>
+        Extend
+      </button>
+       ) : (
       <button
         className="btn btn-warning"
         disabled={!selectedPlan}
         onClick={handleSubscribe}>
         Subscribe
       </button>
+      )}
     </div>
   );
-}
+};
+
+export default PlanSelection;
+

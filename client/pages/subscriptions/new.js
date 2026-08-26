@@ -1,29 +1,34 @@
-import { useState } from "react";
 import buildAxios from "../../api/init-axios";
-import PlanSelection from "../../components/plans";
-import ActiveSubscription from "../../components/ActiveSubscription";
+import PlanSelection from "../../components/subscriptionPlans";
 
-const SubscriptionPage = ({ currentUser, error }) => {
-
-  if (error) {
-    return <div className="alert alert-danger">{error}</div>;
-  }
-
-  if (!currentUser) {
-    return <div className="alert alert-warning">Please sign in to manage subscriptions.</div>;
-  }
+const SubscriptionPage = ({ currentUser, subscription }) => {
 
   return (
     <div className="container mt-4">
       <h1>Subscription</h1>
+      { currentUser ? (
+        <>
       <p>Subscribe to watch unlimited movies in best quality. Choose one
-        of three avaiable <b>plans</b>
+        of three avaivable <b>plans</b>
       </p>
-        <PlanSelection user={currentUser} />
+        <PlanSelection subscription={subscription} />
+        </>
+        ) : (
+          <h3> You are not signed in. Please sign in to continue. </h3>
+        )}
     </div>
   );
 };
 
+    export async function getServerSideProps(context) {
+    try{
+      const client = buildAxios(context);
+      const { data } = await client.get("/subscription/user/active");
+      
+      return { props : { subscription : data }}
+    } catch (error) {
+      return { props: { subscription: null }}
+    }};
 
 
 export default SubscriptionPage;

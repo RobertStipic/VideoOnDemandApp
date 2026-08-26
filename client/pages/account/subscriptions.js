@@ -74,14 +74,18 @@ const SubscriptionsInformation = ({ currentUser, subscriptions }) => {
                     {subscriptions.map((subscription) =>(
                         <tr key={subscription.id}>
                             <td>{subscription.id}</td>
-                            <td>{subscription.status}</td>
+                            <td>{subscription.status === "extended" ? 
+                            `extended (${subscription.replacedBySubId})` :
+                             subscription.status
+                             }  
+                            </td>
                             <td>{formatDate(subscription.expiresAt)}</td>
                             <td>{subscription.plan}</td>
                             <td>€{subscription.price}</td>
                             <td>
                                 {subscription.status === "succeeded" && (
                                 <>    
-                                    <Link href="/" className="btn btn-sm btn-primary me-2">
+                                    <Link href="/subscriptions/new" className="btn btn-sm btn-primary me-2">
                                         Extend
                                     </Link>
                                     <button className="btn btn-sm btn-danger" onClick={() => handleCancel(subscription.id)} disabled={cancelling}>
