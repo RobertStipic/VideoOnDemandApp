@@ -5,6 +5,7 @@ export const constants = {
     expired: "expired",
     pending: "pending",
     paymentExpired: "paymentExpired",
+    extended: "extended"
   },
   time: {
     DAY: 24 * 60 * 60 * 1000,

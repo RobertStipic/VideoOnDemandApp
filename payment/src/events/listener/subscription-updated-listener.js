@@ -9,14 +9,19 @@ export class SubscriptionUpdatedListener extends Listener {
       "Subscription updated event received with id: ",
       data.subscriptionId
     );
-    if (data.status !== constants.status.pending) {
-      throw new Error("Subscription status must be pending");
+    if (data.status !== constants.status.succeeded) {
+      throw new Error("Subscription status must be succeded to extend subscription");
     }
     const subscription = await Subscription.findOne({
       subscriptionId: data.subscriptionId,
     });
-    subscription.set({plan: data.plan});
+    subscription.set({
+      status: constants.status.extended,
+      replacedBySubId: data.replacedBySubId
+    });
+
     await subscription.save();
+    
     msg.ack();
   }catch(error) {
     console.error("Error processing subscription updated event", error);

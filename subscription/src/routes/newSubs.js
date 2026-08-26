@@ -1,5 +1,5 @@
 import express from "express";
-import { body } from "express-validator";
+import { body, validationResult } from "express-validator";
 import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { SubscriptionCreatedPublisher } from "../events/publisher/subscription-created-publisher.js";
@@ -22,6 +22,10 @@ newSubRouter.post(
   ],
   async (req, res) => {
     try{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send(errors.array());
+    }
     const { plan, status } = req.body;
     const userId = req.currentUser.id;
     

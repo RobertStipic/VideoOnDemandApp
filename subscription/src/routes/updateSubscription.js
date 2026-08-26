@@ -2,7 +2,7 @@ import express from "express";
 import { body, validationResult } from "express-validator";
 import { userAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
-import { SubscriptionUpdatedPublisher } from "../events/publisher/subscription-updated-publisher.js";
+import { SubscriptionCreatedPublisher } from "../events/publisher/subscription-created-publisher.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { constantsUpdateSub, constants, calculatePrice } from "../constants/general.js";
 import {
@@ -13,15 +13,12 @@ import {
 const updateSubRouter = express.Router();
 
 updateSubRouter.put(
-  "/subscription/update/:id",
+  "/subscription/extend/:id",
   userAuthorization,
   [
     body(constantsUpdateSub.plan)
       .isInt({ min: 1, max: 3 })
       .withMessage(constantsUpdateSub.planMessage),
-    body(constantsUpdateSub.receiptEmail)
-      .isEmail()
-      .withMessage(constantsUpdateSub.receiptEmailMessage),
   ],
   async (req, res) => {
     try{
@@ -29,49 +26,48 @@ updateSubRouter.put(
     if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
     }
-    const subscription = await Subscription.findById(req.params.id);
-    if (!subscription) {
+    const oldSubscription = await Subscription.findById(req.params.id);
+    if (!oldSubscription) {
       return res.status(404).send("Subscription not found");
     }
-    if (!subscription.userId.equals(req.currentUser.id)) {
+    if (!oldSubscription.userId.equals(req.currentUser.id)) {
       return res.status(401).send("Not authorized");
     }
-    if (subscription.status !== constants.status.pending) {
-      return res.status(400).send("Subscription can only be updated when status is pending status");
+    if (oldSubscription.status !== constants.status.succeeded) {
+      return res.status(400).send("Subscription can only be updated when status is succeeded status");
     }
     const { plan } = req.body;
     const price = calculatePrice(plan);
-    console.log(subscription.expiresAt);
-    const expiresAtObj = calculateExpiration(
+    
+    const expiresAt = calculateExpiration(
       plan,
-      subscription.expiresAt.getTime()
+      oldSubscription.expiresAt.getTime()
     );
     const paymentExpiresAt = calculatePaymentExpiration();
-    subscription.set({
+    const newSubscription = await Subscription.create({
+      userId: req.currentUser.id,
+      userEmail: req.currentUser.email,
       plan,
       price,
       paymentExpiresAt,
-      expiresAt: expiresAtObj,
+      expiresAt,
       status: constants.status.pending,
     });
-    await subscription.save();
-  
-    const updatedSubscription = await Subscription.findById(req.params.id);
-    await new SubscriptionUpdatedPublisher(
+
+    await new SubscriptionCreatedPublisher(
       natsWrapperClient.client,
-      Subjects.SubscriptionUpdated
+      Subjects.SubscriptionCreated
     ).publish({
-      userId: updatedSubscription.userId,
-      plan: updatedSubscription.plan,
-      price: updatedSubscription.price,
-      subscriptionId: updatedSubscription._id,
-      expiresAt: updatedSubscription.expiresAt,
-      receiptEmail: req.body.receipt_email,
-      userEmail: updatedSubscription.userEmail,
-      status: updatedSubscription.status,
-      paymentExpiresAt: updatedSubscription.paymentExpiresAt,
+      userId: newSubscription.userId,
+      plan,
+      price,
+      subscriptionId: newSubscription._id,
+      expiresAt,
+      userEmail: newSubscription.userEmail,
+      status: newSubscription.status,
+      paymentExpiresAt,
     });
-    res.status(200).send(updatedSubscription);
+    res.status(200).send({ subscriptionObj: newSubscription });
   }catch (error) {
      res.status(500).send("Error while updating subscription");
     }

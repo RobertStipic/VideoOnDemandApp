@@ -26,6 +26,10 @@ const SubscriptionSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    replacedBySubId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null
+    },
     status: {
       type: String,
       enum: [
@@ -34,6 +38,7 @@ const SubscriptionSchema = new mongoose.Schema(
         constants.status.expired,
         constants.status.succeeded,
         constants.status.paymentExpired,
+        constants.status.extended
       ],
       required: true,
     },

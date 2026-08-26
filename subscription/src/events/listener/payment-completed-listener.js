@@ -1,24 +1,48 @@
-import { Listener } from "@robstipic/middlewares";
+import { Listener, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
+import { constants } from "../../constants/general.js";
+import { SubscriptionUpdatedPublisher } from "../publisher/subscription-updated-publisher.js";
+import { natsWrapperClient } from "../../nats-wrapper.js";
 
 export class PaymentCompletedListener extends Listener {
   async onMessage(data, msg) {
     try{
-    const subscription = await Subscription.findById({
-      _id: data.subscriptionId,
-    });
+    const newSubscription = await Subscription.findById(data.subscriptionId);
 
-    if (!subscription) {
+    if (!newSubscription) {
       throw new Error("Subscription not found");
     }
-    subscription.set({ status: data.status });
-    await subscription.save();
+    newSubscription.set({ status: data.status });
+    await newSubscription.save();
+
+    const oldSubscription = await Subscription.findOne({
+      userId: data.userId,
+      status: constants.status.succeeded,
+      _id: { $ne: newSubscription._id },
+      });
+    oldSubscription.set({
+      status: constants.status.extended,
+      replacedBySubId: newSubscription._id
+    });
+
+    await oldSubscription.save();
+    
+    await new SubscriptionUpdatedPublisher(
+      natsWrapperClient.client,
+      Subjects.SubscriptionUpdated
+    ).publish({
+      subscriptionId: oldSubscription._id, 
+      status: constants.status.extended,
+      replacedBySubId: newSubscription._id,
+    });
+    
     console.log(
       "Payment complited event received: payment status updated with following keyword:",
-      subscription.status,
+      newSubscription.status,
       "for subscriptionId:",
       data.subscriptionId
     );
+
     msg.ack();
   }catch(error) {
     console.error("Error processing payment completed event", error);

@@ -6,6 +6,7 @@ export const constants = {
     expired: "expired",
     pending: "pending",
     paymentExpired: "paymentExpired",
+    extended: "extended"
   },
   token: "tok_visa",
   cookieAge : 12 * 60 * 60 * 1000,
