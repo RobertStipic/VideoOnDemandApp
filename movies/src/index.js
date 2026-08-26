@@ -14,9 +14,14 @@ import { currentUser } from "@robstipic/middlewares";
 import { startEncoding } from "./services/videoEncoding.js";
 import { natsWrapperClient } from "./nats-client.js";
 import { PlayMovieRouter } from "./routes/PlayMovie.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const { json } = bodyparser;
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.set("trust proxy", true); //ingress-nginx uses proxies
 app.use(json());
 app.use(
@@ -33,6 +38,7 @@ app.use(ListMoviesRouter);
 app.use(MoviesByYearRouter);
 app.use(PlayMovieRouter);
 app.use(SendMovieRouter);
+app.use('/movies/stream', express.static(path.join(__dirname, 'output')));
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });
