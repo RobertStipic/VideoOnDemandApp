@@ -47,6 +47,4 @@ export const constants = {
 ],
   empty: 0,
   MoviesCount: 100,
-  TEMP_PAGESIZE: 10,
-  TEMP_N: 0,
 };

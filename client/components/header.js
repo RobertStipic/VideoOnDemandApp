@@ -24,6 +24,9 @@ export default ({currentUser}) => {
             <Link className="btn btn-outline-warning" href="/" style={{ marginLeft: "25px" }}>
              Vodapp
             </Link>
+            <Link className="btn btn-outline-info" href="/show/movies">
+             Movies
+            </Link>
 
         <div className="d-flex" style={{ marginLeft: "25px" }}>
             <ul className="nav">
