@@ -37,7 +37,7 @@ export async function startEncoding(){
 
   async function processMovie(movie) {
     const moviePath = movie.Path;
-    const newMovieName = movie.imdbID;
+    const newMovieName = movie.imdbID + ".mpd";
     const title = movie.Title;
     const folderPath = path.join(outputPath, movie.imdbID);
 

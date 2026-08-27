@@ -22,6 +22,7 @@
     "react-dom": "^19.2.6",
     "scheduler": "^0.27.0",
     "semver": "^7.8.0",
+    "shaka-player": "^5.2.7",
     "sharp": "^0.34.5",
     "source-map-js": "^1.2.1",
     "styled-jsx": "^5.1.6",
