@@ -17,15 +17,13 @@ export async function searchQuery(query) {
           queryVector: queryEmbedding,
           path: constants.vector.path,
           exact: true,
-          limit: 8,
+          limit: 9,
         },
       },
       {
         $project: {
-          _id: 0,
-          Plot: 1,
-          Title: 1,
-          Poster: 1,
+            _id: 0, Plot: 1, Title: 1, Poster: 1, Year: 1, Runtime: 1,
+            Genre: 1, Actors: 1, Language: 1, imdbRating: 1, imdbID: 1,
           score: {
             $meta: constants.vector.meta,
           },
@@ -35,13 +33,8 @@ export async function searchQuery(query) {
 
     const result = collection.aggregate(pipeline);
 
-    console.log("Search results for term: " + query);
     let resultsArray = [];
     for await (const doc of result) {
-      console.log(`\nTitle: ${doc.Title}`);
-      console.log(`Plot: ${doc.Plot}`);
-      console.log(`Poster: ${doc.Poster}`);
-      console.log(`Score: ${(doc.score * 100).toFixed(2)}% match`);
       resultsArray.push(doc);
     }
     return resultsArray;

@@ -24,7 +24,7 @@ export async function createVectorSearch() {
     };
 
     const result = await collection.createSearchIndex(index);
-    console.log(result);
+    console.log("result");
   } catch (err) {
     if (err.code === 68) {
       console.log("Vector search index already exists for this database");

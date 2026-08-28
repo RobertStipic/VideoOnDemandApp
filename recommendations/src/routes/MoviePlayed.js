@@ -16,10 +16,10 @@ MoviePlayedRouter.get(
     try {
       await client.connect();
 
-      const { id } = req.query;
+      const { id } = req.params;
 
       const record = await collection.findOne({
-        imbdID: id,
+        imdbID: id,
       });
 
       const pipeline = [
@@ -29,15 +29,14 @@ MoviePlayedRouter.get(
             queryVector: record.embedding,
             path: constants.vector.path,
             exact: true,
-            limit: 8,
+            limit: 4,
           },
         },
+        { $match: { imdbID: { $ne: id } } },
         {
           $project: {
-            _id: 0,
-            Plot: 1,
-            Title: 1,
-            Poster: 1,
+            _id: 0, Plot: 1, Title: 1, Poster: 1, Year: 1, Runtime: 1,
+            Genre: 1, Actors: 1, Language: 1, imdbRating: 1, imdbID: 1,
             score: {
               $meta: constants.vector.meta,
             },
@@ -47,13 +46,9 @@ MoviePlayedRouter.get(
 
       const result = collection.aggregate(pipeline);
 
-      console.log("Search results for ID: " + id);
       let resultsArray = [];
+      
       for await (const doc of result) {
-        console.log(`\nTitle: ${doc.Title}`);
-        console.log(`Plot: ${doc.Plot}`);
-        console.log(`Poster: ${doc.Poster}`);
-        console.log(`Score: ${(doc.score * 100).toFixed(2)}% match`);
         resultsArray.push(doc);
       }
 

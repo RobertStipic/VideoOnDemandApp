@@ -17,6 +17,7 @@ export const constants = {
     MoviesCount: 100,
   },
   encoding: "utf-8",
-  columns: ["Title", "Plot", "Poster", "imdbID"],
+  columns: ["Title", "Year", "Runtime", "Genre", "Actors", "Plot", 
+    "Language", "Poster", "imdbRating", "imdbID"],
   cookieAge : 12 * 60 * 60 * 1000,
 };

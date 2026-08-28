@@ -1,12 +1,9 @@
 import express from "express";
-import { currentUser, userAuthorization } from "@robstipic/middlewares";
 import { searchQuery } from "../services/vectorSearch.js";
 const VectorQueryRouter = express.Router();
 
 VectorQueryRouter.get(
   "/recommendations/watch",
-  currentUser,
-  userAuthorization,
   async (req, res) => {
 
      const { term } = req.query; 
