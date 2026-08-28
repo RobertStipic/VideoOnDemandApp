@@ -4,12 +4,9 @@ import bodyparser from "body-parser";
 import mongose from "mongoose";
 import cookieSession from "cookie-session";
 import { initizializeCSV } from "./services/loadCSVtoDB.js";
-import { MoviesByLanguageRouter } from "./routes/MoviesByLanguage.js";
-import { MoviesByGenreRouter } from "./routes/MoviesByGenre.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
 import { constants } from "./constants/general.js";
-import { MoviesByYearRouter } from "./routes/MoviesByYear.js";
-import { SendMovieRouter } from "./routes/SendMovie.js";
+import { MoviesFilterRouter } from "./routes/filterMovies.js";
 import { currentUser } from "@robstipic/middlewares";
 import { startEncoding } from "./services/videoEncoding.js";
 import { natsWrapperClient } from "./nats-client.js";
@@ -32,12 +29,10 @@ app.use(
   })
 );
 app.use(currentUser);
-app.use(MoviesByLanguageRouter);
-app.use(MoviesByGenreRouter);
+
 app.use(ListMoviesRouter);
-app.use(MoviesByYearRouter);
 app.use(PlayMovieRouter);
-app.use(SendMovieRouter);
+app.use(MoviesFilterRouter);
 app.use('/movies/stream', express.static(path.join(__dirname, 'output')));
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");

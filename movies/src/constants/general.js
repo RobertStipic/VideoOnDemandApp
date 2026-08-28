@@ -1,16 +1,16 @@
-export const requestYears = {
+export const constantsMovieFilter = {
   year: "year",
   startyear: "startyear",
   endyear: "endyear",
+  genre: "genre",
+  language: "language",
+  yearMessage: "Invalid Year",
+  startYearMessage: "Invalid Start Year",
+  endYearMessage: "Invalid End Year",
+  genreMessage: "Invalid Genre",
+  languageMessage: "Invalid language",
   minValue: 1931,
   maxValue: 2021,
-  sorting: "sorting",
-  sort: {
-    ascending: "ascending",
-    descending: "descending",
-    values: ["ascending", "descending"],
-  },
-  cookieAge : 12 * 60 * 60 * 1000,
 };
 export const requestLanguages = {
   language: "language",
@@ -47,4 +47,5 @@ export const constants = {
 ],
   empty: 0,
   MoviesCount: 100,
+  cookieAge : 12 * 60 * 60 * 1000,
 };

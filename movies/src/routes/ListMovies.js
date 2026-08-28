@@ -1,5 +1,4 @@
 import express from "express";
-import { userAuthorization } from "@robstipic/middlewares";
 import { Movie } from "../models/movies.js";
 
 const ListMoviesRouter = express.Router();
