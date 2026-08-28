@@ -20,13 +20,15 @@ export class PaymentCompletedListener extends Listener {
       status: constants.status.succeeded,
       _id: { $ne: newSubscription._id },
       });
+
+    if (oldSubscription){
     oldSubscription.set({
       status: constants.status.extended,
       replacedBySubId: newSubscription._id
     });
-
-    await oldSubscription.save();
     
+    await oldSubscription.save();
+   
     await new SubscriptionUpdatedPublisher(
       natsWrapperClient.client,
       Subjects.SubscriptionUpdated
@@ -34,8 +36,9 @@ export class PaymentCompletedListener extends Listener {
       subscriptionId: oldSubscription._id, 
       status: constants.status.extended,
       replacedBySubId: newSubscription._id,
-    });
-    
+    })};
+
+
     console.log(
       "Payment complited event received: payment status updated with following keyword:",
       newSubscription.status,

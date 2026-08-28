@@ -9,8 +9,8 @@ export class SubscriptionUpdatedListener extends Listener {
       "Subscription updated event received with id: ",
       data.subscriptionId
     );
-    if (data.status !== constants.status.succeeded) {
-      throw new Error("Subscription status must be succeded to extend subscription");
+    if (data.status !== constants.status.extended) {
+      throw new Error("Subscription status must be extended to update subscription");
     }
     const subscription = await Subscription.findOne({
       subscriptionId: data.subscriptionId,
