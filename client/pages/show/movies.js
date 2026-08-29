@@ -12,6 +12,9 @@ const  MovieList = ({ movies, error }) => {
   const [startYear, setStartYear] = useState("");
   const [endYear, setEndYear] = useState("");
   const [filterErrors, setFilterErrors] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   
   const applyFilters = async () => {
    try {
@@ -48,6 +51,24 @@ const  MovieList = ({ movies, error }) => {
    }
   };
 
+  const handleSearch = async () => {
+    if (!searchInput.trim()){
+      setDisplayedMovies(movies);
+      setFilterErrors([]);
+      return;
+    }    
+    setSearchLoading(true);
+    setFilterErrors([]);
+    try {
+      const { data } = await axios.get(`/recommendations/watch?term=${encodeURIComponent(searchInput)}`);
+      setDisplayedMovies(data);
+    } catch(error) {
+      setFilterErrors([{ msg: "Search failed. Please try again" }])
+    } finally {
+      setSearchLoading(false);
+    }
+  }
+
   const resetFilters = () => {
      setGenre("");
     setLanguage("");
@@ -62,6 +83,30 @@ const  MovieList = ({ movies, error }) => {
   return (
     <div className="container py-4">
     <h2 className="mb-4">Movies</h2>
+     <div className="row mb-4">
+      <div className="col-md-8">
+        <div className="input-group">
+          <input type="text" className="form-control"
+          placeholder="Search movies by keywords"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()} />
+          <button className="btn btn-primary"
+          onClick={handleSearch}
+          disabled={searchLoading}>
+            {searchLoading ? "Searching" : "Search"}
+          </button>
+        </div>
+      </div>
+     </div>
+      <div className="mb-3">
+        <button className=" btn btn-outline-secondary"
+        onClick={() => setShowFilters((previous) => !previous)}>
+          Filters {showFilters ?  <span>&#8593;</span> : <span>&#8595;</span>}
+        </button>
+      </div>
+  {showFilters && (
+    <>
      <div className="row g-3 mb-4">
       <div className="col-md-3">
         <label className="form-label">Genre</label> 
@@ -115,6 +160,8 @@ const  MovieList = ({ movies, error }) => {
         Reset
       </button>
      </div>
+     </>
+  )}
      {filterErrors.length > 0 && (
       <div className="alert alert-danger">
         <strong>Something went wrong</strong>
