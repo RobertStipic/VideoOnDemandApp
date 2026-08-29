@@ -1,5 +1,5 @@
 import express from "express";
-import { userAuthorization, currentUser } from "@robstipic/middlewares";
+import { userAuthorization } from "@robstipic/middlewares";
 import { Movie } from "../models/movie.js";
 import { WatchHistory } from "../models/watch_history.js";
 
@@ -21,9 +21,7 @@ UserWatchHistoryRouter.get(
     for (const watchedMovie of userWatchHistory.watch_history) {
       const movieInfo = await Movie.findOne({ movieId: watchedMovie.movieId });
       const existingMovie = watchedMovies[watchedMovie.movieId];
-      if (!movieInfo) {
-        return res.status(404).send("Movie not found");
-      }
+
       if (existingMovie) {
         existingMovie.watchedAt.push(watchedMovie.watchedAt);
       } else {
@@ -34,11 +32,7 @@ UserWatchHistoryRouter.get(
         };
       }
     }
-
-    const userEmail = userWatchHistory.userEmail;
-    const response = {
-      [userEmail]: Object.values(watchedMovies),
-    };
+    const response = Object.values(watchedMovies)
 
     res.status(200).send(response);
   }catch (error) {
