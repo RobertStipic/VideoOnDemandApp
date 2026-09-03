@@ -26,7 +26,12 @@ PlayMovieRouter.get(
     const userInfo = { userId: req.currentUser.id };
     
       const subscriptionStatus = await axios.get(
-        `http://userauth-srv:3000/users/${userInfo.userId}/subscription`
+        `http://userauth-srv:3000/users/${userInfo.userId}/subscription`,
+        { 
+          headers: {
+            cookie: req.headers.cookie,
+          } 
+        }
       );
       const Response = subscriptionStatus.data;
 
@@ -49,6 +54,7 @@ PlayMovieRouter.get(
       streamUrl: `/movies/stream/${movie.imdbID}/${movie.imdbID}.mpd`
     });   
   }catch (error) {
+      console.log(error);
       return res.status(500).send("Error while playing movie");
     }
   }
