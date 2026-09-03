@@ -14,19 +14,15 @@ const subscriptionEndedQueue = new Queue(
   }
 );
 
-subscriptionEndedQueue.process(async (job) => {
+subscriptionEndedQueue.process(async () => {
   let now = Date.now();
 
   const subscriptions = await Subscription.find({ expiresAt: { $lt: now } });
 
   subscriptions.forEach(async (subscription) => {
-    await Subscription.updateOne(
-      { _id: subscription._id },
-      { $set: { isSubscribed: false } }
-    );
 
     await new SubscriptionExpiredPublisher(
-      natsWrapperClient.client,
+      natsWrapperClient.jsClient,
       Subjects.SubscriptionExpired
     ).publish({
       userId: subscription.userId,

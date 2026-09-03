@@ -1,5 +1,5 @@
 import { Listener } from "@robstipic/middlewares";
-import { paymentExpirationQueue } from "./expiration-queue.js";
+import { paymentExpirationQueue } from "../queue/expiration-queue.js";
 
 export class SubscriptionCreatedListener extends Listener {
   async onMessage(data, msg) {
@@ -23,6 +23,7 @@ export class SubscriptionCreatedListener extends Listener {
 
     catch (error) {
     console.error("Error processing subscription created event", error);
+    msg.ack();
       }
     }
   }

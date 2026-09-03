@@ -1,10 +1,10 @@
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
 import { SubscriptionCancelledListener } from "./events/listener/subscription-cancelled-listener.js";
 import { AccountDeletedListener } from "./events/listener/account-deleted-listener.js";
+import { SubscriptionUpdatedListener } from "./events/listener/subscription-update-listener.js";
 import { natsQueues } from "./consants/queues.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
-import { Subscription } from "./models/subscription.js";
 import mongose from "mongoose";
 import { subscriptionEndedQueue } from "./events/queue/subscription-ended-queue.js";
 import { constants } from "./consants/general.js";
@@ -26,22 +26,24 @@ const start = async () => {
       Subjects.PaymentCompleted,
       natsQueues.paymentCompleted
     ).listen();
-
     new SubscriptionCancelledListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCancelled,
-      natsQueues.SubscriptionCancelled
+      natsQueues.subscriptionCancelled
     ).listen(); 
     new AccountDeletedListener(
       natsWrapperClient.jsClient,
       Subjects.AccountDeleted,
-      natsQueues.AccountDeleted
+      natsQueues.accountDeleted
     ).listen();
-
+    new SubscriptionUpdatedListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionUpdated,
+      natsQueues.subscriptionUpdated
+    ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
-    const count = await Subscription.countDocuments();
-    console.log("active subsciptions: ", count);
+
     subscriptionEndedQueue.add(
       {},
       {

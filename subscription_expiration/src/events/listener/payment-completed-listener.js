@@ -12,26 +12,7 @@ export class PaymentCompletedListener extends Listener {
       msg.ack();
       return;
     }
-    let subscription = await Subscription.findOne({
-      userId: data.userId,
-    });
-     const date = new Date(data.expiresAt);
-    if (subscription) {
-        console.log(
-          "Updating existing subscription for user:",
-          data.userId,
-          "current expiresAt:",
-          subscription.expiresAt.toUTCString()
-        );
-        const currentExpiresAt = new Date(subscription.expiresAt);
-        const updatedExpiresAt = new Date(
-          Math.max(currentExpiresAt.getTime(), Date.now()) + (date.getTime() - Date.now())
-        );
-        subscription.subscriptionId = data.subscriptionId; 
-        subscription.paymentId = data.paymentId; 
-        subscription.expiresAt = updatedExpiresAt; 
-        subscription.isSubscribed = true;
-    } else {
+
     const date = new Date(data.expiresAt);
     console.log(
       "Inserting new subscription for user: ",
@@ -39,7 +20,7 @@ export class PaymentCompletedListener extends Listener {
       "ending at: ",
       date.toUTCString()
     );
-    subscription = await Subscription.create({
+     await Subscription.create({
       userId: data.userId,
       subscriptionId: data.subscriptionId,
       paymentId: data.paymentId,
@@ -47,12 +28,10 @@ export class PaymentCompletedListener extends Listener {
       isSubscribed: true,
     });
 
-  }
-    subscription.save();
     msg.ack();
   }
   catch(error) {
-    console.error("Error processing payment completed event", error);
+    console.error(`Error processing payment completed event for subscription: ${data.subscriptionId}`, error);
   }
 }
 }

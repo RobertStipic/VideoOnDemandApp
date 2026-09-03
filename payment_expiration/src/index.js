@@ -1,5 +1,5 @@
 import { SubscriptionCreatedListener } from "./events/listeners/subscription-created-listener.js";
-import { SubscriptionUpdatedListener } from "./events/listeners/subscription-updated-listener.js";
+import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 import { natsQueues } from "./consants/queues.js";
@@ -10,7 +10,6 @@ const start = async () => {
   }
 
   try {
-    // Connect to NATS client.
     await natsWrapperClient.connect(process.env.NATS_URL);
     console.log("connected to NATS");
     process.on("SIGINT", () => natsWrapperClient.close());
@@ -21,10 +20,10 @@ const start = async () => {
       Subjects.SubscriptionCreated,
       natsQueues.SubscriptionCreated
     ).listen();
-    new SubscriptionUpdatedListener(
+    new PaymentCompletedListener(
       natsWrapperClient.jsClient,
-      Subjects.SubscriptionUpdated,
-      natsQueues.SubscriptionUpdated
+      Subjects.PaymentCompleted,
+      natsQueues.paymentCompleted,
     ).listen();
   } catch (error) {
     console.log("[ERROR_CONNECTING_TO_REDIS/NATS_SERVER", error);

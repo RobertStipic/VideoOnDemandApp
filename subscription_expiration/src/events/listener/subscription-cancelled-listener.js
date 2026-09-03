@@ -1,6 +1,6 @@
 import { Listener } from "@robstipic/middlewares";
 import { Subscription } from "../../models/subscription.js";
-import { constants } from "../../consants/general.js";
+
 export class SubscriptionCancelledListener extends Listener {
   async onMessage(data, msg) {
 try {
@@ -16,8 +16,7 @@ try {
 
       msg.ack();
     } catch (error) {
-      console.error("Error processing subscription cancelled event:", error);
-      msg.ack();
+      console.error(`Error processing subscription cancelled event for subscription: ${data.subscriptionId}`, error);
     }
   }
 }
