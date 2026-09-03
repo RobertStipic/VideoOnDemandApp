@@ -1,8 +1,12 @@
 import express from "express";
 import { User } from "../models/user.js";
-const router = express.Router();
+import { userAuthorization, currentUser } from "@robstipic/middlewares";
+const SubscriptionStatusRouter = express.Router();
 
-router.get("/users/:id/subscription", async (req, res) => {
+SubscriptionStatusRouter.get("/users/:id/subscription",
+  currentUser, 
+  userAuthorization,
+  async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -14,4 +18,4 @@ router.get("/users/:id/subscription", async (req, res) => {
   }
 });
 
-export { router as SubscriptionStatusRouter };
+export { SubscriptionStatusRouter };

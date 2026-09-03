@@ -16,10 +16,11 @@ import { natsWrapperClient } from "./nats-wrapper.js";
 import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";
 import { SubscriptionExpiredListener } from "./events/listeners/subscription-expired-listener.js";
 import { SubscriptionStatusRouter } from "./routes/SubscriptionStatus.js";
+import { SubscriptionCancelledListener } from "./events/listeners/subscription-cancelled-listener.js";
 
 const { json } = bodyparser;
 const app = express();
-app.set("trust proxy", true); //ingress-nginx uses proxies
+app.set("trust proxy", true);
 app.use(json());
 app.use(
   cookieSession({
@@ -64,6 +65,11 @@ const startApp = async () => {
       natsWrapperClient.jsClient,
       Subjects.SubscriptionExpired,
       natsQueues.subscriptionExpired
+    ).listen();
+    new SubscriptionCancelledListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionCancelled,
+      natsQueues.subscriptionCancelled
     ).listen();
 
     await mongoose.connect(process.env.DATABASE_URL);
