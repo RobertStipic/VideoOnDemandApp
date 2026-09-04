@@ -30,7 +30,7 @@ export class PaymentCompletedListener extends Listener {
     await oldSubscription.save();
    
     await new SubscriptionUpdatedPublisher(
-      natsWrapperClient.client,
+      natsWrapperClient.jsClient,
       Subjects.SubscriptionUpdated
     ).publish({
       subscriptionId: oldSubscription._id, 

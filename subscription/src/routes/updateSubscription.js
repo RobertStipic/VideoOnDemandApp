@@ -55,7 +55,7 @@ updateSubRouter.put(
     });
 
     await new SubscriptionCreatedPublisher(
-      natsWrapperClient.client,
+      natsWrapperClient.jsClient,
       Subjects.SubscriptionCreated
     ).publish({
       userId: newSubscription.userId,
