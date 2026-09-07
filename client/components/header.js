@@ -21,10 +21,11 @@ export default ({currentUser}) => {
     <header className="p-3 bg-dark text-white">
         <div className="container-fluid px-4">
             <div className="d-flex flex-wrap align-items-center justify-content-between">
-            <Link className="btn btn-outline-warning" href="/" style={{ marginLeft: "25px" }}>
-             Vodapp
+            <Link href="/" className="navbar-brand d-flex align-items-center" style={{ marginLeft: "25px" }}>
+                <img src="/logo-black.png" alt="logo" style={{ height: "44px", width: "auto" }}/> 
             </Link>
-            <Link className="btn btn-outline-info" href="/show/movies">
+ 
+            <Link className="btn btn-outline-info" href="/show/movies" style={{ marginLeft: "125px" }}>
              Movies
             </Link>
 
