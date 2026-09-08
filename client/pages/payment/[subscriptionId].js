@@ -72,58 +72,64 @@ const PaymentForm = ({ subscription }) => {
   };
 
   return (
-  <form onSubmit={handleSubmit} className="container mt-4">
-      <h1>Complete your payment</h1>
-      <p>Subscription ID: {subscription.id}</p>
+<div className="container mt-4">
+  <div className="row justify-content-center">
+    <div className="col-md-6 col-lg-5">
+        <form onSubmit={handleSubmit} className="container mt-4">
+            <h1>Complete your payment</h1>
+            <p>Subscription ID: {subscription.id}</p>
 
-      <div className="form-group">
-        <label htmlFor="email">Receipt email</label>
-        <input
-          id="email"
-          type="email"
-          className="form-control"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+            <div className="form-group">
+              <label htmlFor="email">Receipt email</label>
+              <input
+                id="email"
+                type="email"
+                className="form-control"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+      <div className="form-group mt-3">
+        <label>Card number</label>
+        <CardNumberElement className="form-control" options= {{ showIcon: true }}/>
       </div>
 
-<div className="form-group mt-3">
-  <label>Card number</label>
-  <CardNumberElement className="form-control" options= {{ showIcon: true }}/>
+      <div className="row mt-3">
+        <div className="col">
+          <label>Card expiration</label>
+          <CardExpiryElement className="form-control" />
+        </div>
+
+        <div className="col">
+          <label>CVC</label>
+          <CardCvcElement className="form-control" />
+        </div>
+      </div>
+
+
+        {errors.length > 0 && (
+        <div className="alert alert-danger mt-3">
+          <strong>Something went wrong:</strong>
+          <ul className="my-0">
+            {errors.map((err) => (
+              <li key={err.msg}>{err.msg}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+            <button
+              type="submit"
+              className="btn btn-success mt-3"
+              disabled={!stripe || loading}>
+              {loading ? "Processing..." : `Pay €${subscription.price} `}
+            </button>
+      </form>
+    </div>
+  </div>
 </div>
-
-<div className="row mt-3">
-  <div className="col">
-    <label>Card expiration</label>
-    <CardExpiryElement className="form-control" />
-  </div>
-
-  <div className="col">
-    <label>CVC</label>
-    <CardCvcElement className="form-control" />
-  </div>
-</div>
-
-
-  {errors.length > 0 && (
-  <div className="alert alert-danger mt-3">
-    <strong>Something went wrong:</strong>
-    <ul className="my-0">
-      {errors.map((err) => (
-        <li key={err.msg}>{err.msg}</li>
-      ))}
-    </ul>
-  </div>
-)}
-
-      <button
-        type="submit"
-        className="btn btn-success mt-3"
-        disabled={!stripe || loading}>
-        {loading ? "Processing..." : `Pay €${subscription.price} `}
-      </button>
-  </form>
   );
 };
 
