@@ -18,7 +18,7 @@ try {
 
 paymentExpirationQueue.process(async (job) => {
   await new PaymentExpirationPublisher(
-    natsWrapperClient.client,
+    natsWrapperClient.jsClient,
     Subjects.PaymentExpirationCompleted
   ).publish({
     subscriptionId: job.data.subscriptionId,
