@@ -2,7 +2,7 @@
 
 **Diplomski rad**
 
-**Autor:** Robert Stipić    
+**Autor:** Robert Stipić, 0303054488, redovni student      
 **Studijski smjer:** Informatika  
 **Kolegij:** Izrada informatičkih projekata  
 **Znanstveno područje:** Društvene znanosti  
