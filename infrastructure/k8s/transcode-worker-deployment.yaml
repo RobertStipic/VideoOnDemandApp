@@ -1,66 +1,54 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-deployment
+  name: transcode-worker-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: movies
+      app: transcode-worker
   template:
     metadata:
       labels:
-        app: movies
+        app: transcode-worker
     spec:
       initContainers:
-        - name: wait-for-nats
-          image: busybox
-          command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
         - name: wait-for-mongo
           image: busybox
           command: ["sh", "-c", "until nc -z movies-mongo-srv:27017; do sleep 1; done"]
         - name: wait-for-redis
           image: busybox
           command: ["sh", "-c", "until nc -z transcode-redis-srv:6379; do sleep 1; done"]
-        - name: set-output-permissions
+        - name: set-permissions
           image: busybox
           command: ["sh", "-c", "mkdir -p /app/src/output && chown -R 1000:1000 /app/src/output"]
           volumeMounts:
             - name: output-volume
-              mountPath: /app/src/output  
+              mountPath: /app/src/output
       containers:
-        - name: movies
-          image: stile95/movies:latest
+        - name: transcode-worker
+          image: stile95/transcode-worker:latest
           env:
             - name: DATABASE_URL
               value: "mongodb://movies-mongo-srv:27017/movies"
             - name: REDIS_URL
               value: "redis://transcode-redis-srv:6379"
-            - name: JWT_PRIVATE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: jwt-secret
-                  key: JWT_SECRET_KEY
-            - name: NATS_URL
-              value: "http://nats-srv:4222"
-
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
           volumeMounts:
+            - name: input-volume
+              mountPath: /app/src/movies
             - name: output-volume
               mountPath: /app/src/output
       volumes:
+        - name: input-volume
+          persistentVolumeClaim:
+            claimName: movies-input-pvc
         - name: output-volume
           persistentVolumeClaim:
             claimName: movies-output-pvc
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: movies-srv
-spec: ##default ClusterIP service
-  selector:
-    app: movies
-  ports:
-    - name: movies
-      protocol: TCP
-      port: 3000
-      targetPort: 3000

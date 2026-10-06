@@ -9,42 +9,35 @@ const __dirname = path.dirname(__filename);
 const csvFilePath = path.join(__dirname, "..", "csv", "MOVIES_DATA_final.csv");
 
 export async function initizializeCSV() {
-  //await Movie.deleteMany({}); //test function
   try {
-  let count = await Movie.countDocuments();
-  if (count === constants.empty) {
-    console.log("Importing csv data from: ", csvFilePath);
-    await CSVtoDatabase(constants.columns);
-    return console.log("All movies inserted in database");
-  } else if (count === constants.MoviesCount)
-    console.log("Movie collection have all CSV records loaded");
-  else
-    console.log(
-      "Number of records in Database doesnt match value set by application: ",
-      constants.MoviesCount
-    );
-}catch(error) {
+    const count = await Movie.countDocuments();
+
+    if (count === constants.empty) {
+      console.log("Database empty, importing CSV from:", csvFilePath);
+      await CSVtoDatabase(constants.columns);
+      console.log("All movies inserted in database");
+    } else {
+      console.log(`Database has ${count} records, skipping CSV import`);
+    }
+  } catch (error) {
     console.error("Error while initizialing CSV", error);
-  } 
+  }
 }
 async function CSVtoDatabase(columns) {
-  return new Promise((resolve, reject) => {
-    try {
-      csvtojson()
-        .fromFile(csvFilePath, { encoding: "utf-8" })
-        .then((csvData) => {
-          csvData.forEach((row) => {
-            const temp = {};
-            columns.forEach((column) => {
-              temp[column] = row[column];
-            });
-            Movie.create(temp);
-            console.log("Movie inserted in database: ", temp.Title);
-          });
-          resolve();
-        });
-    } catch(error) {
+  try {
+    const csvData = await csvtojson().fromFile(csvFilePath, {
+      encoding: "utf-8",
+    });
+    const movies = csvData.map((row) => {
+      const temp = {};
+      columns.forEach((column) => {
+        temp[column] = row[column];
+      });
+      return temp;
+    });
+    await Movie.insertMany(movies);
+    console.log(`Inserted ${movies.length} movies`);
+  } catch (error) {
     console.error("Error while inserting CSV to database", error);
-  } 
-  });
+  }
 }

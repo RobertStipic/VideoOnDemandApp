@@ -8,11 +8,11 @@ import { ListMoviesRouter } from "./routes/ListMovies.js";
 import { constants } from "./constants/general.js";
 import { MoviesFilterRouter } from "./routes/filterMovies.js";
 import { currentUser } from "@robstipic/middlewares";
-import { startEncoding } from "./services/videoEncoding.js";
 import { natsWrapperClient } from "./nats-client.js";
 import { PlayMovieRouter } from "./routes/PlayMovie.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { queueUnencodedMovies } from "./services/queueUnencodedMovies.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -26,14 +26,14 @@ app.use(
     signed: false,
     secure: true,
     maxAge: constants.cookieAge, //12 H
-  })
+  }),
 );
 app.use(currentUser);
 
 app.use(ListMoviesRouter);
 app.use(PlayMovieRouter);
 app.use(MoviesFilterRouter);
-app.use('/movies/stream', express.static(path.join(__dirname, 'output')));
+app.use("/movies/stream", express.static(path.join(__dirname, "output")));
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
 });
@@ -65,7 +65,7 @@ const startApp = async () => {
   });
 
   await initizializeCSV();
-  startEncoding();
+  await queueUnencodedMovies();
 };
 
 startApp();
