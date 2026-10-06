@@ -1,5 +1,5 @@
 import express from "express";
-import { userAuthorization } from "@robstipic/middlewares";
+import { adminAuthorization } from "@robstipic/middlewares";
 import { Movie } from "../models/movie.js";
 import { WatchHistory } from "../models/watch_history.js";
 
@@ -7,7 +7,7 @@ const CompleteHistoryRouter = express.Router();
 
 CompleteHistoryRouter.get(
   "/history/complete/",
-  userAuthorization,
+  adminAuthorization,
   async (req, res) => {
     try {
       const watchHistory = await WatchHistory.find({});
@@ -16,7 +16,6 @@ CompleteHistoryRouter.get(
         return res.status(404).send("No watch history found");
       }
 
-   
       const movieHistory = {};
 
       for (const userWatchHistory of watchHistory) {
@@ -24,7 +23,9 @@ CompleteHistoryRouter.get(
         movieHistory[userEmail] = [];
 
         for (const watchedMovie of userWatchHistory.watch_history) {
-          const movieInfo = await Movie.findOne({ movieId: watchedMovie.movieId }).select({
+          const movieInfo = await Movie.findOne({
+            movieId: watchedMovie.movieId,
+          }).select({
             Title: 1,
             _id: 0,
           });
@@ -33,7 +34,7 @@ CompleteHistoryRouter.get(
 
           movieHistory[userEmail].push({
             movieId: watchedMovie.movieId,
-            Title: movieTitle, 
+            Title: movieTitle,
             watchedAt: watchedMovie.watchedAt,
           });
         }
@@ -43,7 +44,7 @@ CompleteHistoryRouter.get(
     } catch (error) {
       res.status(500).send("Error fetching complete watch history");
     }
-  }
+  },
 );
 
 export { CompleteHistoryRouter };

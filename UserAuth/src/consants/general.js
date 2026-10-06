@@ -1,4 +1,12 @@
 export const constants = {
+  status: {
+    succeeded: "succeeded",
+    cancelled: "cancelled",
+    expired: "expired",
+    pending: "pending",
+    paymentExpired: "paymentExpired",
+    extended: "extended",
+  },
   role: {
     user: "user",
     admin: "admin",
