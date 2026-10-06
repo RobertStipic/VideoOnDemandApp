@@ -11,7 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@robstipic/middlewares": "^1.0.23",
+    "@robstipic/middlewares": "^1.0.25",
     "@types/ffmpeg-static": "^3.0.3",
     "@types/fluent-ffmpeg": "^2.1.28",
     "bull": "^4.16.5",
