@@ -22,62 +22,56 @@ LogInRouter.post(
       .withMessage(constantsRoutes.passwordMessage),
   ],
   async (req, res) => {
-    try{
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send(errors.array());
-    }
-    const { email, password } = req.body;
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send(errors.array());
+      }
+      const { email, password } = req.body;
 
-    const existingEmail = await User.findOne({ email });
-    if (!existingEmail) {
-      return res
-        .status(404)
-        .send("Provided information doesn't match any record");
-    }
+      const existingEmail = await User.findOne({ email });
+      if (!existingEmail) {
+        return res
+          .status(404)
+          .send("Provided information doesn't match any record");
+      }
 
-    const passwordsMatch = PasswordEncription.comparePassword(
-      password,
-      existingEmail.password
-    );
+      const passwordsMatch = PasswordEncription.comparePassword(
+        password,
+        existingEmail.password,
+      );
 
-    if (!passwordsMatch) {
-      return res
-        .status(404)
-        .send("Provided information doesn't match any record");
-    }
-    const userJwt = jwt.sign(
-      {
+      if (!passwordsMatch) {
+        return res
+          .status(404)
+          .send("Provided information doesn't match any record");
+      }
+      const userJwt = jwt.sign(
+        {
+          id: existingEmail.id,
+          email: existingEmail.email,
+          role: existingEmail.role,
+        },
+        process.env.JWT_PRIVATE_KEY,
+        { expiresIn: "12h" },
+      );
+
+      req.session.jwt = userJwt;
+
+      new UserAuthPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.UserAuth,
+      ).publish({
         id: existingEmail.id,
-        email: existingEmail.email,
-      },
-      process.env.JWT_PRIVATE_KEY,
-      { expiresIn: '12h' }
-    );
-    
-    req.session.jwt = userJwt;
-    console.log(
-      "Publisher data",
-      "id",
-      existingEmail.id,
-      "email",
-      email,
-      "login"
-    );
-    new UserAuthPublisher(
-      natsWrapperClient.jsClient,
-      Subjects.UserAuth
-    ).publish({
-      id: existingEmail.id,
-      email,
-      type: constants.activity.login,
-    });
+        email,
+        type: constants.activity.login,
+      });
 
-    res.status(200).send(existingEmail);
-  }catch (error) {
+      res.status(200).send(existingEmail);
+    } catch (error) {
       res.status(500).send("Unexpected log in error");
     }
-  }
+  },
 );
 
 export { LogInRouter };

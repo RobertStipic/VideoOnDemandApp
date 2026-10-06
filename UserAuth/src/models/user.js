@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { PasswordEncription } from "../services/passwordHash.js";
+import { constants } from "../consants/general.js";
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -38,6 +39,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    role: {
+      type: String,
+      enum: [constants.role.user, constants.role.admin],
+      default: constants.role.user,
+    },
   },
   {
     toJSON: {
@@ -50,7 +56,7 @@ const userSchema = new mongoose.Schema(
 
       versionKey: false,
     },
-  }
+  },
 );
 userSchema.pre("save", function () {
   if (this.isModified("password")) {

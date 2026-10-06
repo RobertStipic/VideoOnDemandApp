@@ -1,9 +1,7 @@
 export const constants = {
-  status: {
-    succeeded: "succeeded",
-    cancelled: "cancelled",
-    failed: "failed",
-    pending: "pending",
+  role: {
+    user: "user",
+    admin: "admin",
   },
   genderArray: ["Male", "Female", "Other"],
   activity: {
