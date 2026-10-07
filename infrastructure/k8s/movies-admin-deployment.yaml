@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movies-admin-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movies-admin
+  template:
+    metadata:
+      labels:
+        app: movies-admin
+    spec:
+      initContainers:
+        - name: wait-for-nats
+          image: busybox
+          command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
+      containers:
+        - name: movies-admin
+          image: stile95/movies-admin:latest
+          env:
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET_KEY
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+          volumeMounts:
+            - name: input-volume
+              mountPath: /app/src/movies
+            - name: output-volume
+              mountPath: /app/src/output
+      volumes:
+        - name: input-volume
+          persistentVolumeClaim:
+            claimName: movies-input-pvc
+        - name: output-volume
+          persistentVolumeClaim:
+            claimName: movies-output-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: movies-admin-srv
+spec:
+  selector:
+    app: movies-admin
+  ports:
+    - name: movies-admin
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

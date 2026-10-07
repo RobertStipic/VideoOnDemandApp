@@ -1,0 +1,23 @@
+{
+  "name": "movies_admin",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@robstipic/middlewares": "^1.0.25",
+    "body-parser": "^2.3.0",
+    "cookie-session": "^2.1.1",
+    "express": "^4.22.3",
+    "express-async-errors": "^3.1.1",
+    "multer": "^2.4.0",
+    "nats": "^2.29.3",
+    "nodemon": "^3.1.14"
+  }
+}
