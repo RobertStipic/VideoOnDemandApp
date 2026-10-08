@@ -59,6 +59,13 @@ spec:
                 name: user-login-activity-srv
                 port:
                   number: 3000
+          - path: /movies-admin/.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: movies-admin-srv
+                port:
+                  number: 3000
           - path: /?(.*)
             pathType: ImplementationSpecific
             backend:
