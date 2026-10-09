@@ -9,7 +9,7 @@ import {
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { MovieUploadedPublisher } from "../events/publishers/movie-uploaded-publisher.js";
 
-const router = express.Router();
+const uploadMovieRouter = express.Router();
 
 const storage = multer.diskStorage({
   destination: "/app/src/movies",
@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post(
+uploadMovieRouter.post(
   "/movies-admin/upload",
   currentUser,
   adminAuthorization,
@@ -189,4 +189,4 @@ router.post(
   },
 );
 
-export { router as UploadMovieRouter };
+export { uploadMovieRouter };
