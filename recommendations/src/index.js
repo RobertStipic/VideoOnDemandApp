@@ -7,6 +7,10 @@ import { VectorQueryRouter } from "./routes/VectorQuery.js";
 import { initializeCSV } from "./services/loadCSVtoDB.js";
 import { MoviePlayedRouter } from "./routes/MoviePlayed.js";
 import { createVectorSearch } from "./services/createIndex.js";
+import { natsWrapperClient } from "./nats-client.js";
+import { MovieUploadedListener } from "./events/listeners/movie-uploaded-listener.js";
+import { Subjects } from "@robstipic/middlewares";
+import { natsQueues } from "./constants/queues.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -17,7 +21,7 @@ app.use(
     signed: false,
     secure: true,
     maxAge: constants.cookieAge, //12 H
-  })
+  }),
 );
 app.use(VectorQueryRouter);
 app.use(MoviePlayedRouter);
@@ -40,11 +44,25 @@ const startApp = async () => {
   if (!process.env.MONGOATLAS_URL) {
     throw new Error("MONGOATLAS_URL must be defined");
   }
-  app.listen(3000, () => {
-    console.log("Server up and running on port 3000!");
-  });
-  await initializeCSV();
-  createVectorSearch();
+  try {
+    await natsWrapperClient.connect(process.env.NATS_URL);
+    console.log("connected to NATS");
+    process.on("SIGINT", () => natsWrapperClient.close());
+    process.on("SIGTERM", () => natsWrapperClient.close());
+    new MovieUploadedListener(
+      natsWrapperClient.jsClient,
+      Subjects.MovieUploaded,
+      natsQueues.MovieUploaded,
+    ).listen();
+
+    app.listen(3000, () => {
+      console.log("Server up and running on port 3000!");
+    });
+    await initializeCSV();
+    createVectorSearch();
+  } catch (error) {
+    console.log("[ERROR_CONNECTING_TO_DATABASE/NATS_SERVER", error);
+  }
 };
 
 startApp();

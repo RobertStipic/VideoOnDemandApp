@@ -34,6 +34,8 @@ spec:
               value: "VectorDB"
             - name: COLLECTION_NAME
               value: "movies"
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
             - name: MONGOATLAS_URL
               valueFrom:
                 secretKeyRef:
