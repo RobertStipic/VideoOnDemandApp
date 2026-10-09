@@ -7,12 +7,14 @@ import { initizializeCSV } from "./services/loadCSVtoDB.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
 import { constants } from "./constants/general.js";
 import { MoviesFilterRouter } from "./routes/filterMovies.js";
-import { currentUser } from "@robstipic/middlewares";
+import { currentUser, Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 import { PlayMovieRouter } from "./routes/PlayMovie.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { queueUnencodedMovies } from "./services/queueUnencodedMovies.js";
+import { MovieUploadedListener } from "./events/listeners/movie-uploaded-listener.js";
+import { natsQueues } from "./constants/queues.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -53,6 +55,12 @@ const startApp = async () => {
     console.log("connected to NATS");
     process.on("SIGINT", () => natsWrapperClient.close());
     process.on("SIGTERM", () => natsWrapperClient.close());
+
+    new MovieUploadedListener(
+      natsWrapperClient.jsClient,
+      Subjects.MovieUploaded,
+      natsQueues.MovieUploaded,
+    ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);
 
