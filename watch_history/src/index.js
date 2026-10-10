@@ -3,6 +3,7 @@ import { natsQueues } from "./consants/queues.js";
 import { natsWrapperClient } from "./nats-client.js";
 import { MoviePlayedListener } from "./events/listeners/movie-played-listener.js";
 import { AccountDeletedListener } from "./events/listeners/account-deleted-listener.js";
+import { MovieUploadedListener } from "./events/listeners/movie-uploaded-listener.js";
 import mongose from "mongoose";
 import express from "express";
 import "express-async-errors";
@@ -21,7 +22,7 @@ app.use(
     signed: false,
     secure: true,
     maxAge: constants.cookieAge, // 12 H
-  })
+  }),
 );
 app.use(json());
 app.use(currentUser);
@@ -47,22 +48,26 @@ const start = async () => {
     new MoviePlayedListener(
       natsWrapperClient.jsClient,
       Subjects.MoviePlayed,
-      natsQueues.MoviePlayed
+      natsQueues.MoviePlayed,
     ).listen();
     new AccountDeletedListener(
       natsWrapperClient.jsClient,
       Subjects.AccountDeleted,
-      natsQueues.AccountDeleted
+      natsQueues.AccountDeleted,
+    ).listen();
+    new MovieUploadedListener(
+      natsWrapperClient.jsClient,
+      Subjects.MovieUploaded,
+      natsQueues.MovieUploaded,
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
     await initizializeCSV();
-  
-  app.listen(3000, () => {
-    console.log("Server up and running on port 3000!");
-  }); 
-}
-  catch (error) {
+
+    app.listen(3000, () => {
+      console.log("Server up and running on port 3000!");
+    });
+  } catch (error) {
     console.log("[ERROR_CONNECTING_TO_DATABASE/NATS_SERVER", error);
   }
 };
