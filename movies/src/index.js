@@ -5,6 +5,7 @@ import mongose from "mongoose";
 import cookieSession from "cookie-session";
 import { initizializeCSV } from "./services/loadCSVtoDB.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
+import { MetricsRouter } from "./routes/Metrics.js";
 import { constants } from "./constants/general.js";
 import { MoviesFilterRouter } from "./routes/filterMovies.js";
 import { currentUser, Subjects } from "@robstipic/middlewares";
@@ -15,6 +16,7 @@ import { fileURLToPath } from "url";
 import { queueUnencodedMovies } from "./services/queueUnencodedMovies.js";
 import { MovieUploadedListener } from "./events/listeners/movie-uploaded-listener.js";
 import { natsQueues } from "./constants/queues.js";
+import { httpRequests, httpDuration } from "./metrics.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -23,6 +25,23 @@ const __dirname = path.dirname(__filename);
 
 app.set("trust proxy", true); //ingress-nginx uses proxies
 app.use(json());
+
+app.use((req, res, next) => {
+  const end = httpDuration.startTimer();
+  res.on("finish", () => {
+    const labels = {
+      method: req.method,
+      route:
+        req.route?.path ||
+        (req.path.startsWith("/tt") ? "/stream/*" : req.path),
+      status: res.statusCode,
+    };
+    httpRequests.inc(labels);
+    end(labels);
+  });
+  next();
+});
+
 app.use(
   cookieSession({
     signed: false,
@@ -30,11 +49,14 @@ app.use(
     maxAge: constants.cookieAge, //12 H
   }),
 );
+app.use(MetricsRouter);
+
 app.use(currentUser);
 
 app.use(ListMoviesRouter);
 app.use(PlayMovieRouter);
 app.use(MoviesFilterRouter);
+
 app.use("/movies/stream", express.static(path.join(__dirname, "output")));
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");

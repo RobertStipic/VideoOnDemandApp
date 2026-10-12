@@ -18,16 +18,27 @@ spec:
           command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
         - name: wait-for-mongo
           image: busybox
-          command: ["sh", "-c", "until nc -z movies-mongo-srv:27017; do sleep 1; done"]
+          command:
+            ["sh", "-c", "until nc -z movies-mongo-srv:27017; do sleep 1; done"]
         - name: wait-for-redis
           image: busybox
-          command: ["sh", "-c", "until nc -z transcode-redis-srv:6379; do sleep 1; done"]
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z transcode-redis-srv:6379; do sleep 1; done",
+            ]
         - name: set-output-permissions
           image: busybox
-          command: ["sh", "-c", "mkdir -p /app/src/output && chown -R 1000:1000 /app/src/output"]
+          command:
+            [
+              "sh",
+              "-c",
+              "mkdir -p /app/src/output && chown -R 1000:1000 /app/src/output",
+            ]
           volumeMounts:
             - name: output-volume
-              mountPath: /app/src/output  
+              mountPath: /app/src/output
       containers:
         - name: movies
           image: stile95/movies:latest
@@ -56,6 +67,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: movies-srv
+  labels:
+    app: movies
 spec: ##default ClusterIP service
   selector:
     app: movies
