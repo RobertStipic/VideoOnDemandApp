@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
+import express from "express";
 import "./queues/videoQueue.js";
+import { MetricsRouter } from "./routes/Metrics.js";
+
+const app = express();
+
+app.use(MetricsRouter);
+
+app.use((req, res) => {
+  res.status(404).send("Route not found");
+});
 
 const startApp = async () => {
   if (!process.env.DATABASE_URL)
@@ -10,6 +20,10 @@ const startApp = async () => {
   console.log("Connected to Mongo");
 
   console.log("Waiting for jobs on queue: video-transcode");
+
+  app.listen(9100, () => {
+    console.log("Metrics server up and running on port 9100");
+  });
 };
 
 startApp().catch((err) => {

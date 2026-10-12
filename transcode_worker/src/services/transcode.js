@@ -5,6 +5,11 @@ import ffmpeg from "fluent-ffmpeg";
 import ffmpegStatic from "ffmpeg-static";
 import { removeAllFilesSync } from "./deleteFiles.js";
 import { formatDuration } from "./formatDuration.js";
+import {
+  transcodeCounter,
+  transcodeDuration,
+  activeTranscodes,
+} from "../metrics.js";
 
 ffmpeg.setFfmpegPath(ffmpegStatic);
 
@@ -34,7 +39,19 @@ export async function processMovie(movie) {
     return;
   }
 
-  await videosTranscoding(moviePath, newMovieName, title);
+  activeTranscodes.inc();
+  const endTimer = transcodeDuration.startTimer();
+
+  try {
+    await videosTranscoding(moviePath, newMovieName, title);
+    transcodeCounter.inc({ status: "success" });
+  } catch (error) {
+    transcodeCounter.inc({ status: "failed" });
+    throw error;
+  } finally {
+    activeTranscodes.dec();
+    endTimer();
+  }
 }
 
 async function videosTranscoding(moviePath, newMovieName, title) {
