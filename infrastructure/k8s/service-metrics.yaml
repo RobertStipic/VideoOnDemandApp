@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: movies-monitor
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: movies
+  endpoints:
+    - port: movies
+      path: /metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: transcode-worker-monitor
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: transcode-worker
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
