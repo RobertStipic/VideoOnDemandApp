@@ -18,7 +18,12 @@ spec:
           command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
         - name: wait-for-mongo
           image: busybox
-          command: ["sh", "-c", "until nc -z userauth-mongo-srv:27017; do sleep 1; done"]
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z userauth-mongo-srv:27017; do sleep 1; done",
+            ]
       containers:
         - name: userauth
           image: stile95/userauth
@@ -30,6 +35,11 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_SECRET_KEY
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_REFRESH_SECRET
             - name: NATS_URL
               value: "http://nats-srv:4222"
 ---

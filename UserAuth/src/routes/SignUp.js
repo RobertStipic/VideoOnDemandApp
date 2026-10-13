@@ -107,18 +107,29 @@ SignUpRouter.post(
       });
       const user = await User.findOne({ email });
 
-      //Json Web Token
-      const userJwt = jwt.sign(
+      const accessToken = jwt.sign(
         {
           id: user.id,
           email: user.email,
           role: user.role,
         },
         process.env.JWT_PRIVATE_KEY,
-        { expiresIn: "12h" },
+        { expiresIn: "15m" },
       );
-      //process.env.JWT_PRIVATE_KEY is saved in secret inside kubernetes cluster
-      req.session.jwt = userJwt;
+
+      const refreshToken = jwt.sign(
+        { id: user.id },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" },
+      );
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
       new UserAuthPublisher(
         natsWrapperClient.jsClient,
         Subjects.UserAuth,
@@ -128,7 +139,10 @@ SignUpRouter.post(
         type: constants.activity.registration,
       });
 
-      res.status(201).send(user);
+      res.status(201).send({
+        user,
+        accessToken,
+      });
     } catch (error) {
       res.status(500).send("Unexpected sign up error");
     }

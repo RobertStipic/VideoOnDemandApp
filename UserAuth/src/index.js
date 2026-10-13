@@ -2,14 +2,14 @@ import express from "express";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import mongoose from "mongoose";
-import cookieSession from "cookie-session";
+import cookieParser from "cookie-parser";
 import { CurrentUserRouter } from "./routes/CurrentUser.js";
 import { Subjects } from "@robstipic/middlewares";
-import { constants } from "./consants/general.js";
 import { LogInRouter } from "./routes/LogIn.js";
 import { LogOutRouter } from "./routes/LogOut.js";
 import { SignUpRouter } from "./routes/SignUp.js";
 import { DeleteRouter } from "./routes/DeleteAccount.js";
+import { RefreshTokenRouter } from "./routes/RefreshToken.js";
 import { natsQueues } from "./consants/queues.js";
 import { ChangePasswordRouter } from "./routes/ChangePassword.js";
 import { natsWrapperClient } from "./nats-wrapper.js";
@@ -22,16 +22,11 @@ const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true);
 app.use(json());
-app.use(
-  cookieSession({
-    signed: false,
-    secure: true,
-    maxAge: constants.cookieAge, // 12 H
-  })
-);
+app.use(cookieParser());
 app.use(SubscriptionStatusRouter);
 app.use(CurrentUserRouter);
 app.use(LogInRouter);
+app.use(RefreshTokenRouter);
 app.use(LogOutRouter);
 app.use(SignUpRouter);
 app.use(ChangePasswordRouter);
@@ -55,21 +50,21 @@ const startApp = async () => {
     console.log("connected to NATS");
     process.on("SIGINT", () => natsWrapperClient.close());
     process.on("SIGTERM", () => natsWrapperClient.close());
-    
+
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
-      natsQueues.paymentCompleted
+      natsQueues.paymentCompleted,
     ).listen();
     new SubscriptionExpiredListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionExpired,
-      natsQueues.subscriptionExpired
+      natsQueues.subscriptionExpired,
     ).listen();
     new SubscriptionCancelledListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCancelled,
-      natsQueues.subscriptionCancelled
+      natsQueues.subscriptionCancelled,
     ).listen();
 
     await mongoose.connect(process.env.DATABASE_URL);

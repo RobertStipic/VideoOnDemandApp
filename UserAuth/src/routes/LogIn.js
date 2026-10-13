@@ -46,17 +46,28 @@ LogInRouter.post(
           .status(404)
           .send("Provided information doesn't match any record");
       }
-      const userJwt = jwt.sign(
+      const accessToken = jwt.sign(
         {
           id: existingEmail.id,
           email: existingEmail.email,
           role: existingEmail.role,
         },
         process.env.JWT_PRIVATE_KEY,
-        { expiresIn: "12h" },
+        { expiresIn: "15m" },
       );
 
-      req.session.jwt = userJwt;
+      const refreshToken = jwt.sign(
+        { id: existingEmail.id },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" },
+      );
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
       new UserAuthPublisher(
         natsWrapperClient.jsClient,
@@ -67,7 +78,10 @@ LogInRouter.post(
         type: constants.activity.login,
       });
 
-      res.status(200).send(existingEmail);
+      res.status(200).send({
+        existingEmail,
+        accessToken,
+      });
     } catch (error) {
       res.status(500).send("Unexpected log in error");
     }
