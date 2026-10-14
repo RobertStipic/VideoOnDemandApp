@@ -8,7 +8,11 @@ import {
   calculateExpiration,
   calculatePaymentExpiration,
 } from "../services/calculateSubscription.js";
-import { constants, constantsNewSub, calculatePrice } from "../constants/general.js";
+import {
+  constants,
+  constantsNewSub,
+  calculatePrice,
+} from "../constants/general.js";
 
 const newSubRouter = express.Router();
 
@@ -18,58 +22,62 @@ newSubRouter.post(
   [
     body(constantsNewSub.plan)
       .isInt({ min: constants.plan.min, max: constants.plan.max })
-      .withMessage(constantsNewSub.planMessage)
+      .withMessage(constantsNewSub.planMessage),
   ],
   async (req, res) => {
-    try{
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send(errors.array());
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send(errors.array());
+      }
+      const { plan, status } = req.body;
+      const userId = req.currentUser.id;
+
+      const activeSub = await Subscription.findOne({
+        userId: userId,
+        status: constants.status.succeeded,
+      });
+
+      if (activeSub) {
+        return res
+          .status(400)
+          .send(
+            "You already have active subscription. Please extend existing subscription.",
+          );
+      }
+
+      const expiresAt = calculateExpiration(plan);
+      const paymentExpiresAt = calculatePaymentExpiration();
+      const price = calculatePrice(plan);
+      const subscriptionObj = await Subscription.create({
+        userId,
+        expiresAt,
+        paymentExpiresAt,
+        plan,
+        price,
+        status,
+        userEmail: req.currentUser.email,
+      });
+
+      await new SubscriptionCreatedPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.SubscriptionCreated,
+      ).publish({
+        userId,
+        plan,
+        price,
+        status,
+        subscriptionId: subscriptionObj._id,
+        expiresAt,
+        paymentExpiresAt,
+        userEmail: req.currentUser.email,
+      });
+
+      res.status(201).send({ subscriptionObj });
+    } catch (error) {
+      res.status(500).send("Error while creating new subscription");
     }
-    const { plan, status } = req.body;
-    const userId = req.currentUser.id;
-    
-    const activeSub = await Subscription.findOne({
-      userId: userId,
-      status: constants.status.succeeded
-    })
-
-    if (activeSub){
-      return res.send(400).send("Yea already have active subscription. Please extend existing subscription.")
-    }
-
-    const expiresAt = calculateExpiration(plan);
-    const paymentExpiresAt = calculatePaymentExpiration();
-    const price = calculatePrice(plan);
-    const subscriptionObj = await Subscription.create({
-      userId,
-      expiresAt,
-      paymentExpiresAt,
-      plan,
-      price,
-      status,
-      userEmail: req.currentUser.email,
-    });
-
-    await new SubscriptionCreatedPublisher(
-      natsWrapperClient.jsClient,
-      Subjects.SubscriptionCreated
-    ).publish({
-      userId,
-      plan,
-      price,
-      status,
-      subscriptionId: subscriptionObj._id,
-      expiresAt,
-      paymentExpiresAt,
-      userEmail: subscriptionObj.email,
-    });
-
-    res.status(201).send({ subscriptionObj });
-  }catch (error) {
-     res.status(500).send("Error while creating new subscription");
-    }
-  }
+  },
 );
 
 export { newSubRouter };
