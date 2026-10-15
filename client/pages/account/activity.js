@@ -1,8 +1,10 @@
 import Sidebar from "../../components/sidebar.js";
-import buildAxios from "../../api/init-axios.js";
+import { getServerData } from "../../api/init-axios.js";
 import { formatDate } from "../../common/formatDate.js";
+import { useAuth } from "../../context/AuthContext.js";
 
-const ActivityInformation = ({ currentUser, loginHistory }) => {
+const ActivityInformation = ({ loginHistory }) => {
+  const { user: currentUser } = useAuth();
 
   const activityColor = (activityType) => {
     switch (activityType) {
@@ -10,7 +12,8 @@ const ActivityInformation = ({ currentUser, loginHistory }) => {
         return "badge bg-success text-dark";
       case "login":
         return "badge bg-info";
-    }};
+    }
+  };
 
   return (
     <div className="d-flex">
@@ -41,20 +44,16 @@ const ActivityInformation = ({ currentUser, loginHistory }) => {
             </table>
           </div>
         ) : (
-        <h3>You are not signed in. Please sign in to continue.</h3>
-      )}
+          <h3>You are not signed in. Please sign in to continue.</h3>
+        )}
       </div>
     </div>
-  )};
+  );
+};
 
 export async function getServerSideProps(context) {
-  try {
-    const client = buildAxios(context);
-    const { data } = await client.get("/activity/useractivity");
-
-    return { props: { loginHistory: data.login_history }};
-  } catch (error) {
-    return { props: { loginHistory: [] }};
-  }};
+  const data = await getServerData(context, "/activity/useractivity");
+  return { props: { loginHistory: data?.login_history || [] } };
+}
 
 export default ActivityInformation;

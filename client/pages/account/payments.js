@@ -1,72 +1,73 @@
 import Sidebar from "../../components/sidebar.js";
-import buildAxios from "../../api/init-axios.js";
+import { getServerData } from "../../api/init-axios.js";
 import { formatDate } from "../../common/formatDate.js";
 import Link from "next/link";
+import { useAuth } from "../../context/AuthContext.js";
 
-
-const PaymentsInformation = ({ currentUser, payments }) => {
-  
-    return (
+const PaymentsInformation = ({ payments }) => {
+  const { user: currentUser } = useAuth();
+  return (
     <div className="d-flex">
-        <Sidebar />
-        <div className="p-4 flex-grow-1">
+      <Sidebar />
+      <div className="p-4 flex-grow-1">
         <h2>My Payments</h2>
         {currentUser ? (
-        <>
-        <div className="table-responsive">
-            <table className="table table-striped table-hover">
+          <>
+            <div className="table-responsive">
+              <table className="table table-striped table-hover">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Subscription ID</th>
-                        <th>Payment time</th>
-                        <th>Receipt email</th>
-                        <th>Receipt url</th>
-                        <th>Actions</th>
-                    </tr>
+                  <tr>
+                    <th>ID</th>
+                    <th>Subscription ID</th>
+                    <th>Payment time</th>
+                    <th>Receipt email</th>
+                    <th>Receipt url</th>
+                    <th>Actions</th>
+                  </tr>
                 </thead>
                 <tbody>
-                    {payments.map((payment) =>(
-                        <tr key={payment.stripeID}>
-                            <td>{payment.stripeID}</td>
-                            <td>{payment.subscriptionId}</td>
-                            <td>{formatDate(payment.paymentTime)}</td>
-                            <td>{payment.receipt_info.receipt_email}</td>
-                            <td><a href={payment.receipt_info.receipt_url}
-                                target="_blank"
-                                rel="noopener noreferrer">
-                                    View Receipt
-                                </a>
-                            </td>
-                            <td>                         
-                                <>    
-                                    <Link href={`/account/payments/${payment.stripeID}`}
-                                     className="btn btn-sm btn-primary me-2">
-                                        More Details
-                                    </Link>
-                                </>
-                            </td>
-                        </tr>
-                    ))}
+                  {payments.map((payment) => (
+                    <tr key={payment.stripeID}>
+                      <td>{payment.stripeID}</td>
+                      <td>{payment.subscriptionId}</td>
+                      <td>{formatDate(payment.paymentTime)}</td>
+                      <td>{payment.receipt_info.receipt_email}</td>
+                      <td>
+                        <a
+                          href={payment.receipt_info.receipt_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View Receipt
+                        </a>
+                      </td>
+                      <td>
+                        <>
+                          <Link
+                            href={`/account/payments/${payment.stripeID}`}
+                            className="btn btn-sm btn-primary me-2"
+                          >
+                            More Details
+                          </Link>
+                        </>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
-            </table>
-        </div>
-        </>
+              </table>
+            </div>
+          </>
         ) : (
-        <h3>You are not signed in. Please sign in to continue.</h3>
-      )}
+          <h3>You are not signed in. Please sign in to continue.</h3>
+        )}
       </div>
     </div>
-    )};
+  );
+};
 
-    export async function getServerSideProps(context) {
-    try{
-      const client = buildAxios(context);
-      const { data } = await client.get("/payment/userpayments");
-      
-      return {props : { payments : data }};
-    } catch (error) {
-      return { props: { payments: [] }};
-    }};
+export async function getServerSideProps(context) {
+  const payments = await getServerData(context, "/payment/userpayments");
+  return { props: { payments: payments || [] } };
+}
 
-    export default PaymentsInformation;
+export default PaymentsInformation;

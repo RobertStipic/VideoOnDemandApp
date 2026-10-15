@@ -1,28 +1,32 @@
 import Sidebar from "../../components/sidebar.js";
-import buildAxios from "../../api/init-axios.js";
+import { getServerData } from "../../api/init-axios.js";
 import { formatDate, formatDateShort } from "../../common/formatDate.js";
+import { useAuth } from "../../context/AuthContext.js";
 
 const formatSubscriptionStatus = (isSubscribed) => {
-    return isSubscribed ? 'Subscribed' : 'Not subscribed';
+  return isSubscribed ? "Subscribed" : "Not subscribed";
 };
 
-const AccountInformation = ({ currentUser, subscription }) => {
+const AccountInformation = ({ subscription }) => {
+  const { user: currentUser } = useAuth();
 
-    return (
+  return (
     <div className="d-flex">
-        <Sidebar />
-        <div className="p-4 flex-grow-1">
+      <Sidebar />
+      <div className="p-4 flex-grow-1">
         <h2>Account Information</h2>
         {currentUser ? (
           <>
             <p>
-              <strong>Name:</strong> {currentUser.firstName} {currentUser.lastName}
+              <strong>Name:</strong> {currentUser.firstName}{" "}
+              {currentUser.lastName}
             </p>
             <p>
               <strong>Email:</strong> {currentUser.email}
             </p>
             <p>
-              <strong>Date of birth:</strong> {formatDateShort(currentUser.dateOfBirth)}
+              <strong>Date of birth:</strong>{" "}
+              {formatDateShort(currentUser.dateOfBirth)}
             </p>
             <p>
               <strong>Country:</strong> {currentUser.country}
@@ -34,29 +38,30 @@ const AccountInformation = ({ currentUser, subscription }) => {
               <strong>Gender:</strong> {currentUser.gender}
             </p>
             <p>
-              <strong>Subscription status:</strong> {formatSubscriptionStatus(currentUser.isSubscribed)}
+              <strong>Subscription status:</strong>{" "}
+              {formatSubscriptionStatus(currentUser.isSubscribed)}
             </p>
             {subscription && (
-            <p>
-              <strong>Valid until:</strong> {formatDate(subscription.expiresAt)}
-            </p>
+              <p>
+                <strong>Valid until:</strong>{" "}
+                {formatDate(subscription.expiresAt)}
+              </p>
             )}
           </>
         ) : (
-        <h3>You are not signed in. Please sign in to continue.</h3>
-      )}
+          <h3>You are not signed in. Please sign in to continue.</h3>
+        )}
       </div>
     </div>
-    )};
+  );
+};
 
-    export async function getServerSideProps(context) {
-    try{
-      const client = buildAxios(context);
-      const { data } = await client.get("/subscription/user/active");
-      
-      return {props : {subscription: data}}
-    } catch (error) {
-      return { props: { subscription: null }}
-    }};
+export async function getServerSideProps(context) {
+  const subscription = await getServerData(
+    context,
+    "/subscription/user/active",
+  );
+  return { props: { subscription: subscription || null } };
+}
 
-    export default AccountInformation;
+export default AccountInformation;
