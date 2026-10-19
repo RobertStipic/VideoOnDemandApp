@@ -17,6 +17,7 @@ export const constants = {
     login: "login",
   },
   cookieAge: 12 * 60 * 60 * 1000,
+  oneHour: 60 * 60 * 1000,
 };
 export const constantsRoutes = {
   password: "password",
@@ -25,6 +26,8 @@ export const constantsRoutes = {
   emailMessage: "Email must be valid",
   confirmPassword: "confirmPassword",
   confirmPasswordMessage: "Please confirm password",
+  token: "token",
+  tokenMessage: "Token required",
 };
 
 export const constantsChangePassword = {

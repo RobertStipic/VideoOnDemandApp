@@ -16,6 +16,8 @@ import { natsWrapperClient } from "./nats-wrapper.js";
 import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";
 import { SubscriptionExpiredListener } from "./events/listeners/subscription-expired-listener.js";
 import { SubscriptionStatusRouter } from "./routes/SubscriptionStatus.js";
+import { ForgotPasswordRouter } from "./routes/ForgotPassword.js";
+import { ResetPasswordRouter } from "./routes/ResetPassword.js";
 import { SubscriptionCancelledListener } from "./events/listeners/subscription-cancelled-listener.js";
 
 const { json } = bodyparser;
@@ -30,6 +32,8 @@ app.use(RefreshTokenRouter);
 app.use(LogOutRouter);
 app.use(SignUpRouter);
 app.use(ChangePasswordRouter);
+app.use(ForgotPasswordRouter);
+app.use(ResetPasswordRouter);
 app.use(DeleteRouter);
 
 app.all("*", (req, res) => {

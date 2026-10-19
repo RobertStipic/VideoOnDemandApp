@@ -1,6 +1,8 @@
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { Subjects } from "@robstipic/middlewares";
+import { natsQueues } from "./constants/queues.js";
 import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";
+import { PasswordResetListener } from "./events/listeners/password-reset-listener.js";
 
 const startApp = async () => {
   if (!process.env.NATS_URL) throw new Error("NATS_URL must be defined");
@@ -20,6 +22,11 @@ const startApp = async () => {
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
       "notification-service",
+    ).listen();
+    new PasswordResetListener(
+      natsWrapperClient.jsClient,
+      Subjects.UserPasswordReset,
+      natsQueues.passwordReset,
     ).listen();
   } catch (err) {
     console.log("[ERROR_CONNECTING_TO_NATS_SERVER", err);

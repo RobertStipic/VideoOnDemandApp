@@ -22,6 +22,8 @@ spec:
           env:
             - name: NATS_URL
               value: "http://nats-srv:4222"
+            - name: CLIENT_URL
+              value: "https://vodapp.dev"
             - name: SMTP_HOST
               valueFrom:
                 secretKeyRef:
