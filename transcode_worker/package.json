@@ -12,7 +12,7 @@
   "description": "",
   "dependencies": {
     "@prometheus-io/client": "^0.16.1",
-    "@robstipic/middlewares": "^1.1.1",
+    "@robstipic/middlewares": "^1.1.2",
     "@types/ffmpeg-static": "^3.0.3",
     "@types/fluent-ffmpeg": "^2.1.28",
     "bull": "^4.16.5",
