@@ -66,9 +66,9 @@ const userSchema = new mongoose.Schema(
     },
   },
 );
-userSchema.pre("save", function () {
+userSchema.pre("save", async function () {
   if (this.isModified("password")) {
-    const hashed = PasswordEncription.hashPassword(this.get("password"));
+    const hashed = await PasswordEncription.hashPassword(this.get("password"));
     this.set("password", hashed);
   }
 });

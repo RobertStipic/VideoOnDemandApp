@@ -29,37 +29,37 @@ ChangePasswordRouter.patch(
   currentUser,
   userAuthorization,
   async (req, res) => {
-    try{
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send(errors.array());
-    }
-    const { email } = req.currentUser;
-    const { password, newPassword, confirmNewPassword } = req.body;
-    if (password === newPassword) {
-      return res.status(400).send("New password is same as current password");
-    } else if (newPassword === confirmNewPassword) {
-      const user = await User.findOne({ email });
-      const passwordsMatch = PasswordEncription.comparePassword(
-        password,
-        user.password
-      );
-      if (!passwordsMatch) {
-        return res
-          .status(400)
-          .send("Provided current password doesn't match user password");
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send(errors.array());
       }
-      const doc = await User.findOne({ email: email });
-      doc.password = newPassword;
-      doc.save();
-    } else {
-      res.status(400).send("New passwords doesn't match");
-    }
-    res.status(200).send("Password succesfully changed");
-    }catch (error) {
+      const { email } = req.currentUser;
+      const { password, newPassword, confirmNewPassword } = req.body;
+      if (password === newPassword) {
+        return res.status(400).send("New password is same as current password");
+      } else if (newPassword === confirmNewPassword) {
+        const user = await User.findOne({ email });
+        const passwordsMatch = await PasswordEncription.comparePassword(
+          password,
+          user.password,
+        );
+        if (!passwordsMatch) {
+          return res
+            .status(400)
+            .send("Provided current password doesn't match user password");
+        }
+        const doc = await User.findOne({ email: email });
+        doc.password = newPassword;
+        doc.save();
+      } else {
+        res.status(400).send("New passwords doesn't match");
+      }
+      res.status(200).send("Password succesfully changed");
+    } catch (error) {
       res.status(500).send("Unexpected password change error");
     }
-  }
+  },
 );
 
 export { ChangePasswordRouter };

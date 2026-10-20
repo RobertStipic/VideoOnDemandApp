@@ -36,7 +36,7 @@ LogInRouter.post(
           .send("Provided information doesn't match any record");
       }
 
-      const passwordsMatch = PasswordEncription.comparePassword(
+      const passwordsMatch = await PasswordEncription.comparePassword(
         password,
         existingEmail.password,
       );
