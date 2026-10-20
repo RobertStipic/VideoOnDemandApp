@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import Router from "next/router";
 import { useAuth } from "../../context/AuthContext";
+import Link from "next/link";
 
 export default () => {
   const [email, setEmail] = useState("");
@@ -76,6 +77,9 @@ export default () => {
                   <button type="submit" className="btn btn-primary">
                     Sign In
                   </button>
+                  <div className="text-center mt-2">
+                    <Link href="/user/forgot-password">Forgot password?</Link>
+                  </div>
                 </div>
               </form>
             </div>
