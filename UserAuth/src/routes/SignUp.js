@@ -1,10 +1,11 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import { User } from "../models/user.js";
-import jwt from "jsonwebtoken";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { UserAuthPublisher } from "../events/publishers/user-auth-publisher.js";
+import { UserActivationPublisher } from "../events/publishers/user-activation-publisher.js";
 import { Subjects } from "@robstipic/middlewares";
+import crypto from "node:crypto";
 import {
   constantsSignUP,
   constants,
@@ -95,7 +96,13 @@ SignUpRouter.post(
       if (emailExist) {
         return res.status(409).send("Email already exist");
       }
-      await User.create({
+      const rawToken = crypto.randomBytes(32).toString("hex");
+      const hashedToken = crypto
+        .createHash("sha256")
+        .update(rawToken)
+        .digest("hex");
+
+      const user = await User.create({
         email,
         password,
         firstName,
@@ -104,30 +111,17 @@ SignUpRouter.post(
         country,
         city,
         gender,
+        activationToken: hashedToken,
+        activationExpiresAt: new Date(Date.now() + 24 * constants.oneHour),
       });
-      const user = await User.findOne({ email });
 
-      const accessToken = jwt.sign(
-        {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-        },
-        process.env.JWT_PRIVATE_KEY,
-        { expiresIn: "15m" },
-      );
-
-      const refreshToken = jwt.sign(
-        { id: user.id },
-        process.env.JWT_REFRESH_SECRET,
-        { expiresIn: "7d" },
-      );
-
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+      await new UserActivationPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.UserAccountActivated,
+      ).publish({
+        email: user.email,
+        firstName: user.firstName,
+        token: rawToken,
       });
 
       new UserAuthPublisher(
@@ -141,7 +135,7 @@ SignUpRouter.post(
 
       res.status(201).send({
         user,
-        accessToken,
+        message: "Account created. Check your email to activate.",
       });
     } catch (error) {
       res.status(500).send("Unexpected sign up error");

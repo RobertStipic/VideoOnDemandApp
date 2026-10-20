@@ -30,6 +30,8 @@ spec:
           env:
             - name: DATABASE_URL
               value: "mongodb://userauth-mongo-srv:27017/userauth"
+            - name: CLIENT_URL
+              value: "https://vodapp.dev"
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:

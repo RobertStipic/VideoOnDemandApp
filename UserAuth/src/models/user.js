@@ -47,6 +47,18 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
+    activationToken: {
+      type: String,
+      default: null,
+    },
+    activationExpiresAt: {
+      type: Date,
+      default: null,
+    },
     role: {
       type: String,
       enum: [constants.role.user, constants.role.admin],

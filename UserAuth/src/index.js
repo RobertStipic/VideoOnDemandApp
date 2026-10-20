@@ -18,6 +18,7 @@ import { SubscriptionExpiredListener } from "./events/listeners/subscription-exp
 import { SubscriptionStatusRouter } from "./routes/SubscriptionStatus.js";
 import { ForgotPasswordRouter } from "./routes/ForgotPassword.js";
 import { ResetPasswordRouter } from "./routes/ResetPassword.js";
+import { ActivateAccountRouter } from "./routes/ActivateAccount.js";
 import { SubscriptionCancelledListener } from "./events/listeners/subscription-cancelled-listener.js";
 
 const { json } = bodyparser;
@@ -34,6 +35,7 @@ app.use(SignUpRouter);
 app.use(ChangePasswordRouter);
 app.use(ForgotPasswordRouter);
 app.use(ResetPasswordRouter);
+app.use(ActivateAccountRouter);
 app.use(DeleteRouter);
 
 app.all("*", (req, res) => {

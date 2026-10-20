@@ -35,6 +35,9 @@ LogInRouter.post(
           .status(404)
           .send("Provided information doesn't match any record");
       }
+      if (!existingEmail.isActive) {
+        return res.status(403).send("Account not activated. Check your email.");
+      }
 
       const passwordsMatch = await PasswordEncription.comparePassword(
         password,
@@ -51,6 +54,7 @@ LogInRouter.post(
           id: existingEmail.id,
           email: existingEmail.email,
           role: existingEmail.role,
+          isActive: existingEmail.isActive,
         },
         process.env.JWT_PRIVATE_KEY,
         { expiresIn: "15m" },
