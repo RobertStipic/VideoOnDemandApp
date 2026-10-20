@@ -3,6 +3,7 @@ import { Subjects } from "@robstipic/middlewares";
 import { natsQueues } from "./constants/queues.js";
 import { PaymentCompletedListener } from "./events/listeners/payment-completed-listener.js";
 import { PasswordResetListener } from "./events/listeners/password-reset-listener.js";
+import { UserActivationListener } from "./events/listeners/user-activation-listener.js";
 
 const startApp = async () => {
   if (!process.env.NATS_URL) throw new Error("NATS_URL must be defined");
@@ -18,10 +19,15 @@ const startApp = async () => {
     process.on("SIGINT", () => natsWrapperClient.close());
     process.on("SIGTERM", () => natsWrapperClient.close());
 
+    new UserActivationListener(
+      natsWrapperClient.jsClient,
+      Subjects.UserAccountActivated,
+      natsQueues.userActivation,
+    ).listen();
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
-      "notification-service",
+      natsQueues.paymentCompleted,
     ).listen();
     new PasswordResetListener(
       natsWrapperClient.jsClient,

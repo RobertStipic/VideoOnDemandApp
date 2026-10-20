@@ -3,9 +3,6 @@ import { sendEmail } from "../../services/emailService.js";
 import { paymentReceiptTemplate } from "../../services/templates/paymentReceipt.js";
 
 export class PaymentCompletedListener extends Listener {
-  subject = Subjects.PaymentCompleted;
-  queueGroupName = "notification-service";
-
   async onMessage(data, msg) {
     try {
       const html = paymentReceiptTemplate({
