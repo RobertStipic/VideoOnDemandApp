@@ -1,10 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { useAuth } from "../../context/AuthContext";
 import Link from "next/link";
 
 export default () => {
+  const router = useRouter();
+  const { activated, error } = router.query;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState([]);
@@ -30,6 +32,8 @@ export default () => {
         setErrors(err.response.data);
       } else if (err.response.status === 404) {
         setErrors([{ msg: err.response.data }]);
+      } else if (err.response.status === 403) {
+        setErrors([{ msg: err.response.data }]);
       } else if (err.response.status === 500) {
         setErrors([{ msg: err.response.data }]);
       }
@@ -42,6 +46,27 @@ export default () => {
         <div className="col-md-6 col-lg-5">
           <div className="card bg-secondary-subtle">
             <div className="card-body">
+              {activated && (
+                <div className="alert alert-success">
+                  Account activated! You can now sign in.
+                </div>
+              )}
+              {error === "invalid-token" && (
+                <div className="alert alert-danger">
+                  Invalid or expired activation link.
+                </div>
+              )}
+              {error === "no-token" && (
+                <div className="alert alert-danger">
+                  Missing activation token.
+                </div>
+              )}
+              {error === "server-error" && (
+                <div className="alert alert-danger">
+                  Server error. Please try again.
+                </div>
+              )}
+
               <form onSubmit={onSubmit}>
                 <div className="form-group">
                   <label htmlFor="email">Email address</label>

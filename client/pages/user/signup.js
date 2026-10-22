@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
-import Router from "next/router";
-import { useAuth } from "../../context/AuthContext";
 
 export default () => {
   const [email, setEmail] = useState("");
@@ -14,7 +12,7 @@ export default () => {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [errors, setErrors] = useState([]);
-  const { login } = useAuth();
+  const [successMessage, setSuccessMessage] = useState("");
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -36,11 +34,15 @@ export default () => {
       );
 
       if (response.status === 201) {
-        const { user, accessToken } = response.data;
-        login(user, accessToken);
-        Router.push("/");
+        setSuccessMessage(
+          "Account created! Check your email to activate your account.",
+        );
       }
     } catch (err) {
+      if (!err.response) {
+        setErrors([{ msg: "Network error. Please try again." }]);
+        return;
+      }
       if (err.response.status === 400) {
         setErrors(err.response.data);
       } else if (err.response.status === 409) {
@@ -57,6 +59,12 @@ export default () => {
         <div className="col-md-6 col-lg-5">
           <div className="card bg-secondary-subtle">
             <div className="card-body">
+              {successMessage && (
+                <div className="alert alert-success">
+                  <strong>{successMessage}</strong>
+                </div>
+              )}
+
               <form onSubmit={onSubmit}>
                 <div className="form-group">
                   <label htmlFor="email">Email address</label>
