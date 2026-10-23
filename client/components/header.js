@@ -9,6 +9,7 @@ export default () => {
     !user && { label: "Sign in", href: "/user/signin" },
     user && { label: "Subscription", href: "/subscriptions/new" },
     user && { label: "Account", href: "/account" },
+    user?.role === "admin" && { label: "Admin", href: "/admin" },
     user && { label: "Sign out", href: "/user/signout" },
   ]
     .filter((linkConfig) => linkConfig)
