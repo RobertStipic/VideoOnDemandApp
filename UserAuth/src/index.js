@@ -24,7 +24,7 @@ import { SubscriptionCancelledListener } from "./events/listeners/subscription-c
 
 const { json } = bodyparser;
 const app = express();
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 app.use(json());
 app.use(cookieParser());
 app.use(SubscriptionStatusRouter);

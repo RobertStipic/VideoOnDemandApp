@@ -6,11 +6,13 @@ import { natsWrapperClient } from "../nats-wrapper.js";
 import { Subjects } from "@robstipic/middlewares";
 import { UserActivationPublisher } from "../events/publishers/user-activation-publisher.js";
 import { constants, constantsRoutes } from "../consants/general.js";
+import { resendActivationLimiter } from "../services/rateLimit.js";
 
 const ResendActivationRouter = express.Router();
 
 ResendActivationRouter.post(
   "/users/resend-activation",
+  resendActivationLimiter,
   [
     body(constantsRoutes.email)
       .isEmail()

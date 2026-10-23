@@ -5,6 +5,7 @@ import Link from "next/link";
 export default () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -12,7 +13,11 @@ export default () => {
       await axios.post("/users/forgot-password", { email });
       setMessage("If email exists, reset link was sent. Check your inbox.");
     } catch (error) {
-      setMessage("Something went wrong.");
+      if (error.response?.status === 429) {
+        setError(error.response.data);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -44,6 +49,7 @@ export default () => {
               {message && (
                 <div className="alert alert-info mt-3">{message}</div>
               )}
+              {error && <div className="alert alert-danger mt-3">{error}</div>}
               <div className="text-center mt-3">
                 <Link href="/user/signin">Back to Sign In</Link>
               </div>

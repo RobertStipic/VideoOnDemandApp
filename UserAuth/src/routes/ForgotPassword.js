@@ -6,11 +6,13 @@ import { natsWrapperClient } from "../nats-wrapper.js";
 import { Subjects } from "@robstipic/middlewares";
 import { constants, constantsRoutes } from "../consants/general.js";
 import { UserPasswordResetPublisher } from "../events/publishers/user-password-reset-publisher.js";
+import { forgotPasswordLimiter } from "../services/rateLimit.js";
 
 const ForgotPasswordRouter = express.Router();
 
 ForgotPasswordRouter.post(
   "/users/forgot-password",
+  forgotPasswordLimiter,
   [
     body(constantsRoutes.email)
       .isEmail()
