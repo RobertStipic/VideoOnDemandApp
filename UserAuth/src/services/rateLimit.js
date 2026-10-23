@@ -12,7 +12,7 @@ export const forgotPasswordLimiter = rateLimit({
 export const resendActivationLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, //10min
   max: 3,
-  message: "Too many resend attempts. Please try again in 5 minutes.",
+  message: "Too many resend attempts. Please try again in 10 minutes.",
   keyGenerator: (req) => req.body.email || ipKeyGenerator(req.ip),
   standardHeaders: true,
   legacyHeaders: false,
