@@ -35,9 +35,6 @@ LogInRouter.post(
           .status(404)
           .send("Provided information doesn't match any record");
       }
-      if (!existingEmail.isActive) {
-        return res.status(403).send("Account not activated. Check your email.");
-      }
 
       const passwordsMatch = await PasswordEncription.comparePassword(
         password,
@@ -48,6 +45,9 @@ LogInRouter.post(
         return res
           .status(404)
           .send("Provided information doesn't match any record");
+      }
+      if (!existingEmail.isActive) {
+        return res.status(403).send("Account not activated. Check your email.");
       }
       const accessToken = jwt.sign(
         {
