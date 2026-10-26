@@ -17,6 +17,9 @@ spec:
           image: busybox
           command:
             ["sh", "-c", "until nc -z movies-mongo-srv:27017; do sleep 1; done"]
+        - name: wait-for-nats
+          image: busybox
+          command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
         - name: wait-for-redis
           image: busybox
           command:
@@ -44,6 +47,8 @@ spec:
               value: "mongodb://movies-mongo-srv:27017/movies"
             - name: REDIS_URL
               value: "redis://transcode-redis-srv:6379"
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
           resources:
             requests:
               cpu: "1000m"
