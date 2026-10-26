@@ -20,6 +20,8 @@ import { ForgotPasswordRouter } from "./routes/ForgotPassword.js";
 import { ResetPasswordRouter } from "./routes/ResetPassword.js";
 import { ActivateAccountRouter } from "./routes/ActivateAccount.js";
 import { ResendActivationRouter } from "./routes/ResendActivation.js";
+import { AdminListUsersRouter } from "./routes/AdminListUsers.js";
+import { AdminDeleteUserRouter } from "./routes/AdminDeleteUser.js";
 import { SubscriptionCancelledListener } from "./events/listeners/subscription-cancelled-listener.js";
 
 const { json } = bodyparser;
@@ -39,6 +41,8 @@ app.use(ResetPasswordRouter);
 app.use(ActivateAccountRouter);
 app.use(ResendActivationRouter);
 app.use(DeleteRouter);
+app.use(AdminListUsersRouter);
+app.use(AdminDeleteUserRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
