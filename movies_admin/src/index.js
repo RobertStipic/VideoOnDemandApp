@@ -5,6 +5,7 @@ import cookieSession from "cookie-session";
 import { currentUser } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-wrapper.js";
 import { uploadMovieRouter } from "./routes/MovieUpload.js";
+import { deleteMovieRouter } from "./routes/DeleteMovie.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -20,6 +21,7 @@ app.use(
 );
 app.use(currentUser);
 app.use(uploadMovieRouter);
+app.use(deleteMovieRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");

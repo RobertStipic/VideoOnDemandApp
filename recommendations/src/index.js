@@ -9,6 +9,7 @@ import { MoviePlayedRouter } from "./routes/MoviePlayed.js";
 import { createVectorSearch } from "./services/createIndex.js";
 import { natsWrapperClient } from "./nats-client.js";
 import { MovieUploadedListener } from "./events/listeners/movie-uploaded-listener.js";
+import { MovieDeletedListener } from "./events/listeners/movie-deleted-listener.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsQueues } from "./constants/queues.js";
 
@@ -53,6 +54,11 @@ const startApp = async () => {
       natsWrapperClient.jsClient,
       Subjects.MovieUploaded,
       natsQueues.MovieUploaded,
+    ).listen();
+    new MovieDeletedListener(
+      natsWrapperClient.jsClient,
+      Subjects.MovieDeleted,
+      natsQueues.MovieDeleted,
     ).listen();
 
     app.listen(3000, () => {

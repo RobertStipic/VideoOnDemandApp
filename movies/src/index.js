@@ -15,6 +15,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { queueUnencodedMovies } from "./services/queueUnencodedMovies.js";
 import { MovieUploadedListener } from "./events/listeners/movie-uploaded-listener.js";
+import { MovieDeletedListener } from "./events/listeners/movie-deleted-listener.js";
 import { natsQueues } from "./constants/queues.js";
 import { httpRequests, httpDuration } from "./metrics.js";
 
@@ -82,6 +83,11 @@ const startApp = async () => {
       natsWrapperClient.jsClient,
       Subjects.MovieUploaded,
       natsQueues.MovieUploaded,
+    ).listen();
+    new MovieDeletedListener(
+      natsWrapperClient.jsClient,
+      Subjects.MovieDeleted,
+      natsQueues.MovieDeleted,
     ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);
