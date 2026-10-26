@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 import express from "express";
 import "./queues/videoQueue.js";
 import { MetricsRouter } from "./routes/Metrics.js";
+import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
+import { MovieDeletedListener } from "./events/listeners/movie-deleted-listener.js";
+import { natsQueues } from "./constants/queues.js";
 
 const app = express();
 
@@ -23,6 +26,12 @@ const startApp = async () => {
 
   process.on("SIGINT", () => natsWrapperClient.close());
   process.on("SIGTERM", () => natsWrapperClient.close());
+
+  new MovieDeletedListener(
+    natsWrapperClient.jsClient,
+    Subjects.MovieDeleted,
+    natsQueues.MovieDeleted,
+  ).listen();
 
   await mongoose.connect(process.env.DATABASE_URL);
   console.log("Connected to Mongo");
