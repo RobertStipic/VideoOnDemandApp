@@ -8,7 +8,7 @@ activeSubsRouter.get(
   "/subscription/findall/active",
   currentUser,
   adminAuthorization,
-  async (res) => {
+  async (req, res) => {
     try {
       const subscription = await Subscription.find({
         status: constants.status.succeeded,

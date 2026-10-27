@@ -65,6 +65,20 @@ export default () => {
             </div>
           </div>
         </div>
+
+        <div className="col-md-6 col-lg-4">
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title">Manage Subscriptions</h5>
+              <p className="card-text">
+                View all subscriptions, cancel, extend.
+              </p>
+              <Link href="/admin/subscriptions" className="btn btn-primary">
+                Manage Subscriptions
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

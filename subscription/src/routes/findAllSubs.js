@@ -8,7 +8,7 @@ findRouter.get(
   "/subscription/findall",
   currentUser,
   adminAuthorization,
-  async (res) => {
+  async (req, res) => {
     try {
       const subscription = await Subscription.find({});
       console.log("subscription count:", subscription.length);
