@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import api from "../../api/axios-instance";
 import { getServerData } from "../../api/init-axios";
 import { formatDateShort } from "../../common/formatDate";
 
@@ -11,6 +12,8 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
   const [subscriptions, setSubscriptions] = useState(initialSubs || []);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [cancelling, setCancelling] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (user === null) router.push("/user/signin");
@@ -49,6 +52,34 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
       extended: subscriptions.filter((s) => s.status === "extended").length,
     };
   }, [subscriptions]);
+
+  const handleCancel = async (id, userEmail) => {
+    if (
+      !window.confirm(
+        `Cancel subscription for ${userEmail}? The user will lose access immediately.`,
+      )
+    ) {
+      return;
+    }
+
+    setCancelling(id);
+    setError("");
+
+    try {
+      await api.delete(`/subscription/admin/remove/${id}`);
+      setSubscriptions((prev) =>
+        prev.map((subscriptions) =>
+          subscriptions.id === id || subscriptions._id === id
+            ? { ...subscriptions, status: "cancelled" }
+            : subscriptions,
+        ),
+      );
+    } catch (err) {
+      setError(err.response?.data || "Cancel failed");
+    } finally {
+      setCancelling(null);
+    }
+  };
 
   return (
     <div className="container mt-4">
@@ -138,7 +169,7 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
           </select>
         </div>
       </div>
-
+      {error && <div className="alert alert-danger">{error}</div>}
       {/* Table */}
       <div className="table-responsive">
         <table className="table table-striped table-hover">
@@ -150,6 +181,7 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
               <th>Status</th>
               <th>Price</th>
               <th>Expires At</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -186,6 +218,21 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
                   </td>
                   <td>€{s.price}</td>
                   <td>{s.expiresAt ? formatDateShort(s.expiresAt) : "—"}</td>
+                  <td>
+                    {s.status === "succeeded" ? (
+                      <button
+                        className="btn btn-sm btn-danger"
+                        onClick={() => handleCancel(s.id || s._id, s.userEmail)}
+                        disabled={cancelling === (s.id || s._id)}
+                      >
+                        {cancelling === (s.id || s._id)
+                          ? "Cancelling..."
+                          : "Cancel"}
+                      </button>
+                    ) : (
+                      <span className="text-muted small">—</span>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
