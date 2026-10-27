@@ -15,10 +15,12 @@ import { findRouter } from "./routes/findAllSubs.js";
 import { updateSubRouter } from "./routes/updateSubscription.js";
 import { UserActiveSubRouter } from "./routes/findUserActiveSub.js";
 import { AllUserSubsRouter } from "./routes/findAllUserSubs.js";
+import { adminCancelRouter } from "./routes/AdminCancelSubscription.js";
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
 import { PaymentExpirationListener } from "./events/listener/payment-expiration-listener.js";
 import { SubscriptionExpiredListener } from "./events/listener/subscription-expired-listener.js";
 import { AccountDeletedListener } from "./events/listener/account-deleted-listener.js";
+
 const { json } = bodyparser;
 const app = express();
 
@@ -29,7 +31,7 @@ app.use(
     signed: false,
     secure: true,
     maxAge: constants.cookieAge, //12 H
-  })
+  }),
 );
 
 app.use(currentUser);
@@ -41,6 +43,7 @@ app.use(cancelSubRouter);
 app.use(updateSubRouter);
 app.use(UserActiveSubRouter);
 app.use(AllUserSubsRouter);
+app.use(adminCancelRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
@@ -61,26 +64,26 @@ const startApp = async () => {
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
-      natsQueues.paymentCompleted
+      natsQueues.paymentCompleted,
     ).listen();
     new PaymentExpirationListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentExpirationCompleted,
-      natsQueues.PaymentExpirationCompleted
+      natsQueues.PaymentExpirationCompleted,
     ).listen();
     new SubscriptionExpiredListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionExpired,
-      natsQueues.subscriptionExpired
+      natsQueues.subscriptionExpired,
     ).listen();
     new AccountDeletedListener(
       natsWrapperClient.jsClient,
       Subjects.AccountDeleted,
-      natsQueues.AccountDeleted
+      natsQueues.AccountDeleted,
     ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);
-    
+
     console.log("Connected to Database");
   } catch (error) {
     console.log("[ERROR_CONNECTING_TO_MONGO/NATS_SERVER", error);
