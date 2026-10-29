@@ -16,6 +16,7 @@ import { updateSubRouter } from "./routes/updateSubscription.js";
 import { UserActiveSubRouter } from "./routes/findUserActiveSub.js";
 import { AllUserSubsRouter } from "./routes/findAllUserSubs.js";
 import { adminCancelRouter } from "./routes/AdminCancelSubscription.js";
+import { adminExtendRouter } from "./routes/AdminExtendSubscription.js";
 import { PaymentCompletedListener } from "./events/listener/payment-completed-listener.js";
 import { PaymentExpirationListener } from "./events/listener/payment-expiration-listener.js";
 import { SubscriptionExpiredListener } from "./events/listener/subscription-expired-listener.js";
@@ -44,6 +45,7 @@ app.use(updateSubRouter);
 app.use(UserActiveSubRouter);
 app.use(AllUserSubsRouter);
 app.use(adminCancelRouter);
+app.use(adminExtendRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
