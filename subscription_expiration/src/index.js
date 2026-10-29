@@ -2,6 +2,7 @@ import { PaymentCompletedListener } from "./events/listener/payment-completed-li
 import { SubscriptionCancelledListener } from "./events/listener/subscription-cancelled-listener.js";
 import { AccountDeletedListener } from "./events/listener/account-deleted-listener.js";
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-update-listener.js";
+import { SubscriptionAdminExtendedListener } from "./events/listener/subscription-admin-extended-listener.js";
 import { natsQueues } from "./consants/queues.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
@@ -24,23 +25,29 @@ const start = async () => {
     new PaymentCompletedListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentCompleted,
-      natsQueues.paymentCompleted
+      natsQueues.paymentCompleted,
     ).listen();
     new SubscriptionCancelledListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCancelled,
-      natsQueues.subscriptionCancelled
-    ).listen(); 
+      natsQueues.subscriptionCancelled,
+    ).listen();
     new AccountDeletedListener(
       natsWrapperClient.jsClient,
       Subjects.AccountDeleted,
-      natsQueues.accountDeleted
+      natsQueues.accountDeleted,
     ).listen();
     new SubscriptionUpdatedListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionUpdated,
-      natsQueues.subscriptionUpdated
+      natsQueues.subscriptionUpdated,
     ).listen();
+    new SubscriptionAdminExtendedListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionAdminExtended,
+      natsQueues.subscriptionAdminExtended,
+    ).listen();
+
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
 
@@ -48,7 +55,7 @@ const start = async () => {
       {},
       {
         repeat: { cron: constants.cronTime.FIVE_SECONDS },
-      }
+      },
     );
   } catch (error) {
     console.log("[ERROR_CONNECTING_TO_DATABASE/NATS_SERVER", error);
