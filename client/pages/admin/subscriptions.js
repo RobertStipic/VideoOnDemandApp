@@ -13,6 +13,9 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [cancelling, setCancelling] = useState(null);
+  const [extending, setExtending] = useState(null);
+  const [extendModal, setExtendModal] = useState(null); // { id, userEmail, currentExpiresAt }
+  const [extendDays, setExtendDays] = useState(30);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -52,6 +55,45 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
       extended: subscriptions.filter((s) => s.status === "extended").length,
     };
   }, [subscriptions]);
+
+  const openExtendModal = (id, userEmail, currentExpiresAt) => {
+    setExtendModal({ id, userEmail, currentExpiresAt });
+    setExtendDays(30);
+  };
+
+  const closeExtendModal = () => {
+    setExtendModal(null);
+    setExtendDays(30);
+  };
+
+  const handleExtend = async () => {
+    if (!extendModal) return;
+
+    setExtending(extendModal.id);
+    setError("");
+
+    try {
+      const res = await api.patch(
+        `/subscription/admin/extend/${extendModal.id}`,
+        { days: parseInt(extendDays) },
+      );
+
+      setSubscriptions((prev) =>
+        prev.map((subscriptions) =>
+          subscriptions.id === extendModal.id ||
+          subscriptions._id === extendModal.id
+            ? { ...subscriptions, expiresAt: res.data.newExpiresAt }
+            : subscriptions,
+        ),
+      );
+
+      closeExtendModal();
+    } catch (err) {
+      setError(err.response?.data || "Extend failed");
+    } finally {
+      setExtending(null);
+    }
+  };
 
   const handleCancel = async (id, userEmail) => {
     if (
@@ -220,15 +262,32 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
                   <td>{s.expiresAt ? formatDateShort(s.expiresAt) : "—"}</td>
                   <td>
                     {s.status === "succeeded" ? (
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => handleCancel(s.id || s._id, s.userEmail)}
-                        disabled={cancelling === (s.id || s._id)}
-                      >
-                        {cancelling === (s.id || s._id)
-                          ? "Cancelling..."
-                          : "Cancel"}
-                      </button>
+                      <div className="d-flex gap-2">
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={() =>
+                            openExtendModal(
+                              s.id || s._id,
+                              s.userEmail,
+                              s.expiresAt,
+                            )
+                          }
+                          disabled={extending === (s.id || s._id)}
+                        >
+                          Extend
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() =>
+                            handleCancel(s.id || s._id, s.userEmail)
+                          }
+                          disabled={cancelling === (s.id || s._id)}
+                        >
+                          {cancelling === (s.id || s._id)
+                            ? "Cancelling..."
+                            : "Cancel"}
+                        </button>
+                      </div>
                     ) : (
                       <span className="text-muted small">—</span>
                     )}
@@ -239,6 +298,70 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
           </tbody>
         </table>
       </div>
+      {extendModal && (
+        <>
+          <div
+            className="modal-backdrop fade show"
+            onClick={closeExtendModal}
+          ></div>
+          <div className="modal fade show d-block" tabIndex="-1">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Extend Subscription</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={closeExtendModal}
+                  ></button>
+                </div>
+
+                <div className="modal-body">
+                  <p className="small text-muted mb-1">
+                    <strong>User:</strong> {extendModal.userEmail}
+                  </p>
+                  <p className="small text-muted mb-3">
+                    <strong>Current expiry:</strong>{" "}
+                    {formatDateShort(extendModal.currentExpiresAt)}
+                  </p>
+
+                  <label htmlFor="extendDays" className="form-label">
+                    Days to add:
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="extendDays"
+                    min="1"
+                    max="365"
+                    value={extendDays}
+                    onChange={(e) => setExtendDays(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeExtendModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleExtend}
+                    disabled={extending === extendModal.id || extendDays < 1}
+                  >
+                    {extending === extendModal.id ? "Extending..." : "Extend"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
