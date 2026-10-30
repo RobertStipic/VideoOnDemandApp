@@ -23,6 +23,7 @@ import { ResendActivationRouter } from "./routes/ResendActivation.js";
 import { AdminListUsersRouter } from "./routes/AdminListUsers.js";
 import { AdminDeleteUserRouter } from "./routes/AdminDeleteUser.js";
 import { SubscriptionCancelledListener } from "./events/listeners/subscription-cancelled-listener.js";
+import { UserGetByEmailResponder } from "./events/responder/user-get-by-email-responder.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -78,6 +79,7 @@ const startApp = async () => {
       Subjects.SubscriptionCancelled,
       natsQueues.subscriptionCancelled,
     ).listen();
+    new UserGetByEmailResponder(natsWrapperClient).listen();
 
     await mongoose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");
