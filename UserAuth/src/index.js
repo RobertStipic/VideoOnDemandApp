@@ -23,6 +23,7 @@ import { ResendActivationRouter } from "./routes/ResendActivation.js";
 import { AdminListUsersRouter } from "./routes/AdminListUsers.js";
 import { AdminDeleteUserRouter } from "./routes/AdminDeleteUser.js";
 import { SubscriptionCancelledListener } from "./events/listeners/subscription-cancelled-listener.js";
+import { SubscriptionAdminCreatedListener } from "./events/listeners/subscription-admin-created-listener.js";
 import { UserGetByEmailResponder } from "./events/responder/user-get-by-email-responder.js";
 
 const { json } = bodyparser;
@@ -78,6 +79,11 @@ const startApp = async () => {
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCancelled,
       natsQueues.subscriptionCancelled,
+    ).listen();
+    new SubscriptionAdminCreatedListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionAdminCreated,
+      natsQueues.subscriptionAdminCreated,
     ).listen();
     new UserGetByEmailResponder(natsWrapperClient).listen();
 

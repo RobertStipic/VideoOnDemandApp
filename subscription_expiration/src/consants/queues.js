@@ -6,6 +6,8 @@ export const natsQueues = {
   subscriptionUpdated: "subscription-extended-subscription-expiration-service",
   subscriptionAdminExtended:
     "subscription-admin-extended-subscription-expiration-service",
+  subscriptionAdminCreated:
+    "subscription-admin-created-subscription-expiration-service",
 };
 export const bullQueues = {
   subscriptionExpirationQueue: "subscription-expiration-queue",

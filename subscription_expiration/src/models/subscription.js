@@ -8,7 +8,7 @@ const SubscriptionSchema = new mongoose.Schema(
     },
     paymentId: {
       type: String,
-      required: true,
+      required: false, //3 commit
     },
     subscriptionId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +33,7 @@ const SubscriptionSchema = new mongoose.Schema(
       },
       versionKey: false,
     },
-  }
+  },
 );
 
 const Subscription = mongoose.model("Subscriptions", SubscriptionSchema);

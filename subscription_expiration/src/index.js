@@ -3,6 +3,7 @@ import { SubscriptionCancelledListener } from "./events/listener/subscription-ca
 import { AccountDeletedListener } from "./events/listener/account-deleted-listener.js";
 import { SubscriptionUpdatedListener } from "./events/listener/subscription-update-listener.js";
 import { SubscriptionAdminExtendedListener } from "./events/listener/subscription-admin-extended-listener.js";
+import { SubscriptionAdminCreatedListener } from "./events/listener/subscription-admin-created-listener.js";
 import { natsQueues } from "./consants/queues.js";
 import { Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
@@ -46,6 +47,11 @@ const start = async () => {
       natsWrapperClient.jsClient,
       Subjects.SubscriptionAdminExtended,
       natsQueues.subscriptionAdminExtended,
+    ).listen();
+    new SubscriptionAdminCreatedListener(
+      natsWrapperClient.jsClient,
+      Subjects.SubscriptionAdminCreated,
+      natsQueues.subscriptionAdminCreated,
     ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);
