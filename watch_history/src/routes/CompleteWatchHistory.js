@@ -13,7 +13,7 @@ CompleteHistoryRouter.get(
       const watchHistory = await WatchHistory.find({});
 
       if (!watchHistory || watchHistory.length === 0) {
-        return res.status(404).send("No watch history found");
+        return res.status(200).send({});
       }
 
       const movieHistory = {};
