@@ -13,6 +13,10 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [cancelling, setCancelling] = useState(null);
+  const [creating, setCreating] = useState(false);
+  const [createModal, setCreateModal] = useState(false);
+  const [createEmail, setCreateEmail] = useState("");
+  const [createPlan, setCreatePlan] = useState(1);
   const [extending, setExtending] = useState(null);
   const [extendModal, setExtendModal] = useState(null); // { id, userEmail, currentExpiresAt }
   const [extendDays, setExtendDays] = useState(30);
@@ -29,15 +33,17 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
     let result = subscriptions;
 
     if (statusFilter !== "all") {
-      result = result.filter((s) => s.status === statusFilter);
+      result = result.filter(
+        (subscriptions) => subscriptions.status === statusFilter,
+      );
     }
 
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
-        (s) =>
-          s.userEmail?.toLowerCase().includes(q) ||
-          s._id?.toLowerCase().includes(q),
+        (subscriptions) =>
+          subscriptions.userEmail?.toLowerCase().includes(q) ||
+          subscriptions._id?.toLowerCase().includes(q),
       );
     }
 
@@ -55,6 +61,27 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
       extended: subscriptions.filter((s) => s.status === "extended").length,
     };
   }, [subscriptions]);
+
+  const handleCreate = async () => {
+    setCreating(true);
+    setError("");
+
+    try {
+      const res = await api.post("/subscription/admin/create", {
+        email: createEmail,
+        plan: parseInt(createPlan),
+      });
+
+      setSubscriptions((prev) => [res.data.subscription, ...prev]);
+      setCreateModal(false);
+      setCreateEmail("");
+      setCreatePlan(1);
+    } catch (err) {
+      setError(err.response?.data || "Create failed");
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const openExtendModal = (id, userEmail, currentExpiresAt) => {
     setExtendModal({ id, userEmail, currentExpiresAt });
@@ -211,6 +238,14 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
           </select>
         </div>
       </div>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <button
+          className="btn btn-success"
+          onClick={() => setCreateModal(true)}
+        >
+          + New Subscription
+        </button>
+      </div>
       {error && <div className="alert alert-danger">{error}</div>}
       {/* Table */}
       <div className="table-responsive">
@@ -234,56 +269,72 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
                 </td>
               </tr>
             ) : (
-              filtered.map((s) => (
-                <tr key={s.id || s._id}>
-                  <td className="small">{s.id || s._id}</td>
-                  <td>{s.userEmail}</td>
-                  <td>{s.plan}</td>
+              filtered.map((subscriptions) => (
+                <tr key={subscriptions.id || subscriptions._id}>
+                  <td className="small">
+                    {subscriptions.id || subscriptions._id}
+                  </td>
+                  <td>{subscriptions.userEmail}</td>
+                  <td>{subscriptions.plan}</td>
                   <td>
                     <span
                       className={`badge ${
-                        s.status === "succeeded"
+                        subscriptions.status === "succeeded"
                           ? "bg-success"
-                          : s.status === "pending"
+                          : subscriptions.status === "pending"
                             ? "bg-warning text-dark"
-                            : s.status === "cancelled"
+                            : subscriptions.status === "cancelled"
                               ? "bg-danger"
-                              : s.status === "extended"
+                              : subscriptions.status === "extended"
                                 ? "bg-info"
-                                : s.status === "paymentExpired"
+                                : subscriptions.status === "paymentExpired"
                                   ? "bg-dark text-white"
                                   : "bg-secondary"
                       }`}
                     >
-                      {s.status}
+                      {subscriptions.status}
                     </span>
                   </td>
-                  <td>€{s.price}</td>
-                  <td>{s.expiresAt ? formatDateShort(s.expiresAt) : "—"}</td>
+                  <td>€{subscriptions}</td>
                   <td>
-                    {s.status === "succeeded" ? (
+                    {subscriptions.expiresAt
+                      ? formatDateShort(s.expiresAt)
+                      : "—"}
+                  </td>
+                  <td>
+                    {subscriptions.status === "succeeded" ? (
                       <div className="d-flex gap-2">
                         <button
                           className="btn btn-sm btn-primary"
                           onClick={() =>
                             openExtendModal(
-                              s.id || s._id,
-                              s.userEmail,
-                              s.expiresAt,
+                              subscriptions.id || subscriptions._id,
+                              subscriptions.userEmail,
+                              subscriptions.expiresAt,
                             )
                           }
-                          disabled={extending === (s.id || s._id)}
+                          disabled={
+                            extending ===
+                            (subscriptions.id || subscriptions._id)
+                          }
                         >
                           Extend
                         </button>
                         <button
                           className="btn btn-sm btn-danger"
                           onClick={() =>
-                            handleCancel(s.id || s._id, s.userEmail)
+                            handleCancel(
+                              subscriptions.id || subscriptions._id,
+                              subscriptions.userEmail,
+                            )
                           }
-                          disabled={cancelling === (s.id || s._id)}
+                          disabled={
+                            cancelling ===
+                            (subscriptions.id || subscriptions._id)
+                          }
                         >
-                          {cancelling === (s.id || s._id)
+                          {cancelling ===
+                          (subscriptions.id || subscriptions._id)
                             ? "Cancelling..."
                             : "Cancel"}
                         </button>
@@ -298,6 +349,69 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
           </tbody>
         </table>
       </div>
+      {createModal && (
+        <>
+          <div
+            className="modal-backdrop fade show"
+            onClick={() => setCreateModal(false)}
+          ></div>
+          <div className="modal fade show d-block" tabIndex="-1">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Create Subscription</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setCreateModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <div className="form-group">
+                    <label>User Email</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      value={createEmail}
+                      onChange={(e) => setCreateEmail(e.target.value)}
+                      placeholder="user@example.com"
+                    />
+                  </div>
+                  <div className="form-group mt-3">
+                    <label>Plan</label>
+                    <select
+                      className="form-select"
+                      value={createPlan}
+                      onChange={(e) => setCreatePlan(e.target.value)}
+                    >
+                      <option value="1">Monthly (€12)</option>
+                      <option value="2">6 Months (€55)</option>
+                      <option value="3">Yearly (€100)</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setCreateModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={handleCreate}
+                    disabled={creating || !createEmail}
+                  >
+                    {creating ? "Creating..." : "Create"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
       {extendModal && (
         <>
           <div
