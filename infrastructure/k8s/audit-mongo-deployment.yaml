@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: audit-mongo
+  template:
+    metadata:
+      labels:
+        app: audit-mongo
+    spec:
+      terminationGracePeriodSeconds: 60
+      initContainers:
+        - name: remove-lockfile
+          image: busybox
+          command:
+            ["sh", "-c", "rm -f /data/db/mongod.lock /data/db/WiredTiger.lock"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+        - name: fix-permissions
+          image: busybox
+          command:
+            ["sh", "-c", "chown -R 999:999 /data/db && chmod -R u+rwX /data/db"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      containers:
+        - image: mongo:7.0
+          name: audit-mongo
+          lifecycle:
+            preStop:
+              exec:
+                command: ["mongod", "--dbpath", "/data/db", "--shutdown"]
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: audit-mongo-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-mongo-srv
+spec:
+  selector:
+    app: audit-mongo
+  ports:
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

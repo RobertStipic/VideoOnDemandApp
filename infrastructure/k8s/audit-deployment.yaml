@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: audit
+  template:
+    metadata:
+      labels:
+        app: audit
+    spec:
+      initContainers:
+        - name: wait-for-nats
+          image: busybox
+          command: ["sh", "-c", "until nc -z nats-srv:4222; do sleep 1; done"]
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            ["sh", "-c", "until nc -z audit-mongo-srv:27017; do sleep 1; done"]
+      containers:
+        - name: audit
+          image: stile95/audit:latest
+          env:
+            - name: DATABASE_URL
+              value: "mongodb://audit-mongo-srv:27017/audit"
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET_KEY
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-srv
+spec:
+  selector:
+    app: audit
+  ports:
+    - name: audit
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
