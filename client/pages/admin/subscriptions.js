@@ -295,10 +295,10 @@ export default function AdminSubscriptions({ subscriptions: initialSubs }) {
                       {subscriptions.status}
                     </span>
                   </td>
-                  <td>€{subscriptions}</td>
+                  <td>€{subscriptions.price}</td>
                   <td>
                     {subscriptions.expiresAt
-                      ? formatDateShort(s.expiresAt)
+                      ? formatDateShort(subscriptions.expiresAt)
                       : "—"}
                   </td>
                   <td>
