@@ -67,6 +67,13 @@ spec:
                 name: movies-admin-srv
                 port:
                   number: 3000
+          - path: /audit/.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: audit-srv
+                port:
+                  number: 3000
           - path: /?(.*)
             pathType: ImplementationSpecific
             backend:
