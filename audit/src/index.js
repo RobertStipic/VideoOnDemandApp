@@ -6,6 +6,7 @@ import cookieSession from "cookie-session";
 import { currentUser, Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
 import { AdminActionListener } from "./events/listeners/admin-action-listener.js";
+import { listLogsRouter } from "./routes/ListLogs.js";
 import { natsQueues } from "./constants/queues.js";
 
 const { json } = bodyparser;
@@ -21,6 +22,7 @@ app.use(
   }),
 );
 app.use(currentUser);
+app.use(listLogsRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
