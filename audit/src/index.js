@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import { currentUser, Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "./nats-client.js";
+import { AdminActionListener } from "./events/listeners/admin-action-listener.js";
+import { natsQueues } from "./constants/queues.js";
 
 const { json } = bodyparser;
 const app = express();
@@ -34,6 +36,12 @@ const startApp = async () => {
   try {
     await natsWrapperClient.connect(process.env.NATS_URL);
     console.log("[audit service] Connected to NATS");
+
+    new AdminActionListener(
+      natsWrapperClient.jsClient,
+      Subjects.AdminActionLogged,
+      natsQueues.adminActionLogged,
+    ).listen();
 
     process.on("SIGINT", () => natsWrapperClient.close());
     process.on("SIGTERM", () => natsWrapperClient.close());
