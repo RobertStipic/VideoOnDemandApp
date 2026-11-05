@@ -4,6 +4,7 @@ import { adminAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { SubscriptionAdminExtendedPublisher } from "../events/publisher/subscription-admin-extended-publisher.js";
+import { AdminActionPublisher } from "../events/publisher/admin-action-publisher.js";
 import { constants } from "../constants/general.js";
 
 const adminExtendRouter = express.Router();
@@ -41,7 +42,7 @@ adminExtendRouter.patch(
       const newExpiresAt = new Date(
         subscription.expiresAt.getTime() + daysInMs,
       );
-
+      const oldExpiresAt = subscription.expiresAt;
       subscription.expiresAt = newExpiresAt;
       await subscription.save();
 
@@ -54,6 +55,22 @@ adminExtendRouter.patch(
         userEmail: subscription.userEmail,
         expiresAt: newExpiresAt,
         daysAdded: days,
+      });
+      await new AdminActionPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.AdminActionLogged,
+      ).publish({
+        adminEmail: req.currentUser.email,
+        action: "subscription:extend",
+        service: "subscription",
+        targetId: subscription.id,
+        targetEmail: subscription.userEmail,
+        details: {
+          daysAdded: days,
+          oldExpiresAt,
+          newExpiresAt,
+        },
+        timestamp: new Date().toISOString(),
       });
 
       console.log(

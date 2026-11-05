@@ -3,6 +3,7 @@ import { adminAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { SubscriptionCancelledPublisher } from "../events/publisher/subscription-cancelled-publisher.js";
+import { AdminActionPublisher } from "../events/publisher/admin-action-publisher.js";
 import { constants } from "../constants/general.js";
 
 const adminCancelRouter = express.Router();
@@ -28,7 +29,7 @@ adminCancelRouter.delete(
           .status(400)
           .send("Only succeeded subscriptions can be cancelled");
       }
-
+      const oldStatus = subscription.status;
       subscription.status = constants.status.cancelled;
       await subscription.save();
 
@@ -40,6 +41,18 @@ adminCancelRouter.delete(
         userId: subscription.userId,
         userEmail: subscription.userEmail,
         status: subscription.status,
+      });
+      await new AdminActionPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.AdminActionLogged,
+      ).publish({
+        adminEmail: req.currentUser.email,
+        action: "subscription:cancel",
+        service: "subscription",
+        targetId: subscription.id,
+        targetEmail: subscription.userEmail,
+        details: { previousStatus: oldStatus },
+        timestamp: new Date().toISOString(),
       });
 
       console.log(

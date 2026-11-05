@@ -4,6 +4,7 @@ import { adminAuthorization, Subjects } from "@robstipic/middlewares";
 import { Subscription } from "../models/subscription.js";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { SubscriptionAdminCreatedPublisher } from "../events/publisher/subscription-admin-created-publisher.js";
+import { AdminActionPublisher } from "../events/publisher/admin-action-publisher.js";
 import { constants } from "../constants/general.js";
 import { calculateExpiration } from "../services/calculateSubscription.js";
 
@@ -80,6 +81,18 @@ adminCreateRouter.post(
         expiresAt,
         createdBy: req.currentUser.email,
         paymentId: null,
+      });
+      await new AdminActionPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.AdminActionLogged,
+      ).publish({
+        adminEmail: req.currentUser.email,
+        action: "subscription:create",
+        service: "subscription",
+        targetId: subscription.id,
+        targetEmail: email,
+        details: { plan, price: 0, expiresAt },
+        timestamp: new Date().toISOString(),
       });
 
       console.log(
