@@ -1,13 +1,10 @@
 import express from "express";
 import multer from "multer";
 import { body, validationResult } from "express-validator";
-import {
-  currentUser,
-  adminAuthorization,
-  Subjects,
-} from "@robstipic/middlewares";
+import { adminAuthorization, Subjects } from "@robstipic/middlewares";
 import { natsWrapperClient } from "../nats-wrapper.js";
 import { MovieUploadedPublisher } from "../events/publishers/movie-uploaded-publisher.js";
+import { AdminActionPublisher } from "../events/publishers/admin-action-publisher.js";
 
 const uploadMovieRouter = express.Router();
 
@@ -26,7 +23,6 @@ const upload = multer({ storage });
 
 uploadMovieRouter.post(
   "/movies-admin/upload",
-  currentUser,
   adminAuthorization,
   upload.single("video"),
   [
@@ -184,6 +180,21 @@ uploadMovieRouter.post(
       natsWrapperClient.jsClient,
       Subjects.MovieUploaded,
     ).publish(movieData);
+    await new AdminActionPublisher(
+      natsWrapperClient.jsClient,
+      Subjects.AdminActionLogged,
+    ).publish({
+      adminEmail: req.currentUser.email,
+      action: "movie:upload",
+      service: "movies-admin",
+      targetId: req.body.imdbID,
+      details: {
+        title: req.body.Title,
+        year: req.body.Year,
+        filename: req.file.filename,
+      },
+      timestamp: new Date().toISOString(),
+    });
 
     res.status(201).send(`Movie uploaded: ${req.file.filename}`);
   },
