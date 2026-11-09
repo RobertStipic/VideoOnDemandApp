@@ -5,10 +5,17 @@ import Link from "next/link";
 import { getServerData } from "../../api/init-axios";
 import { formatDate } from "../../common/formatDate";
 
-export default function AdminAuditLog({ actions: initialActions }) {
+export default function AdminAuditLog({
+  subscriptionActions: initialSubscriptionActions,
+  movieActions: initialMovieActions,
+}) {
   const { user } = useAuth();
   const router = useRouter();
-  const [actions, setActions] = useState(initialActions || []);
+  const [tab, setTab] = useState("subscription");
+
+  const [subscriptionActions] = useState(initialSubscriptionActions || []);
+  const [movieActions] = useState(initialMovieActions || []);
+
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
 
@@ -17,10 +24,18 @@ export default function AdminAuditLog({ actions: initialActions }) {
     else if (user && user.role !== "admin") router.push("/");
   }, [user, router]);
 
+  useEffect(() => {
+    setSearch("");
+    setActionFilter("all");
+  }, [tab]);
+
   if (!user || user.role !== "admin") return null;
 
+  const currentActions =
+    tab === "subscription" ? subscriptionActions : movieActions;
+
   const filtered = useMemo(() => {
-    let result = actions;
+    let result = currentActions;
 
     if (actionFilter !== "all") {
       result = result.filter((log) => log.action === actionFilter);
@@ -37,9 +52,8 @@ export default function AdminAuditLog({ actions: initialActions }) {
     }
 
     return result;
-  }, [actions, search, actionFilter]);
+  }, [currentActions, search, actionFilter]);
 
-  // Format details
   const formatDetails = (details) => {
     if (!details) return "—";
 
@@ -72,6 +86,26 @@ export default function AdminAuditLog({ actions: initialActions }) {
         </Link>
       </div>
 
+      {/* Tabs */}
+      <ul className="nav nav-tabs mb-3">
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tab === "subscription" ? "active" : ""}`}
+            onClick={() => setTab("subscription")}
+          >
+            Subscriptions
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tab === "movies" ? "active" : ""}`}
+            onClick={() => setTab("movies")}
+          >
+            Movies
+          </button>
+        </li>
+      </ul>
+
       {/* Filters */}
       <div className="row g-3 mb-3">
         <div className="col-md-8">
@@ -90,9 +124,19 @@ export default function AdminAuditLog({ actions: initialActions }) {
             onChange={(e) => setActionFilter(e.target.value)}
           >
             <option value="all">All actions</option>
-            <option value="subscription:cancel">Subscription Cancel</option>
-            <option value="subscription:extend">Subscription Extend</option>
-            <option value="subscription:create">Subscription Create</option>
+            {tab === "subscription" && (
+              <>
+                <option value="subscription:cancel">Subscription Cancel</option>
+                <option value="subscription:extend">Subscription Extend</option>
+                <option value="subscription:create">Subscription Create</option>
+              </>
+            )}
+            {tab === "movies" && (
+              <>
+                <option value="movie:upload">Movie Upload</option>
+                <option value="movie:delete">Movie Delete</option>
+              </>
+            )}
           </select>
         </div>
       </div>
@@ -124,9 +168,11 @@ export default function AdminAuditLog({ actions: initialActions }) {
                   <td>
                     <span
                       className={`badge ${
-                        log.action.includes("cancel")
+                        log.action.includes("cancel") ||
+                        log.action.includes("delete")
                           ? "bg-danger"
-                          : log.action.includes("create")
+                          : log.action.includes("create") ||
+                              log.action.includes("upload")
                             ? "bg-success"
                             : "bg-info"
                       }`}
@@ -159,6 +205,19 @@ export default function AdminAuditLog({ actions: initialActions }) {
 }
 
 export async function getServerSideProps(context) {
-  const data = await getServerData(context, "/audit/logs?service=subscription");
-  return { props: { actions: data?.data || [] } };
+  const [subscriptionData, moviesData] = await Promise.all([
+    getServerData(context, "/audit/logs?service=subscription").catch(
+      () => null,
+    ),
+    getServerData(context, "/audit/logs?service=movies-admin").catch(
+      () => null,
+    ),
+  ]);
+
+  return {
+    props: {
+      subscriptionActions: subscriptionData?.data || [],
+      movieActions: moviesData?.data || [],
+    },
+  };
 }
