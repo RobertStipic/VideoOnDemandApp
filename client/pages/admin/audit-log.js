@@ -8,6 +8,7 @@ import { formatDate } from "../../common/formatDate";
 export default function AdminAuditLog({
   subscriptionActions: initialSubscriptionActions,
   movieActions: initialMovieActions,
+  userActions: initialUserActions,
 }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function AdminAuditLog({
 
   const [subscriptionActions] = useState(initialSubscriptionActions || []);
   const [movieActions] = useState(initialMovieActions || []);
+  const [userActions] = useState(initialUserActions || []);
 
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
@@ -32,7 +34,11 @@ export default function AdminAuditLog({
   if (!user || user.role !== "admin") return null;
 
   const currentActions =
-    tab === "subscription" ? subscriptionActions : movieActions;
+    tab === "subscription"
+      ? subscriptionActions
+      : tab === "movies"
+        ? movieActions
+        : userActions;
 
   const filtered = useMemo(() => {
     let result = currentActions;
@@ -54,7 +60,7 @@ export default function AdminAuditLog({
     return result;
   }, [currentActions, search, actionFilter]);
 
-  const formatDetails = (details) => {
+  const formatDetails = (details, action) => {
     if (!details) return "—";
 
     const formatted = { ...details };
@@ -72,6 +78,10 @@ export default function AdminAuditLog({
 
     if (formatted.price === 0) {
       formatted.price = "0 (admin-created, free)";
+    }
+
+    if (action === "user:delete" && formatted.wasSubscribed !== undefined) {
+      formatted.wasSubscribed = formatted.wasSubscribed ? "Yes" : "No";
     }
 
     return JSON.stringify(formatted, null, 2);
@@ -102,6 +112,14 @@ export default function AdminAuditLog({
             onClick={() => setTab("movies")}
           >
             Movies
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tab === "users" ? "active" : ""}`}
+            onClick={() => setTab("users")}
+          >
+            User Deletion
           </button>
         </li>
       </ul>
@@ -136,6 +154,9 @@ export default function AdminAuditLog({
                 <option value="movie:upload">Movie Upload</option>
                 <option value="movie:delete">Movie Delete</option>
               </>
+            )}
+            {tab === "users" && (
+              <option value="user:delete">User Delete</option>
             )}
           </select>
         </div>
@@ -190,7 +211,7 @@ export default function AdminAuditLog({
                         Details
                       </summary>
                       <code className="small d-block mt-2">
-                        {formatDetails(log.details)}
+                        {formatDetails(log.details, log.action)}
                       </code>
                     </details>
                   </td>
@@ -205,19 +226,21 @@ export default function AdminAuditLog({
 }
 
 export async function getServerSideProps(context) {
-  const [subscriptionData, moviesData] = await Promise.all([
+  const [subscriptionData, moviesData, usersData] = await Promise.all([
     getServerData(context, "/audit/logs?service=subscription").catch(
       () => null,
     ),
     getServerData(context, "/audit/logs?service=movies-admin").catch(
       () => null,
     ),
+    getServerData(context, "/audit/logs?service=userauth").catch(() => null),
   ]);
 
   return {
     props: {
       subscriptionActions: subscriptionData?.data || [],
       movieActions: moviesData?.data || [],
+      userActions: usersData?.data || [],
     },
   };
 }
