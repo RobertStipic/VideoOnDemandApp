@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { getServerData } from "../api/init-axios";
 
-const LandingPage = ({ currentUser }) => {
+const LandingPage = ({ currentUser, continueWatching = [] }) => {
   const isSubscribed = currentUser?.isSubscribed;
 
   const logoDivButtons = () => {
@@ -53,7 +54,11 @@ const LandingPage = ({ currentUser }) => {
         }}
       >
         <div className="container py-3 text-center">
-          <img src="/logo-black.png" alt="logo" style={{ height: "100px", width: "auto" }}/> 
+          <img
+            src="/logo-black.png"
+            alt="logo"
+            style={{ height: "100px", width: "auto" }}
+          />
           <p className="lead mb-4">
             Unlimited movies, anytime, anywhere. No ads, no interruptions.
           </p>
@@ -62,6 +67,50 @@ const LandingPage = ({ currentUser }) => {
           </div>
         </div>
       </div>
+      {continueWatching.length > 0 && (
+        <div className="container py-4">
+          <h2 className="mb-3">Continue Watching</h2>
+          <div className="row g-3">
+            {continueWatching.map((item) => (
+              <div className="col-6 col-md-4 col-lg-2" key={item.movieId}>
+                <Link
+                  href={`/watch/${item.movieId}`}
+                  className="text-decoration-none"
+                >
+                  <div className="card bg-dark text-white h-100">
+                    <div className="position-relative">
+                      <img
+                        src={item.Poster}
+                        alt={item.Title}
+                        className="card-img-top"
+                        style={{ height: "220px", objectFit: "cover" }}
+                      />
+                      <div
+                        className="position-absolute bottom-0 start-0 end-0"
+                        style={{
+                          background: "rgba(0,0,0,0.7)",
+                          padding: "6px 8px",
+                        }}
+                      >
+                        <div className="progress" style={{ height: "4px" }}>
+                          <div
+                            className="progress-bar bg-danger"
+                            style={{ width: `${item.percent}%` }}
+                          />
+                        </div>
+                        <small className="text-white">{item.percent}%</small>
+                      </div>
+                    </div>
+                    <div className="card-body p-2">
+                      <p className="card-text small mb-0">{item.Title}</p>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="container py-1">
         <h2 className="text-center mb-3">Why choose VodApp?</h2>
         <div className="row g-4">
@@ -70,8 +119,7 @@ const LandingPage = ({ currentUser }) => {
               <i className="display-4 text-warning"></i>
               <h5 className="mt-3">High Quality</h5>
               <p className="text-muted">
-                We are streaming best movies in best quality.
-                To your browser.
+                We are streaming best movies in best quality. To your browser.
               </p>
             </div>
           </div>
@@ -88,9 +136,7 @@ const LandingPage = ({ currentUser }) => {
             <div className="text-center">
               <i className="display-4 text-warning"></i>
               <h5 className="mt-3">Cancel anytime</h5>
-              <p className="text-muted">
-                Cancel your subscription anytime.
-              </p>
+              <p className="text-muted">Cancel your subscription anytime.</p>
             </div>
           </div>
         </div>
@@ -148,9 +194,7 @@ const LandingPage = ({ currentUser }) => {
       <div className="bg-warning text-dark py-5 text-center">
         <div className="container">
           <h3 className="fw-bold mb-3">Start your movie adventure</h3>
-          <p className="lead mb-4">
-            One click away
-          </p>
+          <p className="lead mb-4">One click away</p>
           {!currentUser ? (
             <Link href="/user/signup" className="btn btn-dark btn-lg">
               Get Started
@@ -170,4 +214,12 @@ const LandingPage = ({ currentUser }) => {
   );
 };
 
+export async function getServerSideProps(context) {
+  const continueWatching = await getServerData(
+    context,
+    "/history/continue",
+  ).catch(() => []);
+
+  return { props: { continueWatching: continueWatching || [] } };
+}
 export default LandingPage;
