@@ -11,6 +11,7 @@ const WatchMoviePage = ({
   isSubscribed,
   notAuthorized,
   recommendations,
+  initialPosition,
 }) => {
   if (notAuthorized) {
     return (
@@ -24,7 +25,11 @@ const WatchMoviePage = ({
     <div>
       {isSubscribed ? (
         <>
-          <MoviePlayer key={movie.imdbID} movie={movie} />
+          <MoviePlayer
+            key={movie.imdbID}
+            movie={movie}
+            initialPosition={initialPosition}
+          />
           {recommendations.length > 0 && (
             <div className="container mt-4">
               <h3 className="mb-4"> You may also like </h3>
@@ -58,16 +63,17 @@ export async function getServerSideProps(context) {
     return { props: { notAuthorized: true } };
   }
 
-  const recommendations = await getServerData(
-    context,
-    `/recommendations/${movieId}`,
-  );
+  const [recommendations, progress] = await Promise.all([
+    getServerData(context, `/recommendations/${movieId}`).catch(() => null),
+    getServerData(context, `/history/progress/${movieId}`).catch(() => null),
+  ]);
 
   return {
     props: {
       movie,
       isSubscribed: true,
       recommendations: recommendations || [],
+      initialPosition: progress?.position || 0,
     },
   };
 }
