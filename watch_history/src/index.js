@@ -14,6 +14,7 @@ import { constants } from "./consants/general.js";
 import cookieSession from "cookie-session";
 import { CompleteHistoryRouter } from "./routes/CompleteWatchHistory.js";
 import { FullMovieHistory } from "./routes/FullMovieHistory.js";
+import { ProgressRouter } from "./routes/WatchProgress.js";
 const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true); //ingress-nginx uses proxies
@@ -29,6 +30,7 @@ app.use(currentUser);
 app.use(UserWatchHistoryRouter);
 app.use(CompleteHistoryRouter);
 app.use(FullMovieHistory);
+app.use(ProgressRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");

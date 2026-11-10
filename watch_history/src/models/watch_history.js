@@ -21,6 +21,11 @@ const WatchHistorySchema = new mongoose.Schema(
           type: Date,
           required: true,
         },
+        progress: {
+          position: { type: Number, default: 0 },
+          duration: { type: Number, default: 0 },
+          updatedAt: { type: Date, default: null },
+        },
         _id: false,
       },
     ],
@@ -34,7 +39,7 @@ const WatchHistorySchema = new mongoose.Schema(
       },
       versionKey: false,
     },
-  }
+  },
 );
 const WatchHistory = mongoose.model("WatchHistory", WatchHistorySchema);
 
