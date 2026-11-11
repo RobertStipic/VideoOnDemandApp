@@ -12,10 +12,6 @@ const MoviePlayer = ({ movie, initialPosition = 0 }) => {
     const video = videoRef.current;
     const player = new shaka.Player(video);
 
-    player.load(movie.streamUrl).catch((error) => {
-      console.error("Error loading video", error);
-    });
-
     const sendProgress = (position, duration) => {
       if (!movie.imdbID || !duration) return;
       api
@@ -25,12 +21,6 @@ const MoviePlayer = ({ movie, initialPosition = 0 }) => {
           duration: Math.floor(duration),
         })
         .catch((err) => console.error("Progress send failed", err));
-    };
-
-    const onLoadedMetadata = () => {
-      if (initialPosition > 0 && initialPosition < video.duration - 5) {
-        video.currentTime = initialPosition;
-      }
     };
 
     const onTimeUpdate = () => {
@@ -43,15 +33,30 @@ const MoviePlayer = ({ movie, initialPosition = 0 }) => {
 
     const onPause = () => sendProgress(video.currentTime, video.duration);
 
-    video.addEventListener("loadedmetadata", onLoadedMetadata);
+    const onCanUpdateStartTime = () => {
+      if (initialPosition > 0) {
+        console.log(
+          "Setting start time via canupdatestarttime:",
+          initialPosition,
+        );
+        player.updateStartTime(initialPosition);
+      }
+    };
+
     video.addEventListener("timeupdate", onTimeUpdate);
     video.addEventListener("pause", onPause);
 
+    player.addEventListener("canupdatestarttime", onCanUpdateStartTime);
+
+    player.load(movie.streamUrl).catch((error) => {
+      console.error("Error loading video", error);
+    });
+
     return () => {
       player.destroy();
-      video.removeEventListener("loadedmetadata", onLoadedMetadata);
       video.removeEventListener("timeupdate", onTimeUpdate);
       video.removeEventListener("pause", onPause);
+      player.removeEventListener("canupdatestarttime", onCanUpdateStartTime);
     };
   }, [movie.streamUrl, movie.imdbID, initialPosition]);
 
