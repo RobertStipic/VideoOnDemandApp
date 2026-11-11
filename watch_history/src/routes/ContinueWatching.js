@@ -66,4 +66,35 @@ ContinueWatchingRouter.get(
   },
 );
 
+ContinueWatchingRouter.delete(
+  "/history/continue/:movieId",
+  userAuthorization,
+  async (req, res) => {
+    try {
+      const userHistory = await WatchHistory.findOne({
+        userId: req.currentUser.id,
+      });
+
+      if (!userHistory) {
+        return res.status(404).send("Watch history not found for user");
+      }
+
+      const entry = userHistory.watch_history.find(
+        (watchedMovie) => watchedMovie.movieId === req.params.movieId,
+      );
+
+      if (!entry) {
+        return res.status(404).send("Movie not in watch history");
+      }
+
+      entry.progress = { position: 0, duration: 0, updatedAt: null };
+      await userHistory.save();
+
+      res.status(200).send({ removed: req.params.movieId });
+    } catch (error) {
+      res.status(500).send("Error removing from continue watching");
+    }
+  },
+);
+
 export { ContinueWatchingRouter };

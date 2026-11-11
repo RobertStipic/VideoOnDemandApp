@@ -1,8 +1,33 @@
 import Link from "next/link";
 import { getServerData } from "../api/init-axios";
+import { useState } from "react";
+import api from "../api/axios-instance";
 
-const LandingPage = ({ currentUser, continueWatching = [] }) => {
+const LandingPage = ({
+  currentUser,
+  continueWatching: initialContinueWatching = [],
+}) => {
   const isSubscribed = currentUser?.isSubscribed;
+  const [continueWatching, setContinueWatching] = useState(
+    initialContinueWatching,
+  );
+  const [removingId, setRemovingId] = useState(null);
+
+  const handleRemove = async (e, movieId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setRemovingId(movieId);
+    try {
+      await api.delete(`/history/continue/${movieId}`);
+      setContinueWatching((prev) =>
+        prev.filter((item) => item.movieId !== movieId),
+      );
+    } catch (err) {
+      console.error("Remove failed", err);
+    } finally {
+      setRemovingId(null);
+    }
+  };
 
   const logoDivButtons = () => {
     if (!currentUser) {
@@ -100,6 +125,16 @@ const LandingPage = ({ currentUser, continueWatching = [] }) => {
                         </div>
                         <small className="text-white">{item.percent}%</small>
                       </div>
+                      <button
+                        type="button"
+                        onClick={(e) => handleRemove(e, item.movieId)}
+                        disabled={removingId === item.movieId}
+                        className="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 fw-bold"
+                        style={{ zIndex: 10, opacity: 0.8 }}
+                        title="Remove"
+                      >
+                        {removingId === item.movieId ? "..." : "×"}
+                      </button>
                     </div>
                     <div className="card-body p-2">
                       <p className="card-text small mb-0">{item.Title}</p>
