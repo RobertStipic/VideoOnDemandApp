@@ -3,10 +3,12 @@ import { getServerData } from "../api/init-axios";
 import { useState } from "react";
 import api from "../api/axios-instance";
 import ContinueWatchingCard from "../components/continueWatchingCard";
+import MovieCard from "../components/movieCard";
 
 const LandingPage = ({
   currentUser,
   continueWatching: initialContinueWatching = [],
+  recentlyAdded = [],
 }) => {
   const isSubscribed = currentUser?.isSubscribed;
   const [continueWatching, setContinueWatching] = useState(
@@ -104,6 +106,18 @@ const LandingPage = ({
                 onRemove={handleRemove}
                 removing={removingId}
               />
+            ))}
+          </div>
+        </div>
+      )}
+      {recentlyAdded.length > 0 && (
+        <div className="container py-4">
+          <h2 className="mb-3">Recently Added</h2>
+          <div className="row g-4">
+            {recentlyAdded.map((movie) => (
+              <div className="col-12 col-md-6 col-lg-4" key={movie.imdbID}>
+                <MovieCard movie={movie} />
+              </div>
             ))}
           </div>
         </div>
@@ -212,11 +226,16 @@ const LandingPage = ({
 };
 
 export async function getServerSideProps(context) {
-  const continueWatching = await getServerData(
-    context,
-    "/history/continue",
-  ).catch(() => []);
+  const [continueWatching, recentlyAdded] = await Promise.all([
+    getServerData(context, "/history/continue").catch(() => []),
+    getServerData(context, "/movies/recent").catch(() => []),
+  ]);
 
-  return { props: { continueWatching: continueWatching || [] } };
+  return {
+    props: {
+      continueWatching: continueWatching || [],
+      recentlyAdded: recentlyAdded || [],
+    },
+  };
 }
 export default LandingPage;
