@@ -6,6 +6,7 @@ import cookieSession from "cookie-session";
 import { initizializeCSV } from "./services/loadCSVtoDB.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
 import { MetricsRouter } from "./routes/Metrics.js";
+import { RecentlyAddedRouter } from "./routes/RecentlyAdded.js";
 import { constants } from "./constants/general.js";
 import { MoviesFilterRouter } from "./routes/filterMovies.js";
 import { currentUser, Subjects } from "@robstipic/middlewares";
@@ -57,6 +58,7 @@ app.use(currentUser);
 app.use(ListMoviesRouter);
 app.use(PlayMovieRouter);
 app.use(MoviesFilterRouter);
+app.use(RecentlyAddedRouter);
 
 app.use("/movies/stream", express.static(path.join(__dirname, "output")));
 app.all("*", (req, res) => {
