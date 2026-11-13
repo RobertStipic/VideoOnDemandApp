@@ -1,9 +1,11 @@
 import Link from "next/link";
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, isInWatchLater = false, onToggleWatchLater }) => {
   return (
-    <div className="card bg-dark text-white h-100 d-flex flex-column" style={{ borderRadius: "8px", overflow: "hidden" }}>
-      
+    <div
+      className="card bg-dark text-white h-100 d-flex flex-column"
+      style={{ borderRadius: "8px", overflow: "hidden" }}
+    >
       <div className="position-relative">
         <img
           src={movie.Poster}
@@ -11,6 +13,24 @@ const MovieCard = ({ movie }) => {
           className="card-img-top"
           style={{ height: "380px", objectFit: "cover" }}
         />
+        {onToggleWatchLater && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleWatchLater(movie.imdbID);
+            }}
+            className={`btn btn-sm position-absolute top-0 end-0 m-2 ${
+              isInWatchLater ? "btn-danger" : "btn-outline-light"
+            }`}
+            title={
+              isInWatchLater ? "Remove from Watch Later" : "Add to Watch Later"
+            }
+          >
+            {isInWatchLater ? "-" : "+"}
+          </button>
+        )}
       </div>
 
       <div className="card-body d-flex flex-column">
@@ -32,17 +52,19 @@ const MovieCard = ({ movie }) => {
           <span className="text-warning small">{movie.Language}</span>
         </div>
 
-          <p className="card-text text-warning small mt-auto mb-0 p-2">
-            <strong>Actors:</strong> {movie.Actors}
-          </p>
-                
+        <p className="card-text text-warning small mt-auto mb-0 p-2">
+          <strong>Actors:</strong> {movie.Actors}
+        </p>
 
-        <Link href={`/watch/${movie.imdbID}`} className="btn btn-danger mt-auto w-100">
+        <Link
+          href={`/watch/${movie.imdbID}`}
+          className="btn btn-danger mt-auto w-100"
+        >
           Watch
         </Link>
       </div>
     </div>
   );
-}
+};
 
 export default MovieCard;

@@ -4,7 +4,7 @@ import { useState } from "react";
 import api from "../../api/axios-instance.js";
 import { genresArray, languagesArray } from "../../constants/movieFilters.js";
 
-const MovieList = ({ movies, error }) => {
+const MovieList = ({ movies, error, watchLaterIds }) => {
   const [displayedMovies, setDisplayedMovies] = useState(movies);
   const [genre, setGenre] = useState("");
   const [language, setLanguage] = useState("");
@@ -15,6 +15,7 @@ const MovieList = ({ movies, error }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [watchLaterSet, setWatchLaterSet] = useState(new Set(watchLaterIds));
 
   const applyFilters = async () => {
     try {
@@ -77,6 +78,24 @@ const MovieList = ({ movies, error }) => {
     setEndYear("");
     setDisplayedMovies(movies);
     setFilterErrors([]);
+  };
+  const toggleWatchLater = async (movieId) => {
+    const isIn = watchLaterSet.has(movieId);
+    try {
+      if (isIn) {
+        await api.delete(`/history/watch-later/${movieId}`);
+        setWatchLaterSet((prev) => {
+          const next = new Set(prev);
+          next.delete(movieId);
+          return next;
+        });
+      } else {
+        await api.post(`/history/watch-later/${movieId}`);
+        setWatchLaterSet((prev) => new Set(prev).add(movieId));
+      }
+    } catch (err) {
+      console.error("Watch later toggle failed", err);
+    }
   };
 
   return (
@@ -204,7 +223,11 @@ const MovieList = ({ movies, error }) => {
         <div className="row g-4">
           {displayedMovies.map((movie) => (
             <div className="col-12 col-md-6 col-lg-4" key={movie.imdbID}>
-              <MovieCard movie={movie} />
+              <MovieCard
+                movie={movie}
+                isInWatchLater={watchLaterSet.has(movie.imdbID)}
+                onToggleWatchLater={toggleWatchLater}
+              />
             </div>
           ))}
         </div>
@@ -214,9 +237,16 @@ const MovieList = ({ movies, error }) => {
 };
 
 export async function getServerSideProps(context) {
-  const movies = await getServerData(context, "/movies/listmovies");
+  const [movies, watchLaterIds] = await Promise.all([
+    getServerData(context, "/movies/listmovies"),
+    getServerData(context, "/history/watch-later/ids").catch(() => []),
+  ]);
   return {
-    props: { movies: movies || [], error: movies ? null : "Unexpected error" },
+    props: {
+      movies: movies || [],
+      watchLaterIds: watchLaterIds || [],
+      error: movies ? null : "Unexpected error",
+    },
   };
 }
 
