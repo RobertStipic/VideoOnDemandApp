@@ -3,12 +3,14 @@ import { getServerData } from "../api/init-axios";
 import { useState } from "react";
 import api from "../api/axios-instance";
 import ContinueWatchingCard from "../components/continueWatchingCard";
+import TrendingMovieCard from "../components/trendingMovieCard";
 import MovieCard from "../components/movieCard";
 
 const LandingPage = ({
   currentUser,
   continueWatching: initialContinueWatching = [],
   recentlyAdded = [],
+  trending = [],
 }) => {
   const isSubscribed = currentUser?.isSubscribed;
   const [continueWatching, setContinueWatching] = useState(
@@ -122,6 +124,18 @@ const LandingPage = ({
           </div>
         </div>
       )}
+      {trending.length > 0 && (
+        <div className="container py-4">
+          <h2 className="mb-3">Trending This Week</h2>
+          <div className="row g-3">
+            {trending.map((item, index) => (
+              <div className="col-6 col-md-4 col-lg-2" key={item.movieId}>
+                <TrendingMovieCard movie={item} rank={index + 1} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="container py-1">
         <h2 className="text-center mb-3">Why choose VodApp?</h2>
         <div className="row g-4">
@@ -226,15 +240,17 @@ const LandingPage = ({
 };
 
 export async function getServerSideProps(context) {
-  const [continueWatching, recentlyAdded] = await Promise.all([
+  const [continueWatching, recentlyAdded, trending] = await Promise.all([
     getServerData(context, "/history/continue").catch(() => []),
     getServerData(context, "/movies/recent").catch(() => []),
+    getServerData(context, "/history/trending").catch(() => []),
   ]);
 
   return {
     props: {
       continueWatching: continueWatching || [],
       recentlyAdded: recentlyAdded || [],
+      trending: trending || [],
     },
   };
 }
