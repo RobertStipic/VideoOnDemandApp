@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/movieCardSmall.css";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import Header from "../components/header.js";

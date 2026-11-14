@@ -1,6 +1,6 @@
 import Sidebar from "../../components/sidebar.js";
 import { getServerData } from "../../api/init-axios.js";
-import MovieCard from "../../components/movieCard.js";
+import MovieCardSmall from "../../components/movieCardSmall.js";
 import { useAuth } from "../../context/AuthContext.js";
 
 const WatchLaterPage = ({ watchLater }) => {
@@ -18,7 +18,7 @@ const WatchLaterPage = ({ watchLater }) => {
             <div className="row g-4">
               {watchLater.map((item) => (
                 <div className="col-12 col-md-6 col-lg-4" key={item.movieId}>
-                  <MovieCard movie={item} />
+                  <MovieCardSmall movie={item} />
                 </div>
               ))}
             </div>
