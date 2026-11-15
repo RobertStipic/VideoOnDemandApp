@@ -87,9 +87,6 @@ WatchLaterRouter.get(
             Poster: 1,
             Year: 1,
             Runtime: 1,
-            Genre: 1,
-            imdbRating: 1,
-            imdbID: 1,
             _id: 0,
           })
           .lean();
