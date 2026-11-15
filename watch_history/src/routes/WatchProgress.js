@@ -18,7 +18,9 @@ ProgressRouter.post(
       ) {
         return res.status(400).send("movieId, position and duration required");
       }
-
+      if (position < 0 || duration <= 0) {
+        return res.status(400).send("Invalid position or duration");
+      }
       const userHistory = await WatchHistory.findOne({
         userId: req.currentUser.id,
       });
