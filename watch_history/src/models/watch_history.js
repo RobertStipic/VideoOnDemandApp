@@ -41,6 +41,9 @@ const WatchHistorySchema = new mongoose.Schema(
     },
   },
 );
+
+WatchHistorySchema.index({ "watch_history.watchedAt": -1 });
+
 const WatchHistory = mongoose.model("WatchHistory", WatchHistorySchema);
 
 export { WatchHistory };
