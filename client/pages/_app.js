@@ -14,6 +14,7 @@ const AppComponent = ({ Component, pageProps }) => {
         <Header />
         <Component {...pageProps} />
       </div>
+      <BackToTop />
     </AuthProvider>
   );
 };
