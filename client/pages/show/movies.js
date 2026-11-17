@@ -1,4 +1,5 @@
 import MovieCard from "../../components/movieCard.js";
+import MovieCardSkeleton from "../../components/movieCardSkeleton.js";
 import { getServerData } from "../../api/init-axios.js";
 import { useState } from "react";
 import api from "../../api/axios-instance.js";
@@ -16,10 +17,12 @@ const MovieList = ({ movies, error, watchLaterIds }) => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [watchLaterSet, setWatchLaterSet] = useState(new Set(watchLaterIds));
+  const [loading, setLoading] = useState(false);
 
   const applyFilters = async () => {
     try {
       setFilterErrors([]);
+      setLoading(true);
       const params = new URLSearchParams();
       if (genre) {
         params.append("genre", genre);
@@ -47,6 +50,8 @@ const MovieList = ({ movies, error, watchLaterIds }) => {
       } else {
         setFilterErrors([{ msg: "Failed to apply filters. Please try again" }]);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,6 +62,7 @@ const MovieList = ({ movies, error, watchLaterIds }) => {
       return;
     }
     setSearchLoading(true);
+    setLoading(true);
     setFilterErrors([]);
     try {
       const { data } = await api.get(
@@ -67,6 +73,7 @@ const MovieList = ({ movies, error, watchLaterIds }) => {
       setFilterErrors([{ msg: "Search failed. Please try again" }]);
     } finally {
       setSearchLoading(false);
+      setLoading(false);
     }
   };
 
@@ -221,15 +228,21 @@ const MovieList = ({ movies, error, watchLaterIds }) => {
         <div className="alert alert-danger">{error}</div>
       ) : (
         <div className="row g-4">
-          {displayedMovies.map((movie) => (
-            <div className="col-12 col-md-6 col-lg-4" key={movie.imdbID}>
-              <MovieCard
-                movie={movie}
-                isInWatchLater={watchLaterSet.has(movie.imdbID)}
-                onToggleWatchLater={toggleWatchLater}
-              />
-            </div>
-          ))}
+          {loading
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div className="col-12 col-md-6 col-lg-4" key={`skeleton-${i}`}>
+                  <MovieCardSkeleton />
+                </div>
+              ))
+            : displayedMovies.map((movie) => (
+                <div className="col-12 col-md-6 col-lg-4" key={movie.imdbID}>
+                  <MovieCard
+                    movie={movie}
+                    isInWatchLater={watchLaterSet.has(movie.imdbID)}
+                    onToggleWatchLater={toggleWatchLater}
+                  />
+                </div>
+              ))}
         </div>
       )}
     </div>
