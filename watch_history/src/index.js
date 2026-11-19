@@ -18,6 +18,7 @@ import { ProgressRouter } from "./routes/WatchProgress.js";
 import { ContinueWatchingRouter } from "./routes/ContinueWatching.js";
 import { WatchLaterRouter } from "./routes/WatchLater.js";
 import { TrendingRouter } from "./routes/Trending.js";
+import { ReviewRouter } from "./routes/Review.js";
 const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true); //ingress-nginx uses proxies
@@ -37,6 +38,7 @@ app.use(ProgressRouter);
 app.use(ContinueWatchingRouter);
 app.use(WatchLaterRouter);
 app.use(TrendingRouter);
+app.use(ReviewRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
