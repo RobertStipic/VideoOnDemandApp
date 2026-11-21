@@ -22,8 +22,10 @@ const MoviesSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    averageRating: { type: Number, default: 0 },
+    reviewCount: { type: Number, default: 0 },
   },
-  { versionKey: false }
+  { versionKey: false },
 );
 
 const Movie = mongoose.model("Movies", MoviesSchema);
