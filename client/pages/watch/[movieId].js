@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import { getServerData } from "../../api/init-axios.js";
 import MovieCard from "../../components/movieCard.js";
+import MovieReview from "../../components/movieReview.js";
 
 const MoviePlayer = dynamic(() => import("../../components/moviePlayer.js"), {
   ssr: false,
@@ -12,6 +13,8 @@ const WatchMoviePage = ({
   notAuthorized,
   recommendations,
   initialPosition,
+  initialReviews,
+  initialAverage,
 }) => {
   if (notAuthorized) {
     return (
@@ -29,6 +32,11 @@ const WatchMoviePage = ({
             key={movie.imdbID}
             movie={movie}
             initialPosition={initialPosition}
+          />
+          <MovieReview
+            movieId={movie.imdbID}
+            initialReviews={initialReviews}
+            initialAverage={initialAverage}
           />
           {recommendations.length > 0 && (
             <div className="container mt-4">
@@ -63,9 +71,10 @@ export async function getServerSideProps(context) {
     return { props: { notAuthorized: true } };
   }
 
-  const [recommendations, progress] = await Promise.all([
+  const [recommendations, progress, reviewsData] = await Promise.all([
     getServerData(context, `/recommendations/${movieId}`).catch(() => null),
     getServerData(context, `/history/progress/${movieId}`).catch(() => null),
+    getServerData(context, `/reviews/${movieId}`).catch(() => null),
   ]);
 
   return {
@@ -74,6 +83,8 @@ export async function getServerSideProps(context) {
       isSubscribed: true,
       recommendations: recommendations || [],
       initialPosition: progress?.position || 0,
+      initialReviews: reviewsData?.reviews || [],
+      initialAverage: reviewsData?.averageRating || 0,
     },
   };
 }
