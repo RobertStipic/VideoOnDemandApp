@@ -33,7 +33,15 @@ TrendingRouter.get("/history/trending", async (req, res) => {
       const movieInfo = await Movie.findOne({
         movieId: entry._id,
       })
-        .select({ Title: 1, Poster: 1, Year: 1, Runtime: 1, _id: 0 })
+        .select({
+          Title: 1,
+          Poster: 1,
+          Year: 1,
+          Runtime: 1,
+          averageRating: 1,
+          reviewCount: 1,
+          _id: 0,
+        })
         .lean();
 
       if (movieInfo) {

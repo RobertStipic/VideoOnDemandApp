@@ -1,6 +1,7 @@
 import express from "express";
 import { userAuthorization } from "@robstipic/middlewares";
 import { Review } from "../models/review.js";
+import { Movie } from "../models/movie.js";
 
 const ReviewRouter = express.Router();
 
@@ -72,13 +73,40 @@ ReviewRouter.delete(
   userAuthorization,
   async (req, res) => {
     try {
+      const { movieId } = req.params;
       const result = await Review.deleteOne({
         userId: req.currentUser.id,
-        movieId: req.params.movieId,
+        movieId,
       });
 
       if (result.deletedCount === 0) {
         return res.status(404).send("Review not found");
+      }
+
+      const stats = await Review.aggregate([
+        { $match: { movieId } },
+        {
+          $group: {
+            _id: "$movieId",
+            averageRating: { $avg: "$rating" },
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+
+      if (stats.length > 0) {
+        await Movie.updateOne(
+          { movieId },
+          {
+            averageRating: Math.round(stats[0].averageRating * 10) / 10,
+            reviewCount: stats[0].count,
+          },
+        );
+      } else {
+        await Movie.updateOne(
+          { movieId },
+          { averageRating: 0, reviewCount: 0 },
+        );
       }
 
       res.status(200).send({ deleted: true });

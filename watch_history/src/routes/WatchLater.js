@@ -87,6 +87,8 @@ WatchLaterRouter.get(
             Poster: 1,
             Year: 1,
             Runtime: 1,
+            averageRating: 1,
+            reviewCount: 1,
             _id: 0,
           })
           .lean();
