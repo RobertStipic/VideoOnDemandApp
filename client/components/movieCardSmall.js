@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
-import styles from "../../styles/movieCardSmall.module.css";
+import styles from "../styles/movieCardSmall.module.css";
 
 const MovieCardSmall = ({ movie }) => {
   const [hovered, setHovered] = useState(false);
@@ -21,6 +21,16 @@ const MovieCardSmall = ({ movie }) => {
       >
         <div className={styles.content}>
           <h4 className={styles.title}>{movie.Title}</h4>
+          {movie.averageRating > 0 && (
+            <div
+              className="text-warning small mb-1"
+              style={{ fontSize: "0.8rem" }}
+            >
+              {"★".repeat(Math.round(movie.averageRating))}
+              {"☆".repeat(5 - Math.round(movie.averageRating))}
+              <span className="text-muted ms-1">({movie.reviewCount})</span>
+            </div>
+          )}
           <p className={styles.meta}>
             {movie.Year} · {movie.Runtime}
           </p>
