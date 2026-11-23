@@ -2,6 +2,9 @@ import express from "express";
 import { userAuthorization } from "@robstipic/middlewares";
 import { Review } from "../models/review.js";
 import { Movie } from "../models/movie.js";
+import { Subjects } from "@robstipic/middlewares";
+import { natsWrapperClient } from "../nats-client.js";
+import { MovieRatingUpdatedPublisher } from "../events/publishers/movie-rating-updated-publisher.js";
 
 const ReviewRouter = express.Router();
 
@@ -24,6 +27,27 @@ ReviewRouter.post("/reviews/:movieId", userAuthorization, async (req, res) => {
       { new: true, upsert: true, setDefaultsOnInsert: true },
     );
 
+    const stats = await Review.aggregate([
+      { $match: { movieId } },
+      {
+        $group: {
+          _id: "$movieId",
+          averageRating: { $avg: "$rating" },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (stats.length > 0) {
+      await new MovieRatingUpdatedPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.MovieRatingUpdated,
+      ).publish({
+        movieId,
+        averageRating: Math.round(stats[0].averageRating * 10) / 10,
+        reviewCount: stats[0].count,
+      });
+    }
     res.status(200).send(review);
   } catch (error) {
     console.error(error);
@@ -94,13 +118,15 @@ ReviewRouter.delete(
         },
       ]);
 
+      let newAverage = 0;
+      let newCount = 0;
+
       if (stats.length > 0) {
+        newAverage = Math.round(stats[0].averageRating * 10) / 10;
+        newCount = stats[0].count;
         await Movie.updateOne(
           { movieId },
-          {
-            averageRating: Math.round(stats[0].averageRating * 10) / 10,
-            reviewCount: stats[0].count,
-          },
+          { averageRating: newAverage, reviewCount: newCount },
         );
       } else {
         await Movie.updateOne(
@@ -108,6 +134,15 @@ ReviewRouter.delete(
           { averageRating: 0, reviewCount: 0 },
         );
       }
+
+      await new MovieRatingUpdatedPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.MovieRatingUpdated,
+      ).publish({
+        movieId,
+        averageRating: newAverage,
+        reviewCount: newCount,
+      });
 
       res.status(200).send({ deleted: true });
     } catch (error) {
