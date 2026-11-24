@@ -28,16 +28,14 @@ const WatchMoviePage = ({
     <div>
       {isSubscribed ? (
         <>
-          <MoviePlayer
-            key={movie.imdbID}
-            movie={movie}
-            initialPosition={initialPosition}
-          />
-          <MovieReview
-            movieId={movie.imdbID}
-            initialReviews={initialReviews}
-            initialAverage={initialAverage}
-          />
+          <div key={movie.imdbID}>
+            <MoviePlayer movie={movie} initialPosition={initialPosition} />
+            <MovieReview
+              movieId={movie.imdbID}
+              initialReviews={initialReviews}
+              initialAverage={initialAverage}
+            />
+          </div>
           {recommendations.length > 0 && (
             <div className="container mt-4">
               <h3 className="mb-4"> You may also like </h3>
