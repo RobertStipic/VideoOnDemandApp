@@ -49,6 +49,16 @@ const MovieCard = ({ movie, isInWatchLater = false, onToggleWatchLater }) => {
           <span className="badge bg-info text-dark">
             IMDb {movie.imdbRating}
           </span>
+          {movie.averageRating > 0 && (
+            <div
+              className="text-warning small mb-1"
+              style={{ fontSize: "0.8rem" }}
+            >
+              {"★".repeat(Math.round(movie.averageRating))}
+              {"☆".repeat(5 - Math.round(movie.averageRating))}
+              <span className="text-warning ms-1">({movie.reviewCount})</span>
+            </div>
+          )}
           <span className="text-warning small">{movie.Language}</span>
         </div>
 
