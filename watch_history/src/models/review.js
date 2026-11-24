@@ -11,6 +11,10 @@ const ReviewSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    firstName: {
+      type: String,
+      required: true,
+    },
     movieId: {
       type: String,
       required: true,

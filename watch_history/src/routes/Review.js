@@ -21,6 +21,7 @@ ReviewRouter.post("/reviews/:movieId", userAuthorization, async (req, res) => {
       { userId: req.currentUser.id, movieId },
       {
         userEmail: req.currentUser.email,
+        firstName: req.currentUser.firstName,
         rating,
         text: text || "",
       },

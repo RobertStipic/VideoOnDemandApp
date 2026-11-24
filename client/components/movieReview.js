@@ -71,7 +71,7 @@ const MovieReview = ({ movieId, initialReviews, initialAverage }) => {
                 >
                   <div className="card-body">
                     <div className="d-flex justify-content-between mb-2">
-                      <strong>{rev.userEmail}</strong>
+                      <strong>{rev.firstName}</strong>
                       <span className="text-warning">
                         {"★".repeat(rev.rating)}
                         {"☆".repeat(5 - rev.rating)}
