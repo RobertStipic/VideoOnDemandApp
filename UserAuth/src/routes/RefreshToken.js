@@ -30,6 +30,7 @@ RefreshTokenRouter.post("/users/refresh", async (req, res) => {
         email: user.email,
         role: user.role,
         isActive: user.isActive,
+        firstName: user.firstName,
       },
       process.env.JWT_PRIVATE_KEY,
       { expiresIn: "15m" },

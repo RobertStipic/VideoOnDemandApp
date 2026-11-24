@@ -55,6 +55,7 @@ LogInRouter.post(
           email: existingEmail.email,
           role: existingEmail.role,
           isActive: existingEmail.isActive,
+          firstName: existingEmail.firstName,
         },
         process.env.JWT_PRIVATE_KEY,
         { expiresIn: "15m" },
