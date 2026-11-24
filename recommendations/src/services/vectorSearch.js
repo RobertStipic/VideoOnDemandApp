@@ -22,8 +22,19 @@ export async function searchQuery(query) {
       },
       {
         $project: {
-            _id: 0, Plot: 1, Title: 1, Poster: 1, Year: 1, Runtime: 1,
-            Genre: 1, Actors: 1, Language: 1, imdbRating: 1, imdbID: 1,
+          _id: 0,
+          Plot: 1,
+          Title: 1,
+          Poster: 1,
+          Year: 1,
+          Runtime: 1,
+          Genre: 1,
+          Actors: 1,
+          Language: 1,
+          imdbRating: 1,
+          imdbID: 1,
+          averageRating: 1,
+          reviewCount: 1,
           score: {
             $meta: constants.vector.meta,
           },
