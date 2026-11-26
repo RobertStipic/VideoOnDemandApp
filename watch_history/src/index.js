@@ -6,6 +6,7 @@ import { AccountDeletedListener } from "./events/listeners/account-deleted-liste
 import { MovieUploadedListener } from "./events/listeners/movie-uploaded-listener.js";
 import mongose from "mongoose";
 import express from "express";
+import helmet from "helmet";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import { UserWatchHistoryRouter } from "./routes/UserWatchHistory.js";
@@ -22,6 +23,7 @@ import { ReviewRouter } from "./routes/Review.js";
 const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true); //ingress-nginx uses proxies
+app.use(helmet());
 app.use(
   cookieSession({
     signed: false,

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import express from "express";
+import helmet from "helmet";
 import "./queues/videoQueue.js";
 import { MetricsRouter } from "./routes/Metrics.js";
 import { Subjects } from "@robstipic/middlewares";
@@ -8,7 +9,7 @@ import { MovieDeletedListener } from "./events/listeners/movie-deleted-listener.
 import { natsQueues } from "./constants/queues.js";
 
 const app = express();
-
+app.use(helmet());
 app.use(MetricsRouter);
 
 app.use((req, res) => {

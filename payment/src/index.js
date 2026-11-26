@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import cookieSession from "cookie-session";
@@ -21,13 +22,14 @@ const { json } = bodyparser;
 const app = express();
 
 app.set("trust proxy", true); //ingress-nginx uses proxies
+app.use(helmet());
 app.use(json());
 app.use(
   cookieSession({
     signed: false,
     secure: true,
     maxAge: constants.cookieAge, // 12 H
-  })
+  }),
 );
 app.use(currentUser);
 app.use(findSubscriptionStatus);
@@ -59,24 +61,24 @@ const startApp = async () => {
     new SubscriptionCreatedListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCreated,
-      natsQueues.subscriptionCreated
+      natsQueues.subscriptionCreated,
     ).listen();
 
     new SubscriptionUpdatedListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionUpdated,
-      natsQueues.SubscriptionUpdated
+      natsQueues.SubscriptionUpdated,
     ).listen();
     new SubscriptionCancelledListener(
       natsWrapperClient.jsClient,
       Subjects.SubscriptionCancelled,
-      natsQueues.SubscriptionCancelled
+      natsQueues.SubscriptionCancelled,
     ).listen();
 
     new PaymentExpirationListener(
       natsWrapperClient.jsClient,
       Subjects.PaymentExpirationCompleted,
-      natsQueues.PaymentExpirationCompleted
+      natsQueues.PaymentExpirationCompleted,
     ).listen();
 
     await mongose.connect(process.env.DATABASE_URL);
@@ -88,5 +90,4 @@ const startApp = async () => {
   });
 };
 
-   
 startApp();

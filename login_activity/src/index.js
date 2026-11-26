@@ -5,6 +5,7 @@ import { UserAuthListener } from "./events/listeners/user-login-listener.js";
 import { AccountDeletedListener } from "./events/listeners/account-deleted-listener.js";
 import mongose from "mongoose";
 import express from "express";
+import helmet from "helmet";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import { constants } from "./consants/general.js";
@@ -15,12 +16,13 @@ import cookieSession from "cookie-session";
 const { json } = bodyparser;
 const app = express();
 app.set("trust proxy", true); //ingress-nginx uses proxies
+app.use(helmet());
 app.use(
   cookieSession({
     signed: false,
     secure: true,
-    maxAge: constants.cookieAge // 12 H
-  })
+    maxAge: constants.cookieAge, // 12 H
+  }),
 );
 app.use(json());
 app.use(currentUser);
@@ -45,12 +47,12 @@ const start = async () => {
     new UserAuthListener(
       natsWrapperClient.jsClient,
       Subjects.UserAuth,
-      natsQueues.UserAuth
+      natsQueues.UserAuth,
     ).listen();
     new AccountDeletedListener(
       natsWrapperClient.jsClient,
       Subjects.AccountDeleted,
-      natsQueues.AccountDeleted
+      natsQueues.AccountDeleted,
     ).listen();
     await mongose.connect(process.env.DATABASE_URL);
     console.log("Connected to Database");

@@ -2,6 +2,7 @@ import express from "express";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import mongose from "mongoose";
+import helmet from "helmet";
 import cookieSession from "cookie-session";
 import { initizializeCSV } from "./services/loadCSVtoDB.js";
 import { ListMoviesRouter } from "./routes/ListMovies.js";
@@ -27,6 +28,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.set("trust proxy", true); //ingress-nginx uses proxies
+app.use(helmet());
 app.use(json());
 
 app.use((req, res, next) => {

@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import cookieSession from "cookie-session";
@@ -27,6 +28,7 @@ const { json } = bodyparser;
 const app = express();
 
 app.set("trust proxy", true); //ingress-nginx uses proxies
+app.use(helmet());
 app.use(json());
 app.use(
   cookieSession({

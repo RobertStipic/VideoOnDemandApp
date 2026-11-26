@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import "express-async-errors";
 import bodyparser from "body-parser";
 import mongoose from "mongoose";
@@ -13,6 +14,7 @@ const { json } = bodyparser;
 const app = express();
 
 app.set("trust proxy", 1);
+app.use(helmet());
 app.use(json());
 app.use(
   cookieSession({
