@@ -1,7 +1,13 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { currentUser, adminAuthorization } from "@robstipic/middlewares";
+import {
+  currentUser,
+  adminAuthorization,
+  Subjects,
+} from "@robstipic/middlewares";
 import { User } from "../models/user.js";
+import { natsWrapperClient } from "../nats-wrapper.js";
+import { AdminActionPublisher } from "../events/publishers/admin-action-publisher.js";
 
 const AdminImpersonateRouter = express.Router();
 
@@ -41,6 +47,19 @@ AdminImpersonateRouter.post(
         secure: true,
         sameSite: "strict",
         maxAge: 60 * 60 * 1000,
+      });
+
+      await new AdminActionPublisher(
+        natsWrapperClient.jsClient,
+        Subjects.AdminActionLogged,
+      ).publish({
+        adminEmail: req.currentUser.email,
+        action: "user:impersonate",
+        service: "userauth",
+        targetId: targetUser.id,
+        targetEmail: targetUser.email,
+        details: { reason: "Admin impersonation" },
+        timestamp: new Date().toISOString(),
       });
 
       res.status(200).send({ impersonationToken, targetUser });
