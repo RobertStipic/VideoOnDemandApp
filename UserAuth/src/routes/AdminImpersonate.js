@@ -51,4 +51,17 @@ AdminImpersonateRouter.post(
   },
 );
 
+AdminImpersonateRouter.post(
+  "/users/admin/impersonate/exit",
+  currentUser,
+  async (req, res) => {
+    res.clearCookie("impersonationToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    res.status(200).send("Exited impersonation");
+  },
+);
+
 export { AdminImpersonateRouter };
