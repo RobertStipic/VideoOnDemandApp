@@ -23,6 +23,7 @@ import { ActivateAccountRouter } from "./routes/ActivateAccount.js";
 import { ResendActivationRouter } from "./routes/ResendActivation.js";
 import { AdminListUsersRouter } from "./routes/AdminListUsers.js";
 import { AdminDeleteUserRouter } from "./routes/AdminDeleteUser.js";
+import { AdminImpersonateRouter } from "./routes/AdminImpersonate.js";
 import { SubscriptionCancelledListener } from "./events/listeners/subscription-cancelled-listener.js";
 import { SubscriptionAdminCreatedListener } from "./events/listeners/subscription-admin-created-listener.js";
 import { UserGetByEmailResponder } from "./events/responder/user-get-by-email-responder.js";
@@ -47,6 +48,7 @@ app.use(ResendActivationRouter);
 app.use(DeleteRouter);
 app.use(AdminListUsersRouter);
 app.use(AdminDeleteUserRouter);
+app.use(AdminImpersonateRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send("Route not found");
