@@ -19,6 +19,15 @@ export const createClient = ({ accessToken, host, cookie } = {}) => {
   });
 };
 
+// 👇 NOVO: Helper za parsiranje cookieja
+const parseCookies = (cookieHeader) => {
+  return cookieHeader.split(";").reduce((acc, c) => {
+    const [key, ...val] = c.trim().split("=");
+    acc[key] = val.join("=");
+    return acc;
+  }, {});
+};
+
 export const getServerUser = async (req) => {
   if (!req || !req.headers.cookie) return null;
 
@@ -27,18 +36,28 @@ export const getServerUser = async (req) => {
     cookie: req.headers.cookie,
   };
 
-  try {
-    const refreshRes = await axios.post(
-      `${BASE_URL}/users/refresh`,
-      {},
-      { headers: baseHeaders },
-    );
-    const { accessToken } = refreshRes.data;
+  const cookies = parseCookies(req.headers.cookie);
+  let accessToken;
 
+  if (cookies.impersonationToken) {
+    accessToken = decodeURIComponent(cookies.impersonationToken);
+  } else {
+    try {
+      const refreshRes = await axios.post(
+        `${BASE_URL}/users/refresh`,
+        {},
+        { headers: baseHeaders },
+      );
+      accessToken = refreshRes.data.accessToken;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  try {
     const userRes = await axios.get(`${BASE_URL}/users/currentuser`, {
       headers: { ...baseHeaders, Authorization: `Bearer ${accessToken}` },
     });
-
     return { user: userRes.data, accessToken };
   } catch (error) {
     return null;
@@ -54,14 +73,25 @@ export const getServerData = async (context, url, config = {}) => {
     cookie: req.headers.cookie,
   };
 
-  try {
-    const refreshRes = await axios.post(
-      `${BASE_URL}/users/refresh`,
-      {},
-      { headers: baseHeaders },
-    );
-    const { accessToken } = refreshRes.data;
+  const cookies = parseCookies(req.headers.cookie);
+  let accessToken;
 
+  if (cookies.impersonationToken) {
+    accessToken = decodeURIComponent(cookies.impersonationToken);
+  } else {
+    try {
+      const refreshRes = await axios.post(
+        `${BASE_URL}/users/refresh`,
+        {},
+        { headers: baseHeaders },
+      );
+      accessToken = refreshRes.data.accessToken;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  try {
     const client = createClient({
       host: req.headers.host,
       cookie: req.headers.cookie,
