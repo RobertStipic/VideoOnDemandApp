@@ -12,6 +12,19 @@ import { AdminActionPublisher } from "../events/publishers/admin-action-publishe
 const AdminImpersonateRouter = express.Router();
 
 AdminImpersonateRouter.post(
+  "/users/admin/impersonate/exit",
+  currentUser,
+  async (req, res) => {
+    res.clearCookie("impersonationToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    res.status(200).send("Exited impersonation");
+  },
+);
+
+AdminImpersonateRouter.post(
   "/users/admin/impersonate/:id",
   currentUser,
   adminAuthorization,
@@ -67,19 +80,6 @@ AdminImpersonateRouter.post(
       console.error(error);
       res.status(500).send("Error creating impersonation token");
     }
-  },
-);
-
-AdminImpersonateRouter.post(
-  "/users/admin/impersonate/exit",
-  currentUser,
-  async (req, res) => {
-    res.clearCookie("impersonationToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-    });
-    res.status(200).send("Exited impersonation");
   },
 );
 
