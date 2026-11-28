@@ -1,8 +1,9 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import Header from "../components/header.js";
 import BackToTop from "../components/backToTop.js";
 import { getServerUser } from "../api/init-axios.js";
+import ImpersonationBanner from "../components/ImpersonationBanner";
 
 const AppComponent = ({ Component, pageProps }) => {
   return (
@@ -10,6 +11,7 @@ const AppComponent = ({ Component, pageProps }) => {
       initialUser={pageProps.currentUser}
       initialAccessToken={pageProps.initialAccessToken}
     >
+      <ImpersonationBanner />
       <div>
         <Header />
         <Component {...pageProps} />

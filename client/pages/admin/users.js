@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import api from "../../api/axios-instance";
 import { getServerData } from "../../api/init-axios";
+import api, { setAccessToken, getAccessToken } from "../../api/axios-instance";
 
 export default function AdminUsers({ users: initialUsers }) {
   const { user } = useAuth();
@@ -13,6 +13,7 @@ export default function AdminUsers({ users: initialUsers }) {
   const [roleFilter, setRoleFilter] = useState("all");
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState("");
+  const [impersonating, setImpersonating] = useState(false);
 
   useEffect(() => {
     if (user === null) router.push("/user/signin");
@@ -65,6 +66,29 @@ export default function AdminUsers({ users: initialUsers }) {
       setError(err.response?.data || "Delete failed");
     } finally {
       setDeleting(null);
+    }
+  };
+
+  const handleImpersonate = async (id, email) => {
+    if (!window.confirm(`Impersonate ${email}?`)) return;
+
+    setImpersonating(id);
+    setError("");
+
+    try {
+      const currentAdminToken = getAccessToken();
+      localStorage.setItem("adminBackupToken", currentAdminToken);
+
+      const res = await api.post(`/users/admin/impersonate/${id}`);
+
+      setAccessToken(res.data.impersonationToken);
+
+      sessionStorage.setItem("impersonationEmail", res.data.targetUser.email);
+
+      window.location.href = "/";
+    } catch (err) {
+      setError(err.response?.data || "Impersonation failed");
+      setImpersonating(null);
     }
   };
 
@@ -207,6 +231,13 @@ export default function AdminUsers({ users: initialUsers }) {
                         }
                       >
                         {deleting === id ? "Deleting..." : "Delete"}
+                      </button>
+                      <button
+                        className="btn btn-sm btn-warning me-2"
+                        onClick={() => handleImpersonate(id, u.email)}
+                        disabled={isSelf || isAdmin || impersonating === id}
+                      >
+                        {impersonating === id ? "Loading..." : "Impersonate"}
                       </button>
                     </td>
                   </tr>
